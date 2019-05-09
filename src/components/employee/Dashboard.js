@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Box from '../../styled/layouts/Box';
 import Layout from '../Layout';
-import Timer from './Timer';
+import ShiftClock from './ShiftClock';
 
 const Dashboard = () => {
   return (
@@ -19,9 +19,9 @@ const Dashboard = () => {
           </ul>
         </div>
       </Stats>
-      <Timer>
+      <ShiftClock>
         <form />
-      </Timer>
+      </ShiftClock>
     </Content>
   );
 };

@@ -13,6 +13,14 @@ export const ME = gql`
       active
       email
       isClockedIn
+      lastShift {
+        id
+        timeIn
+        timeOut
+        department {
+          name
+        }
+      }
       departments {
         id
         name
