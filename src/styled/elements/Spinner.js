@@ -5,6 +5,9 @@ const Spinner = styled.div`
   margin: 0 auto;
   position: relative;
   text-indent: -9999em;
+  ${({ dark }) => {
+    console.log('dark spinner');
+  }}
   border-top: 1.1em solid rgba(255, 255, 255, 0.2);
   border-right: 1.1em solid rgba(255, 255, 255, 0.2);
   border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);

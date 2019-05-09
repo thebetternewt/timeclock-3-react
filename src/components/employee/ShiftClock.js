@@ -22,7 +22,6 @@ const ShiftClock = () => {
             const { departments } = me;
             if (me.isClockedIn) {
               const { lastShift } = me;
-              console.log(lastShift);
               const secondsElapsed =
                 moment().diff(moment(lastShift.timeIn)) / 1000;
 

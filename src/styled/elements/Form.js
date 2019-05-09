@@ -1,4 +1,7 @@
+import React from 'react';
 import styled from 'styled-components';
+import Spinner from './Spinner';
+import { absolute } from '../utilities';
 
 export const Form = styled.form`
   display: flex;
@@ -15,6 +18,30 @@ export const Input = styled.input`
   margin: 5px 0;
 `;
 
+export const FormControl = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  label {
+    margin-right: 1rem;
+    flex-shrink: 0;
+
+    &:after {
+      content: ' :';
+    }
+  }
+
+  select,
+  input,
+  button,
+  .field-loader-wrapper {
+    flex-basis: 60%;
+    margin: 5px;
+    height: 34px;
+  }
+`;
+
 export const Select = styled.select`
   display: block;
   padding: 0.5em 8px;
@@ -22,6 +49,7 @@ export const Select = styled.select`
   border-radius: 3px;
   font-size: 1rem;
   cursor: pointer;
+  position: relative;
 
   appearance: none;
   background-color: #fff;

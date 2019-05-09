@@ -23,8 +23,6 @@ const Layout = ({ children }) => {
           toggleSidebar(true);
         }
 
-        console.log(showSidebar);
-
         return (
           <div>
             <Header logoWidth={SIDEBAR_WIDTH}>

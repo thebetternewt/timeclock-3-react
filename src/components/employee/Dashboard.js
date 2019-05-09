@@ -1,13 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Box from '../../styled/layouts/Box';
-import Layout from '../Layout';
+import Container from '../../styled/layouts/Container';
 import ShiftClock from './ShiftClock';
+import PrivateRoute from '../shared/PrivateRoute';
 
 const Dashboard = () => {
+  // TODO: Wire up to db (myShifts query)
   return (
-    <Content>
+    <Container>
       <Stats>
         <div className="title">Current Pay Period</div>
         <div className="date">May 5 - May 17</div>
@@ -22,13 +23,9 @@ const Dashboard = () => {
       <ShiftClock>
         <form />
       </ShiftClock>
-    </Content>
+    </Container>
   );
 };
-
-const Content = styled.div`
-  display: flex;
-`;
 
 const Stats = styled.div`
   flex-basis: 50%;
@@ -38,7 +35,6 @@ const Stats = styled.div`
   .title {
     text-transform: uppercase;
     opacity: 0.6;
-    margin-bottom; 0.3em;
   }
 
   .date {
@@ -63,4 +59,4 @@ const Stats = styled.div`
   }
 `;
 
-export default Dashboard;
+export default () => <PrivateRoute component={Dashboard} />;

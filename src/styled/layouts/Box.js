@@ -3,6 +3,6 @@ import { GRAY1 } from '../utilities';
 
 export default styled.div`
   background: ${GRAY1};
-  padding: 1rem;
+  padding: 1.5rem;
   border-radius: 3px;
 `;

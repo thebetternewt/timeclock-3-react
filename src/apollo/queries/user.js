@@ -45,3 +45,22 @@ export const IS_CLOCKED_IN = gql`
     isClockedin
   }
 `;
+
+export const MY_SHIFTS = gql`
+  query MyShifts {
+    myShifts {
+      id
+      timeIn
+      timeOut
+      minutesElapsed
+      department {
+        id
+        name
+      }
+      user {
+        id
+        name
+      }
+    }
+  }
+`;
