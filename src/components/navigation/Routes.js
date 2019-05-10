@@ -2,7 +2,7 @@ import React from 'react';
 import { Router } from '@reach/router';
 import Login from '../auth/Login';
 import Dashboard from '../employee/Dashboard';
-import History from '../employee/History';
+import History from '../employee/history/History';
 
 const Routes = () => {
   return (

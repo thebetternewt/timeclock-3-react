@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Formik } from 'formik';
 import moment from 'moment';
@@ -35,6 +35,7 @@ const ShiftClock = () => {
                       return (
                         <>
                           <Button
+                            key="clockOut"
                             onClick={async () => {
                               try {
                                 await clockOut({

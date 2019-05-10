@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const Container = styled.div`
+const Container = styled.section`
   display: flex;
   max-width: 960px;
 `;

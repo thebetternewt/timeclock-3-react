@@ -1,7 +1,4 @@
-import React from 'react';
 import styled from 'styled-components';
-import Spinner from './Spinner';
-import { absolute } from '../utilities';
 
 export const Form = styled.form`
   display: flex;
