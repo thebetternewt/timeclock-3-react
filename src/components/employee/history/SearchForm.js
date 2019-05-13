@@ -26,14 +26,14 @@ const SearchForm = ({
   const [department, setDepartment] = useState();
   const [shifts, setShifts] = useState([]);
 
-  console.log('state:', {
-    year,
-    payPeriodOptions,
-    payPeriod,
-    departments,
-    department,
-    shifts,
-  });
+  // console.log('search form state:', {
+  //   year,
+  //   payPeriodOptions,
+  //   payPeriod,
+  //   departments,
+  //   department,
+  //   shifts,
+  // });
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -43,7 +43,6 @@ const SearchForm = ({
   };
 
   const handleChange = ({ target: { name, value } }) => {
-    console.log(name, value);
     switch (name) {
       case 'year':
         setYear(value);
@@ -129,9 +128,6 @@ const SearchForm = ({
                   const oldPpIds = payPeriodOptions.map(opt => opt.id);
 
                   if (!arraysEqual(newPpIds, oldPpIds)) {
-                    // console.log('diff pps!');
-                    // console.log('old pps:', oldPpIds);
-                    // console.log('new pps:', newPpIds);
                     setPayPeriodOptions(data.payPeriods);
                     setPayPeriod(data.payPeriods[0]);
                   }
@@ -203,9 +199,6 @@ const SearchForm = ({
                 !arraysEqual(newDeptIds, oldDeptIds) ||
                 !arraysEqual(newShiftIds, oldShiftIds)
               ) {
-                // console.log('diff pps!');
-                // console.log('old pps:', oldPpIds);
-                // console.log('new pps:', newPpIds);
                 setShifts(shifts);
                 setDepartments(depts);
                 setDepartment(depts[0]);

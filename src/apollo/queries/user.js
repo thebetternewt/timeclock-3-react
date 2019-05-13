@@ -25,17 +25,6 @@ export const ME = gql`
         id
         name
       }
-      shifts {
-        id
-        department {
-          name
-          users {
-            id
-          }
-        }
-        timeIn
-        minutesElapsed
-      }
     }
   }
 `;

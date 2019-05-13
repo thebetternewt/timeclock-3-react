@@ -1,13 +1,21 @@
 import styled from 'styled-components';
 
+import React from 'react';
+
+const SpinnerWrapper = ({ size, ...props }) => (
+  <div {...props}>
+    <Spinner size={size} />
+  </div>
+);
+
 const Spinner = styled.div`
+  ${props => {
+    // console.log(props);
+  }}
   font-size: 2px;
   margin: 0 auto;
   position: relative;
   text-indent: -9999em;
-  ${({ dark }) => {
-    console.log('dark spinner');
-  }}
   border-top: 1.1em solid rgba(255, 255, 255, 0.2);
   border-right: 1.1em solid rgba(255, 255, 255, 0.2);
   border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
@@ -47,4 +55,4 @@ const Spinner = styled.div`
   }
 `;
 
-export default Spinner;
+export default SpinnerWrapper;

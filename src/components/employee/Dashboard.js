@@ -1,62 +1,69 @@
 import React from 'react';
-import styled from 'styled-components';
+import moment from 'moment';
 
 import Container from '../../styled/layouts/Container';
 import ShiftClock from './ShiftClock';
+import Stats from './Stats';
 import PrivateRoute from '../shared/PrivateRoute';
+import { Query } from 'react-apollo';
+import { CURRENT_PAY_PERIOD } from '../../apollo/queries/payPeriod';
+import { MY_SHIFTS } from '../../apollo/queries/user';
 
 const Dashboard = () => {
-  // TODO: Wire up to db (myShifts query)
+  const shiftQueryVariables = ({ payPeriod }) => {
+    const vars = {
+      startDate: moment(payPeriod.startDate)
+        .startOf('Day')
+        .toISOString(),
+      endDate: moment(payPeriod.endDate)
+        .endOf('Day')
+        .toISOString(),
+    };
+    return vars;
+  };
+
   return (
     <Container>
-      <Stats>
-        <div className="title">Current Pay Period</div>
-        <div className="date">May 5 - May 17</div>
-        <div className="total">36.8 hours</div>
-        <div className="departments">
-          <ul>
-            <li>Digital Initiatives: 14.6 hours</li>
-            <li>Systems: 12.2 hours</li>
-          </ul>
-        </div>
-      </Stats>
-      <ShiftClock>
-        <form />
-      </ShiftClock>
+      <Query query={CURRENT_PAY_PERIOD}>
+        {({ data, loading: ppLoading, error: ppError }) => {
+          let payPeriod;
+
+          if (data && data.payPeriod) {
+            payPeriod = data.payPeriod;
+
+            return (
+              <Query
+                query={MY_SHIFTS}
+                variables={shiftQueryVariables({ payPeriod })}
+              >
+                {({ data, loading: shiftsLoading }) => {
+                  const loading = ppLoading || shiftsLoading;
+
+                  if (data && data.myShifts) {
+                    const { myShifts } = data;
+
+                    return (
+                      <Stats
+                        payPeriod={payPeriod}
+                        shifts={myShifts}
+                        loading={loading}
+                      />
+                    );
+                  }
+
+                  return <Stats payPeriod={payPeriod} loading={loading} />;
+                }}
+              </Query>
+            );
+          }
+          return (
+            <Stats payPeriod={payPeriod} loading={!ppError && ppLoading} />
+          );
+        }}
+      </Query>
+      <ShiftClock />
     </Container>
   );
 };
-
-const Stats = styled.div`
-  flex-basis: 50%;
-  display: flex;
-  flex-direction: column;
-
-  .title {
-    text-transform: uppercase;
-    opacity: 0.6;
-  }
-
-  .date {
-    font-size: 1.5rem;
-  }
-
-  .total {
-    font-size: 4rem;
-    font-weight: 600;
-    margin: 1rem 0 0;
-  }
-
-  .departments {
-    opacity: 0.7;
-    font-size: 1.2em;
-
-    ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-  }
-`;
 
 export default () => <PrivateRoute component={Dashboard} />;

@@ -12,3 +12,16 @@ export const PAY_PERIODS = gql`
     }
   }
 `;
+
+export const CURRENT_PAY_PERIOD = gql`
+  query PayPeriod {
+    payPeriod {
+      id
+      startDate
+      endDate
+      fiscalYear
+      payPeriodId
+      semester
+    }
+  }
+`;

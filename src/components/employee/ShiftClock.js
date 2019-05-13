@@ -30,17 +30,14 @@ const ShiftClock = () => {
                   <div className="title">Currently clocked into</div>
                   <div className="department">{lastShift.department.name}</div>
                   <Timer secondsElapsed={secondsElapsed} />
-                  <Mutation mutation={CLOCK_OUT}>
-                    {(clockOut, { data, loading }) => {
+                  <Mutation mutation={CLOCK_OUT} refetchQueries={() => ['Me']}>
+                    {(clockOut, { loading }) => {
                       return (
                         <>
                           <Button
-                            key="clockOut"
                             onClick={async () => {
                               try {
-                                await clockOut({
-                                  refetchQueries: () => ['Me'],
-                                });
+                                await clockOut();
                               } catch (e) {
                                 console.log(e);
                               }
@@ -56,19 +53,16 @@ const ShiftClock = () => {
                 </>
               );
             }
-            console.log(me);
 
             return (
-              <Mutation mutation={CLOCK_IN}>
+              <Mutation mutation={CLOCK_IN} refetchQueries={() => ['Me']}>
                 {(clockIn, { data, loading, error }) => {
                   return (
                     <Formik
                       onSubmit={async values => {
                         try {
-                          console.log(values);
                           await clockIn({
                             variables: values,
-                            refetchQueries: () => ['Me'],
                           });
                         } catch (error) {
                           console.log(error);
@@ -130,7 +124,7 @@ const ShiftClockContainer = styled(Box)`
 
   .title {
     opacity: 0.6;
-    margin-bottom; 0.3em;
+    margin-bottom: 0.3em;
   }
 
   .department {

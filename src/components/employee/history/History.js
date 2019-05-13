@@ -11,18 +11,13 @@ import Shifts from './Shifts';
 import { GRAY3 } from '../../../styled/utilities/Colors';
 
 const History = () => {
-  const [searching, setSearching] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [payPeriod, setPayPeriod] = useState();
   const [department, setDepartment] = useState();
 
-  const toggleSearching = () => setSearching(!searching);
-
   const hoursElapsed = shifts
     .reduce((total, shift) => total + shift.minutesElapsed / 60, 0)
     .toFixed(2);
-
-  console.log('hoursElapsed:', hoursElapsed);
 
   return (
     <>
