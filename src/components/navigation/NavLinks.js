@@ -5,6 +5,7 @@ const NavLinks = () => {
   return (
     <>
       <Link to="/">Home</Link>
+      <Link to="/admin">Admin</Link>
     </>
   );
 };

@@ -1,14 +1,16 @@
 import React from 'react';
 import { Router } from '@reach/router';
 import Login from '../auth/Login';
-import Dashboard from '../employee/Dashboard';
+import EmployeeDashboard from '../employee/Dashboard';
+import AdminDashboard from '../admin/Dashboard';
 import History from '../employee/history/History';
 
 const Routes = () => {
   return (
     <Router>
       <Login path="/login" default />
-      <Dashboard path="/" />
+      <EmployeeDashboard path="/" />
+      <AdminDashboard path="/admin" />
       <History path="/history" />
     </Router>
   );

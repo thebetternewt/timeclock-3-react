@@ -18,10 +18,15 @@ export const ME = gql`
         timeIn
         timeOut
         department {
+          id
           name
         }
       }
       departments {
+        id
+        name
+      }
+      supervisedDepartments {
         id
         name
       }
@@ -31,7 +36,7 @@ export const ME = gql`
 
 export const IS_CLOCKED_IN = gql`
   query IsClockedIn {
-    isClockedin
+    isClockedIn
   }
 `;
 

@@ -57,7 +57,7 @@ const Login = () => {
                           />
                           <Button
                             type="submit"
-                            color={SUCCESS}
+                            color="success"
                             text="Login"
                             loading={loading}
                           />

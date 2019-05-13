@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 
 import Box from '../../../styled/layouts/Box';
-import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
+import { LIGHT_GRAY, GRAY2, GRAY4 } from '../../../styled/utilities/Colors';
 
 const Shifts = ({ shifts }) => {
   return (

@@ -161,7 +161,7 @@ const SearchForm = ({
       </FormControl>
 
       <FormControl>
-        <Button type="submit" text="Search" color={SUCCESS} />
+        <Button type="submit" text="Search" color="success" />
       </FormControl>
 
       {/* Shifts Query wraps department select and search button */}

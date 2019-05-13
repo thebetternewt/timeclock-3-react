@@ -11,6 +11,7 @@ import { SUCCESS, DANGER } from '../../styled/utilities';
 import { Query, Mutation } from 'react-apollo';
 import { ME } from '../../apollo/queries/user';
 import { CLOCK_IN, CLOCK_OUT } from '../../apollo/mutations/user';
+import DepartmentSelect from '../shared/DepartmentSelect';
 
 const ShiftClock = () => {
   return (
@@ -19,6 +20,8 @@ const ShiftClock = () => {
         {({ data, loading }) => {
           if (data && data.me) {
             const { me } = data;
+            console.log(me);
+
             const { departments } = me;
             if (me.isClockedIn) {
               const { lastShift } = me;
@@ -44,7 +47,7 @@ const ShiftClock = () => {
                             }}
                             loading={loading}
                             text="Clock Out"
-                            color={DANGER}
+                            color="danger"
                           />
                         </>
                       );
@@ -72,22 +75,16 @@ const ShiftClock = () => {
                       {({ handleSubmit, handleChange, values }) => {
                         return (
                           <Form onSubmit={handleSubmit}>
-                            <Select
-                              name="deptId"
+                            <DepartmentSelect
+                              departments={departments}
                               value={values.deptId}
-                              onChange={handleChange}
-                            >
-                              <option value="">Choose Department</option>
-                              {departments.map(dept => (
-                                <option key={dept.id} value={dept.id}>
-                                  {dept.name}
-                                </option>
-                              ))}
-                            </Select>
+                              handleChange={handleChange}
+                              name="deptId"
+                            />
 
                             <Button
                               type="submit"
-                              color={SUCCESS}
+                              color="success"
                               text="Clock in"
                               loading={loading}
                             />
@@ -118,8 +115,6 @@ const ShiftClockContainer = styled(Box)`
     width: 100%;
     margin-top: 2rem;
     max-width: 200px;
-    color: #fff;
-    font-weight: 600;
   }
 
   .title {

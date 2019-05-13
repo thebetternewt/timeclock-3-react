@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Spinner from './Spinner';
+import { SUCCESS } from '../utilities';
+import { PRIMARY, GRAY1, DANGER } from '../utilities/Colors';
 
 const StyledButton = styled.button`
   padding: 0.5em 8px;
@@ -12,7 +14,28 @@ const StyledButton = styled.button`
   font-weight: 500;
 
 
-  background: ${({ color }) => color || '#ddd'};
+  ${({ color }) => {
+    switch (color) {
+      case 'primary':
+        return `
+          background: ${PRIMARY};
+          color: #fff;
+        `;
+      case 'success':
+        return `
+          background: ${SUCCESS};
+          color: ${GRAY1};
+        `;
+      case 'danger':
+        return `
+          background: ${DANGER};
+          color: #fff;
+        `;
+      default: {
+        return `background: #ddd;`;
+      }
+    }
+  }};
   cursor: pointer;
   }}
 `;
