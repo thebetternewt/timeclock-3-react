@@ -1,7 +1,7 @@
 import React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import { Formik } from 'formik';
-import { REGISTER } from '../../../apollo/mutations/user';
+import { REGISTER, EDIT } from '../../../apollo/mutations/user';
 import { navigate } from '@reach/router';
 import EmployeeForm from './EmployeeForm';
 import { USER } from '../../../apollo/queries/user';
@@ -19,7 +19,8 @@ const Edit = ({ employeeId }) => {
 
     try {
       const result = await edit();
-      navigate(result.data.edit.id);
+      console.log('result:', result);
+      navigate(`/admin/employees/${result.data.updateUser.id}`);
     } catch (err) {
       console.log(err);
     }
@@ -40,13 +41,17 @@ const Edit = ({ employeeId }) => {
             return (
               <Formik initialValues={data.user}>
                 {({ values, handleChange }) => {
-                  const { confirm, ...variables } = values;
+                  const variables = {
+                    id: data.user.id,
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    netId: values.netId,
+                    nineDigitId: values.nineDigitId,
+                    email: values.email,
+                  };
 
                   return (
-                    <Mutation
-                      mutation={REGISTER}
-                      variables={{ data: variables }}
-                    >
+                    <Mutation mutation={EDIT} variables={{ data: variables }}>
                       {(edit, { loading, error }) => {
                         console.log(error);
                         return (

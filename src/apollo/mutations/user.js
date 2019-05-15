@@ -8,6 +8,14 @@ export const REGISTER = gql`
   }
 `;
 
+export const EDIT = gql`
+  mutation UpdateUser($data: UserInput!) {
+    updateUser(data: $data) {
+      id
+    }
+  }
+`;
+
 export const LOGIN = gql`
   mutation Login($netId: String!, $password: String!) {
     login(netId: $netId, password: $password) {
