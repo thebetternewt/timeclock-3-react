@@ -1,5 +1,13 @@
 import { gql } from 'apollo-boost';
 
+export const REGISTER = gql`
+  mutation Register($data: RegisterInput!) {
+    register(data: $data) {
+      id
+    }
+  }
+`;
+
 export const LOGIN = gql`
   mutation Login($netId: String!, $password: String!) {
     login(netId: $netId, password: $password) {

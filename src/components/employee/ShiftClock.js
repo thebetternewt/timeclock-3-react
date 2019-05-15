@@ -5,9 +5,8 @@ import moment from 'moment';
 
 import Timer from './Timer';
 import Box from '../../styled/layouts/Box';
-import { Form, Select } from '../../styled/elements/Form';
+import { Form } from '../../styled/elements/Form';
 import { Button } from '../../styled/elements/Button';
-import { SUCCESS, DANGER } from '../../styled/utilities';
 import { Query, Mutation } from 'react-apollo';
 import { ME } from '../../apollo/queries/user';
 import { CLOCK_IN, CLOCK_OUT } from '../../apollo/mutations/user';
@@ -17,7 +16,7 @@ const ShiftClock = () => {
   return (
     <ShiftClockContainer>
       <Query query={ME}>
-        {({ data, loading }) => {
+        {({ data }) => {
           if (data && data.me) {
             const { me } = data;
             console.log(me);
@@ -34,7 +33,7 @@ const ShiftClock = () => {
                   <div className="department">{lastShift.department.name}</div>
                   <Timer secondsElapsed={secondsElapsed} />
                   <Mutation mutation={CLOCK_OUT} refetchQueries={() => ['Me']}>
-                    {(clockOut, { loading }) => {
+                    {(clockOut, { loading: clockOutLoading }) => {
                       return (
                         <>
                           <Button
@@ -45,9 +44,10 @@ const ShiftClock = () => {
                                 console.log(e);
                               }
                             }}
-                            loading={loading}
+                            loading={clockOutLoading}
                             text="Clock Out"
                             color="danger"
+                            disabled={clockOutLoading}
                           />
                         </>
                       );
@@ -59,9 +59,11 @@ const ShiftClock = () => {
 
             return (
               <Mutation mutation={CLOCK_IN} refetchQueries={() => ['Me']}>
-                {(clockIn, { data, loading, error }) => {
+                {(clockIn, { loading }) => {
+                  // TODO: Handle error.
                   return (
                     <Formik
+                      initialValues={{ deptId: '' }}
                       onSubmit={async values => {
                         try {
                           await clockIn({
@@ -87,6 +89,7 @@ const ShiftClock = () => {
                               color="success"
                               text="Clock in"
                               loading={loading}
+                              disabled={loading || !values.deptId}
                             />
                           </Form>
                         );

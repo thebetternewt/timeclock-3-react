@@ -22,7 +22,18 @@ const GlobalStyle = createGlobalStyle`
     color: #fff;
   }
 
- 
+  h1.title {
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0  0 1em;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 `;
 
 export default GlobalStyle;

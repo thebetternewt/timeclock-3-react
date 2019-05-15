@@ -5,7 +5,6 @@ import { Query } from 'react-apollo';
 import Box from '../../styled/layouts/Box';
 import DepartmentSelect from '../shared/DepartmentSelect';
 import EmployeesTable from './EmployeesTable';
-import { FormControl } from '../../styled/elements/Form';
 import {
   DEPARTMENTS,
   USERS_BY_DEPARTMENT,
@@ -17,11 +16,10 @@ const ActivityWrapper = () => {
 
   const handleDeptChange = e =>
     setDepartment(departments.find(dept => dept.id === e.target.value));
-  console.log(department);
 
   return (
     <Activity>
-      <div className="title">Activity</div>
+      <h1 className="title">Activity</h1>
       <Query query={DEPARTMENTS}>
         {({ data, loading }) => {
           if (data && data.departments) {
@@ -31,8 +29,6 @@ const ActivityWrapper = () => {
               setDepartments(data.departments);
             }
           }
-
-          console.log('depts:', departments);
 
           return (
             <div className="department-select">
@@ -92,12 +88,6 @@ const Activity = styled.div`
   display: flex;
   flex-direction: column;
   width: 800px;
-
-  .title {
-    text-transform: uppercase;
-    opacity: 0.6;
-    margin-bottom: 1em;
-  }
 
   .department-select {
     display: flex;

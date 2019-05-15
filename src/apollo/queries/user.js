@@ -58,3 +58,33 @@ export const MY_SHIFTS = gql`
     }
   }
 `;
+
+export const USERS = gql`
+  query Users {
+    users {
+      id
+      name
+      netId
+    }
+  }
+`;
+
+export const USER = gql`
+  query User($id: ID!) {
+    user(id: $id) {
+      id
+      firstName
+      lastName
+      name
+      netId
+      nineDigitId
+      email
+      admin
+      active
+      departments {
+        id
+        name
+      }
+    }
+  }
+`;

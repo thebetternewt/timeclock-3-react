@@ -7,10 +7,14 @@ import { DANGER } from '../../styled/utilities';
 const GraphQlErrors = error => {
   console.log('graphql errors:', error);
 
+  // if (!error.errors.graphQLErrors.length) {
+  //   return null;
+  // }
+
   return (
     <ErrorWrapper>
       <ul>
-        {error.error.graphQLErrors.map(({ message }) => (
+        {error.errors.graphQLErrors.map(({ message }) => (
           <li key={message}>{message}</li>
         ))}
       </ul>

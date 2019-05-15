@@ -2,8 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Spinner from './Spinner';
-import { SUCCESS } from '../utilities';
-import { PRIMARY, GRAY1, DANGER } from '../utilities/Colors';
+import {
+  SUCCESS,
+  PRIMARY,
+  GRAY1,
+  DANGER,
+  GRAY5,
+  LIGHT_GRAY,
+} from '../utilities';
 
 const StyledButton = styled.button`
   padding: 0.5em 8px;
@@ -12,7 +18,20 @@ const StyledButton = styled.button`
   border-radius: 3px;
   font-size: 1rem;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 
+  &:disabled {
+    /* background: ${LIGHT_GRAY};
+    color: ${GRAY5}; */
+    cursor: not-allowed;
+  }
+
+  svg {
+    margin-right: 5px;
+  }
 
   ${({ color }) => {
     switch (color) {
@@ -36,12 +55,16 @@ const StyledButton = styled.button`
       }
     }
   }};
-  cursor: pointer;
-  }}
 `;
 
 export const Button = ({ text, loading, ...styles }) => (
   <StyledButton {...styles}>
-    {loading ? <Spinner size="1rem" /> : text}
+    {loading ? (
+      <Spinner size="1rem" />
+    ) : text && typeof text === 'string' ? (
+      text
+    ) : (
+      text()
+    )}
   </StyledButton>
 );

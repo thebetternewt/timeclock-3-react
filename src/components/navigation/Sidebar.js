@@ -1,41 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from '@reach/router';
-import { fixed } from '../../styled/utilities';
-import { GRAY4 } from '../../styled/utilities';
-import { FaRegChartBar, FaRegFileAlt, FaHistory } from 'react-icons/fa';
-import { GRAY5 } from '../../styled/utilities/Colors';
-
-const isActive = ({ isCurrent }) => {
-  return isCurrent ? { className: 'active' } : null;
-};
-
-const NavLink = props => <Link getProps={isActive} {...props} />;
+import { Location } from '@reach/router';
+import { fixed, GRAY4, GRAY5 } from '../../styled/utilities';
+import EmployeeLinks from './EmployeeLinks';
+import AdminLinks from './AdminLinks';
 
 const SidebarWrapper = ({ width }) => {
   return (
-    <Sidebar width={width}>
-      <ul>
-        <li>
-          <NavLink to="/">
-            <FaRegChartBar />
-            Dashboard
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/history">
-            <FaHistory />
-            History
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/timesheets">
-            <FaRegFileAlt />
-            Timesheets
-          </NavLink>
-        </li>
-      </ul>
-    </Sidebar>
+    <Location>
+      {({ location: { pathname } }) => (
+        <Sidebar width={width}>
+          <Location>
+            {({ location }) =>
+              pathname.includes('admin') ? <AdminLinks /> : <EmployeeLinks />
+            }
+          </Location>
+        </Sidebar>
+      )}
+    </Location>
   );
 };
 

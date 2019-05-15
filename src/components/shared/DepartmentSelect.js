@@ -7,21 +7,26 @@ const DepartmentSelect = ({
   handleChange,
   name = 'department',
 }) => {
-  let options = [];
+  let options = [
+    <option key="none" value="">
+      Choose Department
+    </option>,
+  ];
 
   if (!departments.length) {
     options = <option value="">No departments found.</option>;
   } else {
-    options = departments.map(dept => (
-      <option key={dept.id} value={dept.id}>
-        {dept.name}
-      </option>
-    ));
+    options.push(
+      departments.map(dept => (
+        <option key={dept.id} value={dept.id}>
+          {dept.name}
+        </option>
+      ))
+    );
   }
 
   return (
     <Select name={name} value={value} onChange={handleChange}>
-      <option value="">Choose Department</option>
       {options}
     </Select>
   );

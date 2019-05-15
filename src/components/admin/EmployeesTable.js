@@ -3,9 +3,8 @@ import styled from 'styled-components';
 import moment from 'moment';
 
 import Box from '../../styled/layouts/Box';
-import { LIGHT_GRAY, GRAY4, DANGER } from '../../styled/utilities/Colors';
+import { LIGHT_GRAY, GRAY4 } from '../../styled/utilities/Colors';
 import { Button } from '../../styled/elements/Button';
-import { Mutation } from 'react-apollo';
 
 const Employees = ({ employees }) => {
   // TODO: Clock out employee on button click. Need to setup special resolver for admins only.
