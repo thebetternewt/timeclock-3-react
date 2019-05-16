@@ -13,8 +13,6 @@ const EmployeeForm = ({
 }) => {
   // TODO: Handle Errors
 
-  console.log('got an error:', error);
-
   return (
     <Form onSubmit={handleSubmit}>
       {error && <GraphQlErrors errors={error} />}

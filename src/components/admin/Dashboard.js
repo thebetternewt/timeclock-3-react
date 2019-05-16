@@ -2,6 +2,7 @@ import React from 'react';
 
 import Container from '../../styled/layouts/Container';
 import Activity from './Activity';
+import PrivateRoute from '../shared/PrivateRoute';
 
 const Dashboard = () => {
   return (
@@ -11,4 +12,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default () => <PrivateRoute component={Dashboard} />;

@@ -14,7 +14,7 @@ const GraphQlErrors = error => {
   return (
     <ErrorWrapper>
       <ul>
-        {error.errors.graphQLErrors.map(({ message }) => (
+        {error.error.graphQLErrors.map(({ message }) => (
           <li key={message}>{message}</li>
         ))}
       </ul>

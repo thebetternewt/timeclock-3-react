@@ -7,7 +7,6 @@ import { USERS } from '../../../apollo/queries/user';
 import EmployeeSelect from '../../shared/EmployeeSelect';
 import Container from '../../../styled/layouts/Container';
 import { Button } from '../../../styled/elements/Button';
-import Employee from './Employee';
 import { Link } from '@reach/router';
 
 const Employees = () => {

@@ -32,7 +32,10 @@ const ShiftClock = () => {
                   <div className="title">Currently clocked into</div>
                   <div className="department">{lastShift.department.name}</div>
                   <Timer secondsElapsed={secondsElapsed} />
-                  <Mutation mutation={CLOCK_OUT} refetchQueries={() => ['Me']}>
+                  <Mutation
+                    mutation={CLOCK_OUT}
+                    refetchQueries={() => ['Me', 'MyShifts']}
+                  >
                     {(clockOut, { loading: clockOutLoading }) => {
                       return (
                         <>

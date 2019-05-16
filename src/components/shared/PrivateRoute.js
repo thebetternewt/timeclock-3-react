@@ -8,8 +8,11 @@ const PrivateRoute = ({ component: Component, location, ...rest }) => {
 
   return (
     <Query query={ME}>
-      {({ data }) => {
-        if (data && !data.me) {
+      {({ data, loading }) => {
+        console.log('loading:', loading);
+        console.log('data:', data);
+        if (!loading && !data) {
+          console.log('not logged in...');
           // If user session expired, redirect to login.
           return <Redirect to="/login" noThrow />;
         } else if (data) {

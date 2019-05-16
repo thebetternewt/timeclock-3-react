@@ -8,7 +8,7 @@ export const REGISTER = gql`
   }
 `;
 
-export const EDIT = gql`
+export const UPDATE_USER = gql`
   mutation UpdateUser($data: UserInput!) {
     updateUser(data: $data) {
       id
@@ -50,5 +50,29 @@ export const CLOCK_OUT = gql`
     clockOut {
       id
     }
+  }
+`;
+
+export const ADD_SUPERVISOR_TO_DEPT = gql`
+  mutation AddSupervisorToDept($userId: ID!, $deptId: ID!) {
+    addToDepartment(userId: $userId, deptId: $deptId, supervisor: true)
+  }
+`;
+
+export const ADD_TO_DEPT = gql`
+  mutation AddEmplooyeeToDept($userId: ID!, $deptId: ID!) {
+    addToDepartment(userId: $userId, deptId: $deptId)
+  }
+`;
+
+export const REMOVE_SUPERVISOR_FROM_DEPT = gql`
+  mutation RemoveSupervisorFromDept($userId: ID!, $deptId: ID!) {
+    addToDepartment(userId: $userId, deptId: $deptId, supervisor: false)
+  }
+`;
+
+export const REMOVE_FROM_DEPT = gql`
+  mutation RemoveEmployeeFromDept($userId: ID!, $deptId: ID!) {
+    removeFromDepartment(userId: $userId, deptId: $deptId)
   }
 `;

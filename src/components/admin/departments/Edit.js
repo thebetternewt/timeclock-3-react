@@ -1,26 +1,21 @@
 import React from 'react';
 import { Mutation, Query } from 'react-apollo';
 import { Formik } from 'formik';
-import { UPDATE_USER } from '../../../apollo/mutations/user';
 import { navigate } from '@reach/router';
-import EmployeeForm from './EmployeeForm';
-import { USER } from '../../../apollo/queries/user';
+
+import DepartmentForm from './DepartmentForm';
 import SpinnerWrapper from '../../../styled/elements/Spinner';
+import { DEPARTMENT } from '../../../apollo/queries/department';
+import { UPDATE_DEPARTMENT } from '../../../apollo/mutations/department';
 
-const Edit = ({ employeeId }) => {
-  const passwordsMatch = (password, confirm) => password === confirm;
-
-  const handleSubmit = async (e, { values, edit }) => {
+const Edit = ({ departmentId }) => {
+  const handleSubmit = async (e, { values, mutate }) => {
     e.preventDefault();
 
-    if (!passwordsMatch(values.password, values.confirm)) {
-      throw new Error('Passwords must match');
-    }
-
     try {
-      const result = await edit();
+      const result = await mutate();
       console.log('result:', result);
-      navigate(`/admin/employees/${result.data.updateUser.id}`);
+      navigate(`/admin/departments/${result.data.updateDepartment.id}`);
     } catch (err) {
       console.log(err);
     }
@@ -28,45 +23,43 @@ const Edit = ({ employeeId }) => {
 
   return (
     <div style={{ width: 500 }}>
-      <h1 className="title">Edit Employee</h1>
+      <h1 className="title">Edit Department</h1>
 
-      <Query query={USER} variables={{ id: employeeId }}>
+      <Query query={DEPARTMENT} variables={{ id: departmentId }}>
         {({ data, loading }) => {
           console.log('data:', data);
           if (loading) {
             return <SpinnerWrapper size="60px" />;
           }
 
-          if (data && data.user) {
+          if (data && data.department) {
             return (
-              <Formik initialValues={data.user}>
+              <Formik initialValues={data.department}>
                 {({ values, handleChange }) => {
                   const variables = {
-                    id: data.user.id,
-                    firstName: values.firstName,
-                    lastName: values.lastName,
-                    netId: values.netId,
-                    nineDigitId: values.nineDigitId,
-                    email: values.email,
+                    name: values.name,
                   };
 
                   return (
                     <Mutation
-                      mutation={UPDATE_USER}
-                      variables={{ data: variables }}
+                      mutation={UPDATE_DEPARTMENT}
+                      variables={{
+                        deptId: data.department.id,
+                        data: variables,
+                      }}
                     >
                       {(edit, { loading, error }) => {
                         console.log(error);
                         return (
-                          <EmployeeForm
+                          <DepartmentForm
                             values={values}
                             handleChange={handleChange}
                             handleSubmit={e =>
-                              handleSubmit(e, { values, edit })
+                              handleSubmit(e, { values, mutate: edit })
                             }
                             error={error}
                             loading={loading}
-                            buttonText="Edit Employee"
+                            buttonText="Edit Department"
                           />
                         );
                       }}

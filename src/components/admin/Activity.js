@@ -71,7 +71,7 @@ const ActivityWrapper = () => {
                 </div>
                 <Box>
                   <div className="heading">
-                    Active Employees: {clockedInEmployees.length}
+                    Clocked in employees: {clockedInEmployees.length}
                   </div>
                   <EmployeesTable employees={clockedInEmployees} />
                 </Box>

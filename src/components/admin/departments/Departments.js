@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from '@reach/router';
 import { Query } from 'react-apollo';
 import styled from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
@@ -39,21 +40,28 @@ const Departments = () => {
                 handleChange={handleDepartmentSelect}
                 value={department}
               />
-              <Button
-                color="success"
-                text={() => (
-                  <>
-                    <FaPlusCircle /> Create Department
-                  </>
-                )}
-                style={{ marginLeft: '2rem' }}
-              />
+              <Link to={department || ''}>
+                <Button
+                  color="success"
+                  text="View"
+                  style={{ marginLeft: '2rem', width: 120 }}
+                  disabled={!department}
+                />
+              </Link>
             </DepartmentSelectWrapper>
           );
         }}
       </Query>
-
-      {department && <Department departmentId={department} />}
+      <Link to="new">
+        <Button
+          color="success"
+          text={() => (
+            <>
+              <FaPlusCircle /> Create Department
+            </>
+          )}
+        />
+      </Link>
     </Container>
   );
 };
