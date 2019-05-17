@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Query } from 'react-apollo';
 import { FaPlusCircle } from 'react-icons/fa';
 
 import Box from '../../../styled/layouts/Box';
+import Modal from '../../../styled/layouts/Modal';
 import { Button } from '../../../styled/elements/Button';
 import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';
 import { USER } from '../../../apollo/queries/user';
 import { Link } from '@reach/router';
+import WorkStudyForm from './workstudy/WorkStudyForm';
 
 const Employee = ({ employeeId }) => {
+  const [workStudyModalOpen, setWorkStudyModalOpen] = useState(true);
+
+  const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
+
   return (
     <div>
       <Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
@@ -92,6 +98,7 @@ const Employee = ({ employeeId }) => {
                     </>
                   )}
                   style={{ marginTop: '1rem' }}
+                  onClick={toggleWorkStudyModal}
                 />
               </EmployeeDetailBox>
               <EmployeeActionsWrapper>
@@ -100,6 +107,15 @@ const Employee = ({ employeeId }) => {
                 </Link>
                 <Button text="Deactivate Employee" color="danger" />
               </EmployeeActionsWrapper>
+              {workStudyModalOpen && (
+                <Modal title="Add Workstudy" close={toggleWorkStudyModal}>
+                  <WorkStudyForm
+                    employee={user}
+                    departments={user.departments}
+                    cancel={toggleWorkStudyModal}
+                  />
+                </Modal>
+              )}
             </>
           );
         }}

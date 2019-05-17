@@ -7,7 +7,7 @@ const GlobalStyle = createGlobalStyle`
   }
 
   *, *:before, *:after {
-    box-sizing: inherit;
+    box-sizing: border-box;
   }
 
   body {
@@ -20,6 +20,7 @@ const GlobalStyle = createGlobalStyle`
     -moz-osx-font-smoothing: grayscale;
     background: ${GRAY3};
     color: #fff;
+    width: 100%;
   }
 
   h1.title {

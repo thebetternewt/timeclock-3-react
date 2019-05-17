@@ -4,6 +4,10 @@ export const Form = styled.form`
   display: flex;
   flex-direction: column;
   width: 100%;
+
+  label {
+    margin: 0.5em 0 0;
+  }
 `;
 
 export const Input = styled.input`
@@ -21,6 +25,7 @@ export const FormControl = styled.div`
   justify-content: flex-end;
 
   label {
+    margin-top: 0;
     margin-right: 1rem;
     flex-shrink: 0;
 

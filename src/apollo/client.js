@@ -1,9 +1,8 @@
 import ApolloClient from 'apollo-boost';
-import { onError } from 'apollo-link-error';
 
 export const client = new ApolloClient({
-  uri: 'http://dev.relatemediadesign.com:4000/graphql',
-  // uri: 'http://localhost:4000/graphql',
+  // uri: 'http://dev.relatemediadesign.com:4000/graphql',
+  uri: 'http://localhost:4000/graphql',
   credentials: 'include',
   onError: ({ graphQLErrors = false, networkError, response }) => {
     if (graphQLErrors) {
