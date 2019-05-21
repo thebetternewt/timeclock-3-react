@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Query } from 'react-apollo';
+import { Query, Mutation } from 'react-apollo';
 import { FaPlusCircle } from 'react-icons/fa';
 
 import Box from '../../../styled/layouts/Box';
@@ -10,13 +10,28 @@ import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';
 import { USER } from '../../../apollo/queries/user';
+import { ADD_TO_DEPT, REMOVE_FROM_DEPT } from '../../../apollo/mutations/user';
 import { Link } from '@reach/router';
 import WorkStudyForm from './workstudy/WorkStudyForm';
+import Container from '../../../styled/layouts/Container';
+import { DEPARTMENTS } from '../../../apollo/queries/department';
+import DepartmentSelect from '../../shared/DepartmentSelect';
 
 const Employee = ({ employeeId }) => {
-  const [workStudyModalOpen, setWorkStudyModalOpen] = useState(true);
+  const [workStudyModalOpen, setWorkStudyModalOpen] = useState(false);
+  const [addingDepartment, setAddingDepartment] = useState(false);
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedWorkStudy, setSelectedWorkStudy] = useState();
 
+  const toggleAddingDepartment = () => setAddingDepartment(!addingDepartment);
   const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
+
+  const handleDepartmentSelect = e => setSelectedDepartment(e.target.value);
+  const handleWorkStudySelect = ws => {
+    console.log('selecting ws...');
+    setSelectedWorkStudy(ws);
+    console.log(selectedWorkStudy);
+  };
 
   return (
     <div>
@@ -27,7 +42,6 @@ const Employee = ({ employeeId }) => {
             return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
           }
           if (data && data.user) {
-            console.log(data.user);
             user = data.user;
           }
 
@@ -36,7 +50,7 @@ const Employee = ({ employeeId }) => {
           }
 
           return (
-            <>
+            <Container direction="column">
               <EmployeeDetail>
                 <DetailColumn>
                   <div>First Name: {user.firstName}</div>
@@ -59,21 +73,95 @@ const Employee = ({ employeeId }) => {
                       <Item key={dept.id}>
                         <div>{dept.name}</div>
                         <div>
-                          <Button text="remove" color="danger" />
+                          <Mutation
+                            mutation={REMOVE_FROM_DEPT}
+                            variables={{ userId: user.id, deptId: dept.id }}
+                            refetchQueries={() => ['User']}
+                          >
+                            {(remove, { loading }) => {
+                              return (
+                                <Button
+                                  text="remove"
+                                  color="danger"
+                                  loading={loading}
+                                  onClick={async () => {
+                                    try {
+                                      await remove();
+                                    } catch (err) {
+                                      console.log(err);
+                                    }
+                                  }}
+                                />
+                              );
+                            }}
+                          </Mutation>
                         </div>
                       </Item>
                     ))}
                 </List>
 
-                <Button
-                  color="success"
-                  text={() => (
-                    <>
-                      <FaPlusCircle /> Add Department
-                    </>
-                  )}
-                  style={{ marginTop: '1rem' }}
-                />
+                {addingDepartment ? (
+                  <EmployeeActionsWrapper>
+                    <Query query={DEPARTMENTS}>
+                      {({ data }) => {
+                        let departments;
+
+                        if (data && data.departments) {
+                          departments = data.departments;
+                        }
+
+                        return (
+                          <DepartmentSelect
+                            departments={departments}
+                            handleChange={handleDepartmentSelect}
+                            value={selectedDepartment}
+                          />
+                        );
+                      }}
+                    </Query>
+                    <Mutation mutation={ADD_TO_DEPT}>
+                      {(addToDepartment, { loading }) => {
+                        return (
+                          <Button
+                            color="success"
+                            onClick={async () => {
+                              try {
+                                await addToDepartment({
+                                  variables: {
+                                    userId: user.id,
+                                    deptId: selectedDepartment,
+                                  },
+                                  refetchQueries: () => ['User'],
+                                });
+                                toggleAddingDepartment();
+                                setSelectedDepartment('');
+                              } catch (err) {
+                                console.log(err);
+                              }
+                            }}
+                            text="Add"
+                          />
+                        );
+                      }}
+                    </Mutation>
+                    <Button
+                      color="danger"
+                      onClick={toggleAddingDepartment}
+                      text="Cancel"
+                    />
+                  </EmployeeActionsWrapper>
+                ) : (
+                  <Button
+                    color="success"
+                    text={() => (
+                      <>
+                        <FaPlusCircle /> Add Department
+                      </>
+                    )}
+                    style={{ marginTop: '1rem' }}
+                    onClick={toggleAddingDepartment}
+                  />
+                )}
               </EmployeeDetailBox>
 
               {/* Workstudy */}
@@ -81,11 +169,21 @@ const Employee = ({ employeeId }) => {
                 <ListHeader>Workstudy</ListHeader>
                 <List>
                   {user &&
-                    user.departments.map(dept => (
-                      <Item key={dept.id}>
-                        <div>{dept.name}</div>
+                    user.workStudy.map(ws => (
+                      <Item key={ws.id}>
+                        <div style={{ flexGrow: 1 }}>
+                          {ws.department.name} ({ws.period.name}{' '}
+                          {ws.period.year})
+                        </div>
                         <div>
-                          <Button text="edit" color="primary" />
+                          <Button
+                            text="view"
+                            color="primary"
+                            onClick={() => {
+                              handleWorkStudySelect(ws);
+                              toggleWorkStudyModal();
+                            }}
+                          />
                         </div>
                       </Item>
                     ))}
@@ -108,15 +206,21 @@ const Employee = ({ employeeId }) => {
                 <Button text="Deactivate Employee" color="danger" />
               </EmployeeActionsWrapper>
               {workStudyModalOpen && (
-                <Modal title="Add Workstudy" close={toggleWorkStudyModal}>
+                <Modal
+                  title={
+                    selectedWorkStudy ? `Edit Work Study` : `Add Work Study`
+                  }
+                  close={toggleWorkStudyModal}
+                >
                   <WorkStudyForm
                     employee={user}
                     departments={user.departments}
-                    cancel={toggleWorkStudyModal}
+                    close={toggleWorkStudyModal}
+                    workStudy={selectedWorkStudy}
                   />
                 </Modal>
               )}
-            </>
+            </Container>
           );
         }}
       </Query>
@@ -144,8 +248,14 @@ const EmployeeDetailBox = styled(Box)`
 const EmployeeActionsWrapper = styled.div`
   display: flex;
 
+  select,
   button {
     margin-right: 1rem;
+    min-width: 100px;
+  }
+
+  select {
+    width: 200px;
   }
 `;
 

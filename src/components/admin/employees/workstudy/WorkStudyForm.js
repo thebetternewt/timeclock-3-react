@@ -1,143 +1,245 @@
 import React, { useState } from 'react';
-import { Query } from 'react-apollo';
-import moment from 'moment';
+import { Query, Mutation } from 'react-apollo';
+import { format, parse } from 'date-fns';
 import styled from 'styled-components';
-import { Formik } from 'formik';
+import DatePicker from 'react-datepicker';
 
 import DepartmentSelect from '../../../shared/DepartmentSelect';
-import { Form, Select } from '../../../../styled/elements/Form';
+import { Form, Select, Input } from '../../../../styled/elements/Form';
 import { ALL_WORK_STUDY_PERIOD } from '../../../../apollo/queries/workStudyPeriod';
 import { Button } from '../../../../styled/elements/Button';
-// import DateTimePicker from './DateTimePicker';
+import { arraysEqual } from '../../../../util/arrays';
 
-const WorkStudyForm = ({ employee, departments = [], cancel }) => {
-  const [periods, setPeriods] = useState();
-  const [period, setPeriod] = useState();
-  const [editingDates, setEditingDates] = useState();
+import 'react-datepicker/dist/react-datepicker.css';
+import {
+  CREATE_WORK_STUDY,
+  EDIT_WORK_STUDY,
+} from '../../../../apollo/mutations/workStudy';
+import GraphQlErrors from '../../../shared/GraphQLErrors';
 
-  const getDepartmentName = id => departments.find(dept => dept.id === id).name;
+const yearOptions = [
+  new Date().getFullYear() - 1,
+  new Date().getFullYear(),
+  new Date().getFullYear() + 1,
+];
 
+const WorkStudyForm = ({
+  employee,
+  departments = [],
+  workStudy: ws,
+  close,
+}) => {
+  const [department, setDepartment] = useState(ws ? ws.department : null);
+  const [year, setYear] = useState(ws ? ws.period.year : '');
+  const [periods, setPeriods] = useState([]);
+  const [period, setPeriod] = useState(ws ? ws.period : null);
+  const [startDate, setStartDate] = useState(ws ? parse(ws.startDate) : null);
+  const [endDate, setEndDate] = useState(ws ? parse(ws.endDate) : null);
+  const [editingDates, setEditingDates] = useState(false);
+  const [error, setError] = useState();
+
+  console.log('state:', { periods, period, editingDates });
+  console.log('ws:', ws);
+
+  const editing = !!ws;
+  const mutation = editing ? EDIT_WORK_STUDY : CREATE_WORK_STUDY;
+
+  const handleDepartmentChange = e =>
+    setDepartment(getDepartment(e.target.value));
+  const handleYearChange = e => {
+    setYear(e.target.value);
+    setPeriod(null);
+  };
+  const handlePeriodChange = e => {
+    const selectedPeriod = getPeriod(e.target.value);
+    console.log('selectedPeriod:', selectedPeriod);
+    setPeriod(selectedPeriod);
+    setStartDate(parse(selectedPeriod.startDate));
+    setEndDate(parse(selectedPeriod.endDate));
+  };
+  const handleStartDateChange = date => setStartDate(date);
+  const handleEndDateChange = date => setEndDate(date);
+
+  const getDepartment = id => departments.find(dept => dept.id === id);
   const getPeriod = id => periods.find(period => period.id === id);
-
   const toggleEditingDates = () => setEditingDates(!editingDates);
 
+  const getInitialValues = () => ({
+    deptId: ws ? ws.department.id : '',
+    year: ws ? ws.period.year : '',
+    workStudyPeriodId: ws ? ws.period.id : '',
+    startDate: period ? parse(period.startDate) : '',
+    endDate: period ? parse(period.endDate) : '',
+  });
+
   return (
-    <Formik
-      initialValues={{
-        deptId: '',
-        year: '',
-        workStudyPeriodId: '',
-        startDate: '',
-        endDate: '',
-      }}
-    >
-      {({ values, handleChange, setFieldValue }) => {
-        console.log('values:', values);
-        return (
-          <Form>
-            <label htmlFor="deptId"> Department</label>
-            <DepartmentSelect
-              name="deptId"
-              departments={departments}
-              handleChange={handleChange}
-            />
+    <Form>
+      {error && <GraphQlErrors error={error} />}
+      <label htmlFor="deptId"> Department</label>
+      <DepartmentSelect
+        name="deptId"
+        departments={departments}
+        handleChange={handleDepartmentChange}
+        value={department.id}
+      />
 
-            <label htmlFor="year">Year</label>
+      <label htmlFor="year">Year</label>
+      <Select name="year" onChange={handleYearChange} value={year}>
+        <option value="">Choose year.</option>
+        {yearOptions.map(year => (
+          <option key={year} value={year}>
+            {year}
+          </option>
+        ))}
+      </Select>
+
+      <label htmlFor="workStudyPeriodId">Work study period</label>
+      <Query
+        query={ALL_WORK_STUDY_PERIOD}
+        variables={{ year: parseInt(year, 10) }}
+      >
+        {({ data, loading, error }) => {
+          let periodOptions;
+
+          if (!year && periods.length) {
+            setPeriods([]);
+          } else if (year && data && data.allWorkStudyPeriod) {
+            if (!arraysEqual(data.allWorkStudyPeriod, periods)) {
+              setPeriods(data.allWorkStudyPeriod);
+            }
+
+            if (periods.length) {
+              periodOptions = periods.map(period => (
+                <option key={period.id} value={period.id}>
+                  {period.name}
+                </option>
+              ));
+            }
+          }
+
+          return (
             <Select
-              name="year"
-              onChange={e => {
-                setFieldValue('workStudyPeriodId', '');
-                handleChange(e);
-              }}
+              name="workStudyPeriodId"
+              onChange={handlePeriodChange}
+              value={period ? period.id : ''}
             >
-              <option value="">Choose year.</option>
-              <option value={new Date().getFullYear() - 1}>
-                {new Date().getFullYear() - 1}
-              </option>
-              <option value={new Date().getFullYear()}>
-                {new Date().getFullYear()}
-              </option>
-              <option value={new Date().getFullYear() + 1}>
-                {new Date().getFullYear() + 1}
-              </option>
+              {periods.length ? (
+                <>
+                  <option value="">Choose work study period.</option>
+                  {periodOptions}
+                </>
+              ) : (
+                <option value="">No work study periods found.</option>
+              )}
             </Select>
+          );
+        }}
+      </Query>
 
-            <label htmlFor="workStudyPeriodId">Work study period</label>
-            <Query
-              query={ALL_WORK_STUDY_PERIOD}
-              variables={{ year: parseInt(values.year, 10) }}
-            >
-              {({ data, loading, error }) => {
-                let periodOptions = (
-                  <option value="">No work study periods found.</option>
-                );
+      {department && year && period && (
+        <>
+          <WorkStudyDescription>
+            <span>{employee.name}</span> is eligible for work study in{' '}
+            <span>{department.name}</span> during{' '}
+            <span>
+              {period.name} {year} ({format(startDate, 'MMM DD')} -{' '}
+              {format(endDate, 'MMM DD')}).
+              <Button
+                text="Edit Dates"
+                naked
+                onClick={e => {
+                  e.preventDefault();
+                  toggleEditingDates();
+                }}
+              />
+            </span>
+          </WorkStudyDescription>
 
-                if (data && data.allWorkStudyPeriod) {
-                  if (!periods) {
-                    setPeriods(data.allWorkStudyPeriod);
-                  }
+          {editingDates && (
+            <div style={{ display: 'flex' }}>
+              <DatePicker
+                customInput={<Input style={{ marginRight: '1rem' }} />}
+                name="startDate"
+                selected={startDate}
+                selectsStart
+                startDate={startDate}
+                endDate={startDate}
+                minDate={parse(period.startDate)}
+                maxDate={parse(period.endDate)}
+                onChange={handleStartDateChange}
+              />
 
-                  periodOptions = data.allWorkStudyPeriod.map(period => (
-                    <option key={period.id} value={period.id}>
-                      {period.name}
-                    </option>
-                  ));
+              <DatePicker
+                customInput={<Input />}
+                name="endDate"
+                selected={endDate}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={parse(period.startDate)}
+                maxDate={parse(period.endDate)}
+                onChange={handleEndDateChange}
+              />
+            </div>
+          )}
+
+          <p> Is this correct?</p>
+          <ModalActions>
+            <Mutation mutation={mutation} refetchQueries={() => ['User']}>
+              {(submit, { loading, error: workStudyError }) => {
+                if (workStudyError) {
+                  setError(workStudyError);
+                }
+
+                const variables = {
+                  data: {
+                    userId: employee.id,
+                    deptId: department.id,
+                    workStudyPeriodId: period.id,
+                    startDate: format(startDate, 'YYYY-MM-DD'),
+                    endDate: format(endDate, 'YYYY-MM-DD'),
+                  },
+                };
+
+                if (editing) {
+                  variables.id = ws.id;
                 }
 
                 return (
-                  <Select
-                    name="workStudyPeriodId"
-                    onChange={e => {
-                      setPeriod(getPeriod(e.target.value));
-                      handleChange(e);
-                    }}
-                  >
-                    <option value="">Choose work study period.</option>
-                    {periodOptions}
-                  </Select>
-                );
-              }}
-            </Query>
-
-            {values.deptId && values.year && values.workStudyPeriodId && (
-              <>
-                <WorkStudyDescription>
-                  <span>{employee.name}</span> is eligible for work study in{' '}
-                  <span>{getDepartmentName(values.deptId)}</span> during{' '}
-                  <span>
-                    {period.name} {values.year} (
-                    {moment(period.startDate).format('MMM DD')} -{' '}
-                    {moment(period.endDate).format('MMM DD')})
-                  </span>
-                  .
-                </WorkStudyDescription>
-
-                <p> Is this correct?</p>
-                <ModalActions>
                   <Button
                     type="submit"
                     text="Yes"
                     color="success"
-                    onClick={cancel}
-                  />
-                  <Button
-                    text="Edit Dates"
-                    color="primary"
-                    onClick={e => {
+                    onClick={async e => {
                       e.preventDefault();
-                      toggleEditingDates();
+                      console.log(variables);
+                      try {
+                        await submit({
+                          variables,
+                        });
+                        close();
+                      } catch (error) {
+                        console.log(error);
+                      }
                     }}
+                    loading={loading}
                   />
-                  <Button text="Cancel" color="danger" onClick={cancel} />
-                </ModalActions>
+                );
+              }}
+            </Mutation>
 
-                {/* {editingDates && <DateTimePicker />} */}
-              </>
-            )}
-          </Form>
-        );
-      }}
-    </Formik>
+            <Button
+              text="Cancel"
+              color="danger"
+              onClick={e => {
+                e.preventDefault();
+                close();
+              }}
+            />
+          </ModalActions>
+        </>
+      )}
+    </Form>
   );
 };
 

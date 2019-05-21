@@ -59,6 +59,25 @@ export const MY_SHIFTS = gql`
   }
 `;
 
+export const USER_SHIFTS = gql`
+  query UserShifts($userId: ID!, $startDate: DateTime, $endDate: DateTime) {
+    shifts(userId: $userId, startDate: $startDate, endDate: $endDate) {
+      id
+      timeIn
+      timeOut
+      minutesElapsed
+      department {
+        id
+        name
+      }
+      user {
+        id
+        name
+      }
+    }
+  }
+`;
+
 export const USERS = gql`
   query Users {
     users {
@@ -84,6 +103,22 @@ export const USER = gql`
       departments {
         id
         name
+      }
+      workStudy {
+        id
+        startDate
+        endDate
+        period: workStudyPeriod {
+          id
+          name
+          year
+          startDate
+          endDate
+        }
+        department {
+          id
+          name
+        }
       }
     }
   }

@@ -55,6 +55,18 @@ const StyledButton = styled.button`
       }
     }
   }};
+
+${({ naked }) =>
+  naked &&
+  `
+  background: transparent;
+  color: inherit;
+  display: inline;
+  padding: 0;
+  margin: 0 1rem;
+  text-decoration: underline;
+  `}
+
 `;
 
 export const Button = ({ text, loading, ...styles }) => (

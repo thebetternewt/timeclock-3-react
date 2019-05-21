@@ -35,7 +35,7 @@ const Title = styled.h3`
 
 const Content = styled.div`
   position: relative;
-  height: 500px;
+  height: 525px;
   max-height: 100%;
   width: 500px;
   max-width: 100%;

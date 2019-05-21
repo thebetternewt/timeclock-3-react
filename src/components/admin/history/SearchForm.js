@@ -11,13 +11,15 @@ import {
 } from '../../../styled/elements/Form';
 import { Button } from '../../../styled/elements/Button';
 import { arraysEqual } from '../../../util/arrays';
-import { MY_SHIFTS } from '../../../apollo/queries/user';
+import { USERS, USER_SHIFTS } from '../../../apollo/queries/user';
+import EmployeeSelect from '../../shared/EmployeeSelect';
 
 const SearchForm = ({
   setShiftsInHistory,
   setPayPeriodInHistory,
   setDepartmentInHistory,
 }) => {
+  const [employee, setEmployee] = useState('');
   const [year, setYear] = useState(moment().year());
   const [payPeriod, setPayPeriod] = useState();
   const [payPeriodOptions, setPayPeriodOptions] = useState([]);
@@ -36,6 +38,7 @@ const SearchForm = ({
 
   const handleSubmit = e => {
     e.preventDefault();
+    console.log('shifts after submit:', shifts);
     setShiftsInHistory(handleFilterShifts());
     setPayPeriodInHistory(payPeriod);
     setDepartmentInHistory(department);
@@ -43,6 +46,9 @@ const SearchForm = ({
 
   const handleChange = ({ target: { name, value } }) => {
     switch (name) {
+      case 'employee':
+        setEmployee(value);
+        return;
       case 'year':
         setYear(value);
         setPayPeriodOptions([]);
@@ -65,6 +71,8 @@ const SearchForm = ({
 
   const shiftQueryVariables = () => {
     const vars = {
+      userId: employee,
+      deptId: department && department.id,
       startDate: moment(payPeriod.startDate)
         .startOf('Day')
         .toISOString(),
@@ -83,6 +91,24 @@ const SearchForm = ({
 
   return (
     <Form onSubmit={handleSubmit}>
+      <FormControl>
+        <label>Employee</label>
+        <Query query={USERS}>
+          {({ data }) => {
+            if (data && data.users) {
+            }
+
+            return (
+              <EmployeeSelect
+                name="employee"
+                employees={data.users}
+                value={employee}
+                handleChange={handleChange}
+              />
+            );
+          }}
+        </Query>
+      </FormControl>
       <FormControl>
         <label>Calendar Year</label>
         <Input
@@ -166,15 +192,16 @@ const SearchForm = ({
       {/* Shifts Query wraps department select and search button */}
       {payPeriod && (
         <Query
-          query={MY_SHIFTS}
+          query={USER_SHIFTS}
           variables={shiftQueryVariables()}
           fetchPolicy="no-cache"
         >
           {({ data, loading, error }) => {
             let shifts;
 
-            if (data && data.myShifts) {
-              shifts = data.myShifts;
+            console.log(data);
+            if (data && data.shifts) {
+              shifts = data.shifts;
 
               const depts = shifts.reduce((acc, shift) => {
                 const dept = shift.department;
@@ -198,6 +225,7 @@ const SearchForm = ({
                 !arraysEqual(newDeptIds, oldDeptIds) ||
                 !arraysEqual(newShiftIds, oldShiftIds)
               ) {
+                console.log('diff!');
                 setShifts(shifts);
                 setDepartments(depts);
                 setDepartment(depts[0]);
