@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { FaRegTimesCircle } from 'react-icons/fa';
 
-import { fixed, absolute } from '../utilities';
+import { fixed, absolute, GRAY5 } from '../utilities';
 
 const Modal = ({ title, children, close }) => {
   return (
@@ -39,7 +39,7 @@ const Content = styled.div`
   max-height: 100%;
   width: 500px;
   max-width: 100%;
-  background: rebeccapurple;
+  background: ${GRAY5};
 
   padding: 1rem;
   border-radius: 3px;

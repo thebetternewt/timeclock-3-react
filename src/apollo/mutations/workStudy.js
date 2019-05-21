@@ -15,3 +15,9 @@ export const EDIT_WORK_STUDY = gql`
     }
   }
 `;
+
+export const DELETE_WORK_STUDY = gql`
+  mutation DeleteWorkStudy($id: ID!) {
+    deleteWorkStudy(id: $id)
+  }
+`;

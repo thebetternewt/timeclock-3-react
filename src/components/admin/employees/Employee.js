@@ -27,11 +27,7 @@ const Employee = ({ employeeId }) => {
   const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
 
   const handleDepartmentSelect = e => setSelectedDepartment(e.target.value);
-  const handleWorkStudySelect = ws => {
-    console.log('selecting ws...');
-    setSelectedWorkStudy(ws);
-    console.log(selectedWorkStudy);
-  };
+  const handleWorkStudySelect = ws => setSelectedWorkStudy(ws);
 
   return (
     <div>
@@ -196,7 +192,10 @@ const Employee = ({ employeeId }) => {
                     </>
                   )}
                   style={{ marginTop: '1rem' }}
-                  onClick={toggleWorkStudyModal}
+                  onClick={() => {
+                    setSelectedWorkStudy(null);
+                    toggleWorkStudyModal();
+                  }}
                 />
               </EmployeeDetailBox>
               <EmployeeActionsWrapper>

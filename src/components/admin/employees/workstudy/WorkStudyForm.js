@@ -7,15 +7,16 @@ import DatePicker from 'react-datepicker';
 import DepartmentSelect from '../../../shared/DepartmentSelect';
 import { Form, Select, Input } from '../../../../styled/elements/Form';
 import { ALL_WORK_STUDY_PERIOD } from '../../../../apollo/queries/workStudyPeriod';
+import {
+  CREATE_WORK_STUDY,
+  EDIT_WORK_STUDY,
+  DELETE_WORK_STUDY,
+} from '../../../../apollo/mutations/workStudy';
+import GraphQlErrors from '../../../shared/GraphQLErrors';
 import { Button } from '../../../../styled/elements/Button';
 import { arraysEqual } from '../../../../util/arrays';
 
 import 'react-datepicker/dist/react-datepicker.css';
-import {
-  CREATE_WORK_STUDY,
-  EDIT_WORK_STUDY,
-} from '../../../../apollo/mutations/workStudy';
-import GraphQlErrors from '../../../shared/GraphQLErrors';
 
 const yearOptions = [
   new Date().getFullYear() - 1,
@@ -29,23 +30,31 @@ const WorkStudyForm = ({
   workStudy: ws,
   close,
 }) => {
-  const [department, setDepartment] = useState(ws ? ws.department : null);
-  const [year, setYear] = useState(ws ? ws.period.year : '');
+  const initialValues = {
+    department: ws ? ws.department : null,
+    year: ws ? ws.period.year : '',
+    period: ws ? ws.period : null,
+    startDate: ws ? parse(ws.startDate) : null,
+    endDate: ws ? parse(ws.endDate) : null,
+    amount: ws ? ws.amount : 0,
+  };
+
+  const [department, setDepartment] = useState(initialValues.department);
+  const [year, setYear] = useState(initialValues.year);
   const [periods, setPeriods] = useState([]);
-  const [period, setPeriod] = useState(ws ? ws.period : null);
-  const [startDate, setStartDate] = useState(ws ? parse(ws.startDate) : null);
-  const [endDate, setEndDate] = useState(ws ? parse(ws.endDate) : null);
+  const [period, setPeriod] = useState(initialValues.period);
+  const [startDate, setStartDate] = useState(initialValues.startDate);
+  const [endDate, setEndDate] = useState(initialValues.endDate);
+  const [amount, setAmount] = useState(initialValues.amount);
   const [editingDates, setEditingDates] = useState(false);
   const [error, setError] = useState();
-
-  console.log('state:', { periods, period, editingDates });
-  console.log('ws:', ws);
 
   const editing = !!ws;
   const mutation = editing ? EDIT_WORK_STUDY : CREATE_WORK_STUDY;
 
   const handleDepartmentChange = e =>
     setDepartment(getDepartment(e.target.value));
+  const handleAmountChange = e => setAmount(e.target.value);
   const handleYearChange = e => {
     setYear(e.target.value);
     setPeriod(null);
@@ -64,14 +73,6 @@ const WorkStudyForm = ({
   const getPeriod = id => periods.find(period => period.id === id);
   const toggleEditingDates = () => setEditingDates(!editingDates);
 
-  const getInitialValues = () => ({
-    deptId: ws ? ws.department.id : '',
-    year: ws ? ws.period.year : '',
-    workStudyPeriodId: ws ? ws.period.id : '',
-    startDate: period ? parse(period.startDate) : '',
-    endDate: period ? parse(period.endDate) : '',
-  });
-
   return (
     <Form>
       {error && <GraphQlErrors error={error} />}
@@ -80,7 +81,7 @@ const WorkStudyForm = ({
         name="deptId"
         departments={departments}
         handleChange={handleDepartmentChange}
-        value={department.id}
+        value={department ? department.id : ''}
       />
 
       <label htmlFor="year">Year</label>
@@ -135,6 +136,16 @@ const WorkStudyForm = ({
           );
         }}
       </Query>
+
+      <label htmlFor="amount">Work Study Amount</label>
+      <Input
+        name="amount"
+        type="number"
+        min="0"
+        step="1"
+        value={amount}
+        onChange={handleAmountChange}
+      />
 
       {department && year && period && (
         <>
@@ -198,6 +209,7 @@ const WorkStudyForm = ({
                     workStudyPeriodId: period.id,
                     startDate: format(startDate, 'YYYY-MM-DD'),
                     endDate: format(endDate, 'YYYY-MM-DD'),
+                    amount: parseInt(amount, 10),
                   },
                 };
 
@@ -228,9 +240,33 @@ const WorkStudyForm = ({
               }}
             </Mutation>
 
+            {editing && (
+              <Mutation
+                mutation={DELETE_WORK_STUDY}
+                variables={{ id: ws.id }}
+                refetchQueries={() => ['User']}
+              >
+                {(destroy, { loading }) => (
+                  <Button
+                    text="Remove"
+                    color="danger"
+                    loading={loading}
+                    onClick={async e => {
+                      e.preventDefault();
+                      try {
+                        await destroy();
+                        close();
+                      } catch (err) {
+                        console.log(err);
+                      }
+                    }}
+                  />
+                )}
+              </Mutation>
+            )}
+
             <Button
               text="Cancel"
-              color="danger"
               onClick={e => {
                 e.preventDefault();
                 close();

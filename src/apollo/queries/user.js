@@ -108,6 +108,7 @@ export const USER = gql`
         id
         startDate
         endDate
+        amount
         period: workStudyPeriod {
           id
           name
