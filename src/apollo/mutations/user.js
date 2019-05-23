@@ -45,9 +45,18 @@ export const CLOCK_IN = gql`
     }
   }
 `;
+
 export const CLOCK_OUT = gql`
   mutation ClockOut {
     clockOut {
+      id
+    }
+  }
+`;
+
+export const CLOCK_OUT_USER = gql`
+  mutation ClockOutUser($userId: ID!) {
+    clockOutUser(userId: $userId) {
       id
     }
   }

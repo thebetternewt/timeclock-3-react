@@ -47,6 +47,8 @@ export const MY_SHIFTS = gql`
       timeIn
       timeOut
       minutesElapsed
+      workStudy
+      nightShiftMinutes
       department {
         id
         name
@@ -66,6 +68,8 @@ export const USER_SHIFTS = gql`
       timeIn
       timeOut
       minutesElapsed
+      workStudy
+      nightShiftMinutes
       department {
         id
         name

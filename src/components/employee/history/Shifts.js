@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import moment from 'moment';
 
 import Box from '../../../styled/layouts/Box';
+import Tag from '../../../styled/elements/Tag';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 
 const Shifts = ({ shifts }) => {
@@ -24,7 +25,10 @@ const Shifts = ({ shifts }) => {
                   ? moment(shift.timeOut).format('MMM DD LT')
                   : '--'}
               </div>
-              <div>{shift.timeOut ? hoursElapsed : '--'}</div>
+              <div>
+                {shift.timeOut ? hoursElapsed : '--'}
+                <Tag>WS</Tag>
+              </div>
             </ShiftItem>
           );
         })}

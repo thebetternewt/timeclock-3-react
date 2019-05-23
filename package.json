@@ -9,6 +9,7 @@
     "formik": "^1.5.4",
     "graphql": "^14.3.0",
     "moment": "^2.24.0",
+    "pdfmake": "^0.1.56",
     "react": "^16.8.6",
     "react-apollo": "^2.5.5",
     "react-datepicker": "^2.5.0",

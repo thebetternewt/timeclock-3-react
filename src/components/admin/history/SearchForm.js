@@ -38,7 +38,6 @@ const SearchForm = ({
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log('shifts after submit:', shifts);
     setShiftsInHistory(handleFilterShifts());
     setPayPeriodInHistory(payPeriod);
     setDepartmentInHistory(department);
@@ -54,8 +53,7 @@ const SearchForm = ({
         setPayPeriodOptions([]);
         return;
       case 'payPeriod':
-        setPayPeriod(payPeriodOptions.find(pp => pp.id === value));
-        return;
+        return setPayPeriod(payPeriodOptions.find(pp => pp.id === value));
       case 'department':
         setDepartment(departments.find(dept => dept.id === value));
         return;
@@ -80,8 +78,6 @@ const SearchForm = ({
         .endOf('Day')
         .toISOString(),
     };
-
-    console.log('vars:', vars);
 
     return vars;
   };
@@ -197,13 +193,12 @@ const SearchForm = ({
           fetchPolicy="no-cache"
         >
           {({ data, loading, error }) => {
-            let shifts;
+            let newShifts;
 
-            console.log(data);
             if (data && data.shifts) {
-              shifts = data.shifts;
+              newShifts = data.shifts;
 
-              const depts = shifts.reduce((acc, shift) => {
+              const newDepts = newShifts.reduce((acc, shift) => {
                 const dept = shift.department;
                 if (!acc.find(d => d.id === dept.id)) {
                   acc.push(dept);
@@ -213,12 +208,12 @@ const SearchForm = ({
 
               // Compare newly queried departments with current state
               // and only update if different.
-              const newDeptIds = depts.map(dept => dept.id);
+              const newDeptIds = newDepts.map(dept => dept.id);
               const oldDeptIds = departments.map(dept => dept.id);
 
               // Compare newly queried shifts with current state
               // and only update if different.
-              const newShiftIds = shifts.map(shift => shift.id);
+              const newShiftIds = newShifts.map(shift => shift.id);
               const oldShiftIds = shifts.map(shift => shift.id);
 
               if (
@@ -226,9 +221,9 @@ const SearchForm = ({
                 !arraysEqual(newShiftIds, oldShiftIds)
               ) {
                 console.log('diff!');
-                setShifts(shifts);
-                setDepartments(depts);
-                setDepartment(depts[0]);
+                setShifts(newShifts);
+                setDepartments(newDepts);
+                setDepartment(newDepts[0]);
               }
             }
 

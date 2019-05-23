@@ -4,6 +4,7 @@ import moment from 'moment';
 
 import Box from '../../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
+import Tag from '../../../styled/elements/Tag';
 
 const Shifts = ({ shifts }) => {
   return (
@@ -24,7 +25,14 @@ const Shifts = ({ shifts }) => {
                   ? moment(shift.timeOut).format('MMM DD LT')
                   : '--'}
               </div>
-              <div>{shift.timeOut ? hoursElapsed : '--'}</div>
+              <div style={{ display: 'flex' }}>
+                {shift.timeOut ? hoursElapsed : '--'}
+                {shift.workStudy && (
+                  <Tag color="primary" style={{ marginLeft: 5 }}>
+                    WS
+                  </Tag>
+                )}
+              </div>
             </ShiftItem>
           );
         })}

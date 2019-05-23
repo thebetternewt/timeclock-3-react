@@ -5,6 +5,7 @@ import moment from 'moment';
 import Spinner from '../../styled/elements/Spinner';
 
 const StatsWrapper = ({ payPeriod = {}, shifts = [], loading }) => {
+  console.log('shifts:', shifts);
   // Get department Ids from shifts array.
   const departments = shifts.reduce((acc, shift) => {
     const dept = shift.department;

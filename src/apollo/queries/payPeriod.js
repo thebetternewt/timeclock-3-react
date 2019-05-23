@@ -6,6 +6,7 @@ export const PAY_PERIODS = gql`
       id
       startDate
       endDate
+      year
       fiscalYear
       payPeriodId
       semester
