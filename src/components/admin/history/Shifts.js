@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 
 import Box from '../../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import Tag from '../../../styled/elements/Tag';
+import { Button } from '../../../styled/elements/Button';
+import ShiftModal from '../../shared/ShiftModal';
 
 const Shifts = ({ shifts }) => {
+  const [selectedShift, setSelectedShift] = useState();
+  const [showShiftModal, setShowShiftModal] = useState(false);
+
+  const toggleShiftModal = () => setShowShiftModal(!showShiftModal);
+
   return (
     <ShiftsTable>
       <ShiftList>
@@ -33,10 +40,23 @@ const Shifts = ({ shifts }) => {
                   </Tag>
                 )}
               </div>
+              <div>
+                <Button
+                  text="view"
+                  color="primary"
+                  onClick={() => {
+                    setSelectedShift(shift);
+                    toggleShiftModal();
+                  }}
+                />
+              </div>
             </ShiftItem>
           );
         })}
       </ShiftList>
+      {showShiftModal && (
+        <ShiftModal shift={selectedShift} close={toggleShiftModal} />
+      )}
     </ShiftsTable>
   );
 };
