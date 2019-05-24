@@ -1,16 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 
+import searchContext from './searchContext';
 import Box from '../../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import Tag from '../../../styled/elements/Tag';
 import { Button } from '../../../styled/elements/Button';
 import ShiftModal from '../../shared/ShiftModal';
 
-const Shifts = ({ shifts }) => {
+const Shifts = () => {
   const [selectedShift, setSelectedShift] = useState();
   const [showShiftModal, setShowShiftModal] = useState(false);
+  const { filteredShifts } = useContext(searchContext);
+
+  console.log('shifts:', filteredShifts);
 
   const toggleShiftModal = () => setShowShiftModal(!showShiftModal);
 
@@ -22,7 +26,7 @@ const Shifts = ({ shifts }) => {
           <div>Time out</div>
           <div>Hours Elapsed</div>
         </ShiftListHeader>
-        {shifts.map(shift => {
+        {filteredShifts.map(shift => {
           const hoursElapsed = (shift.minutesElapsed / 60).toFixed(2);
           return (
             <ShiftItem key={shift.id}>

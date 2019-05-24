@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
 import { parse } from 'date-fns';
-import { Mutation } from 'react-apollo';
+import { useMutation } from 'react-apollo-hooks';
 
+import searchContext from '../../components/admin/history/searchContext';
 import Modal from '../../styled/layouts/Modal';
+import DepartmentSelect from './DepartmentSelect';
 import { Button } from '../../styled/elements/Button';
 import { Form, Input } from '../../styled/elements/Form';
 import GraphQlErrors from './GraphQLErrors';
@@ -14,25 +16,83 @@ import {
   UPDATE_SHIFT,
 } from '../../apollo/mutations/shift';
 
-const ShiftModal = ({ shift, close }) => {
+const ShiftModal = ({ employee, shift, close }) => {
   const [timeIn, setTimeIn] = useState(shift && parse(shift.timeIn));
   const [timeOut, setTimeOut] = useState(shift && parse(shift.timeOut));
+  const [department, setDepartment] = useState(shift && shift.department);
   const [error, setError] = useState();
+  const [loading, setLoading] = useState(false);
 
+  const context = useContext(searchContext);
+
+  const emp = shift ? shift.user : employee;
   const editing = !!shift;
-  const mutation = editing ? UPDATE_SHIFT : CREATE_SHIFT;
+
+  const variables = {
+    data: {
+      userId: emp.id,
+      deptId: department && department.id,
+      timeIn,
+      timeOut,
+    },
+  };
+
+  if (editing) {
+    variables.id = shift.id;
+  }
+
+  const shiftMutation = editing ? UPDATE_SHIFT : CREATE_SHIFT;
+  const mutate = useMutation(shiftMutation, { variables });
+  const destroy = useMutation(DELETE_SHIFT, { variables: { id: shift.id } });
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      await mutate();
+      await context.fetchShifts({});
+      setLoading(false);
+      close();
+    } catch (err) {
+      setError(err);
+      console.log(err);
+    }
+  };
+
+  const handleDeleteShift = async e => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      await destroy();
+      await context.fetchShifts({});
+      setLoading(false);
+      close();
+    } catch (err) {
+      setError(err);
+      console.log(err);
+    }
+  };
 
   const handleTimeInChange = date => setTimeIn(date);
   const handleTimeOutChange = date => setTimeOut(date);
-
-  console.log('shift:', shift);
+  const handleDepartmentSelect = e =>
+    setDepartment(
+      employee.departments.find(dept => dept.id === e.target.value)
+    );
 
   return (
     <Modal title={shift ? `Edit Shift` : `Add Shift`} close={close}>
-      <h3>{shift.user.name}</h3>
-      <h4>{shift.department.name}</h4>
+      <h3>{emp.name}</h3>
+      {editing && <h4>{department.name}</h4>}
       <Form>
         {error && <GraphQlErrors error={error} />}
+        {!department && (
+          <DepartmentSelect
+            departments={emp.departments}
+            handleChange={handleDepartmentSelect}
+            value={department}
+          />
+        )}
         <div style={{ display: 'flex' }}>
           <DatePicker
             customInput={<Input style={{ marginRight: '1rem' }} />}
@@ -64,71 +124,21 @@ const ShiftModal = ({ shift, close }) => {
         </div>
 
         <ModalActions>
-          <Mutation mutation={mutation} refetchQueries={() => ['UserShifts']}>
-            {(submit, { loading, error: shiftError }) => {
-              if (shiftError) {
-                setError(shiftError);
-              }
-
-              const variables = {
-                data: {
-                  userId: shift.user.id,
-                  deptId: shift.department.id,
-                  timeIn,
-                  timeOut,
-                },
-              };
-
-              if (editing) {
-                variables.id = shift.id;
-              }
-
-              return (
-                <Button
-                  type="submit"
-                  text="Save"
-                  color="success"
-                  onClick={async e => {
-                    e.preventDefault();
-                    console.log(variables);
-                    try {
-                      await submit({
-                        variables,
-                      });
-                      close();
-                    } catch (error) {
-                      console.log(error);
-                    }
-                  }}
-                  loading={loading}
-                />
-              );
-            }}
-          </Mutation>
+          <Button
+            type="submit"
+            text="Save"
+            color="success"
+            onClick={handleSubmit}
+            loading={loading}
+          />
 
           {editing && (
-            <Mutation
-              mutation={DELETE_SHIFT}
-              variables={{ id: shift.id }}
-              refetchQueries={() => ['UserShifts']}
-            >
-              {(destroy, { loading }) => (
-                <Button
-                  text="Remove"
-                  color="danger"
-                  loading={loading}
-                  onClick={async e => {
-                    e.preventDefault();
-                    try {
-                      await destroy();
-                      close();
-                    } catch (err) {
-                      console.log(err);
-                    }
-                  }}
-                />
-              )}
-            </Mutation>
+            <Button
+              text="Remove"
+              color="danger"
+              loading={loading}
+              onClick={handleDeleteShift}
+            />
           )}
 
           <Button

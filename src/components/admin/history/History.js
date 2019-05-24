@@ -3,32 +3,93 @@ import styled from 'styled-components';
 import moment from 'moment';
 import { FaArrowLeft } from 'react-icons/fa';
 
+import SearchContext from './searchContext';
 import Box from '../../../styled/layouts/Box';
 import Container from '../../../styled/layouts/Container';
 import PrivateRoute from '../../shared/PrivateRoute';
 import SearchForm from './SearchForm';
 import Shifts from './Shifts';
 import { GRAY3 } from '../../../styled/utilities/Colors';
+import { USER_SHIFTS } from '../../../apollo/queries/user';
+import { client } from '../../../apollo/client';
 
 const History = () => {
+  const [employee, setEmployee] = useState('');
   const [shifts, setShifts] = useState([]);
+  const [payPeriods, setPayPeriods] = useState([]);
   const [payPeriod, setPayPeriod] = useState();
+  const [departments, setDepartments] = useState([]);
   const [department, setDepartment] = useState();
 
   const hoursElapsed = shifts
     .reduce((total, shift) => total + shift.minutesElapsed / 60, 0)
     .toFixed(2);
 
+  const onShiftsFetched = newShifts => {
+    setShifts(newShifts);
+
+    const newDepts = newShifts.reduce((acc, shift) => {
+      const dept = shift.department;
+      if (!acc.find(d => d.id === dept.id)) {
+        acc.push(dept);
+      }
+      return acc;
+    }, []);
+
+    setDepartments(newDepts);
+    setDepartment(newDepts[0]);
+  };
+
+  const fetchShifts = async ({ payPeriod: period = payPeriod }) => {
+    const { data } = await client.query({
+      query: USER_SHIFTS,
+      variables: {
+        userId: employee,
+        deptId: department && department.id,
+        startDate: moment(period.startDate)
+          .startOf('Day')
+          .toISOString(),
+        endDate: moment(period.endDate)
+          .endOf('Day')
+          .toISOString(),
+      },
+      fetchPolicy: 'no-cache',
+    });
+
+    onShiftsFetched(data.shifts);
+  };
+
+  let filteredShifts = [];
+
+  if (department) {
+    filteredShifts = shifts.filter(
+      shift => shift.department.id === department.id
+    );
+  }
+
   return (
-    <>
+    <SearchContext.Provider
+      value={{
+        employee,
+        setEmployee,
+        payPeriods,
+        setPayPeriods,
+        shifts,
+        payPeriod,
+        departments,
+        setDepartments,
+        department,
+        setShifts,
+        setPayPeriod,
+        setDepartment,
+        fetchShifts,
+        filteredShifts,
+      }}
+    >
       <Container>
         <Search>
           <div className="title">History</div>
-          <SearchForm
-            setShiftsInHistory={setShifts}
-            setPayPeriodInHistory={setPayPeriod}
-            setDepartmentInHistory={setDepartment}
-          />
+          <SearchForm />
         </Search>
         <Summary>
           <h2 className="title">Summary</h2>
@@ -51,9 +112,9 @@ const History = () => {
         </Summary>
       </Container>
       <Container>
-        <Shifts shifts={shifts} />
+        <Shifts />
       </Container>
-    </>
+    </SearchContext.Provider>
   );
 };
 

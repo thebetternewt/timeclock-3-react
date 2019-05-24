@@ -7,27 +7,29 @@ import logo from './logo';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-const NIGHT_SHIFT_WEIGHT = 1.14;
 const NIGHT_SHIFT_RATE = 1.0;
 const WAGE_RATE = 7.25;
 
 const TimeSheet = ({ employee, payPeriod, department, shifts }) => {
+  // TODO: Box around keyed hours (top right)
+  // TODO: Fine print message about rounding
+  // TODO: Rearrange student, name, netID, etc.
+
   const totalMinutes = shifts.reduce((total, shift) => {
     total += shift.minutesElapsed;
     return total;
   }, 0);
+  const totalHours = totalMinutes / 60;
+  console.log('totalHours:', totalHours);
 
   const totalNightShiftMinutes = shifts.reduce((total, shift) => {
     total += shift.nightShiftMinutes;
     return total;
   }, 0);
-
-  const totalHours = totalMinutes / 60;
   const totalNightShiftHours = totalNightShiftMinutes / 60;
-  const WeightedNightShiftHours = totalNightShiftHours * NIGHT_SHIFT_WEIGHT;
 
-  const totalPay =
-    totalHours * WAGE_RATE + WeightedNightShiftHours * NIGHT_SHIFT_RATE;
+  const totalWagePay = parseFloat((totalHours * WAGE_RATE).toFixed(2));
+  const totalNightPay = totalNightShiftHours * NIGHT_SHIFT_RATE;
 
   const shiftRows = shifts.map(shift => [
     format(shift.timeIn, 'MMM D, YYYY'),
@@ -41,6 +43,10 @@ const TimeSheet = ({ employee, payPeriod, department, shifts }) => {
     (shift.nightShiftMinutes / 60).toFixed(2),
   ]);
 
+  const totalPay = totalWagePay + totalNightPay;
+  const finalHours = parseFloat(totalPay.toFixed(2)) / WAGE_RATE;
+  console.log('finalHours:', finalHours);
+
   console.log(totalMinutes);
 
   const docDefinition = {
@@ -51,6 +57,13 @@ const TimeSheet = ({ employee, payPeriod, department, shifts }) => {
           { text: 'Wages', bold: true, alignment: 'right' },
         ],
       },
+      { text: 'Total Hours Keyed', alignment: 'right', fontSize: 10 },
+      {
+        text: finalHours.toFixed(2),
+        alignment: 'right',
+        fontSize: 10,
+      },
+
       {
         fontSize: 10,
         margin: [0, 10],
@@ -97,17 +110,13 @@ const TimeSheet = ({ employee, payPeriod, department, shifts }) => {
             ],
           },
         ],
-        // optional space between columns
         columnGap: 15,
       },
       {
-        layout: 'lightHorizontalLines', // optional
+        layout: 'lightHorizontalLines',
         style: { fontSize: 10 },
         table: {
-          // headers are automatically repeated if the table spans over multiple pages
-          // you can declare how many rows should be treated as headers
           headerRows: 1,
-          // widths: [50, 50, 50, 50, 50, '*'],
           widths: [100, 100, '*', '*'],
 
           body: [
@@ -119,13 +128,7 @@ const TimeSheet = ({ employee, payPeriod, department, shifts }) => {
               totalHours.toFixed(2),
               totalNightShiftHours.toFixed(2),
             ],
-            [{ text: 'Weight', colSpan: 2 }, {}, '1.00', NIGHT_SHIFT_WEIGHT],
-            [
-              { text: 'Total Hours Keyed', colSpan: 2 },
-              {},
-              totalHours.toFixed(2),
-              WeightedNightShiftHours.toFixed(2),
-            ],
+
             [
               { text: 'Rate', colSpan: 2 },
               {},
@@ -135,29 +138,8 @@ const TimeSheet = ({ employee, payPeriod, department, shifts }) => {
             [
               { text: 'Pay', colSpan: 2 },
               {},
-              `$${totalPay.toFixed(2)}`,
-              `$${(WeightedNightShiftHours * NIGHT_SHIFT_RATE).toFixed(2)}`,
-            ],
-            [
-              {
-                text: 'Total Hours:',
-                colSpan: 3,
-                fillColor: '#000',
-                color: '#fff',
-                margin: [0, 5],
-                alignment: 'right',
-                fontSize: 10,
-              },
-              {},
-              {},
-              {
-                text: (totalHours + WeightedNightShiftHours).toFixed(2),
-                fillColor: '#000',
-                color: '#fff',
-                margin: [0, 5],
-                fontSize: 10,
-                alignment: 'left',
-              },
+              `$${totalWagePay.toFixed(2)}`,
+              `$${totalNightPay.toFixed(2)}`,
             ],
             [
               {

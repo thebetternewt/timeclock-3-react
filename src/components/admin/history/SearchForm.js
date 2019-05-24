@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import moment from 'moment';
 import { Query } from 'react-apollo';
 
@@ -10,80 +10,98 @@ import {
   Input,
 } from '../../../styled/elements/Form';
 import { Button } from '../../../styled/elements/Button';
-import { arraysEqual } from '../../../util/arrays';
-import { USERS, USER_SHIFTS } from '../../../apollo/queries/user';
+import { client } from '../../../apollo/client';
+import { USERS } from '../../../apollo/queries/user';
 import EmployeeSelect from '../../shared/EmployeeSelect';
+import searchContext from './searchContext';
 
-const SearchForm = ({
-  setShiftsInHistory,
-  setPayPeriodInHistory,
-  setDepartmentInHistory,
-}) => {
-  const [employee, setEmployee] = useState('');
-  const [year, setYear] = useState(moment().year());
-  const [payPeriod, setPayPeriod] = useState();
-  const [payPeriodOptions, setPayPeriodOptions] = useState([]);
-  const [departments, setDepartments] = useState([]);
-  const [department, setDepartment] = useState();
+const SearchForm = () => {
+  const [year, setYear] = useState(new Date().getFullYear());
   const [shifts, setShifts] = useState([]);
+  const context = useContext(searchContext);
 
-  // console.log('search form state:', {
-  //   year,
-  //   payPeriodOptions,
-  //   payPeriod,
-  //   departments,
-  //   department,
-  //   shifts,
-  // });
+  const allowSubmit =
+    context.employee && year && context.payPeriod && context.department;
 
   const handleSubmit = e => {
     e.preventDefault();
-    setShiftsInHistory(handleFilterShifts());
-    setPayPeriodInHistory(payPeriod);
-    setDepartmentInHistory(department);
+    // console.log('contextShifts:', context.shifts);
+    // context.setShifts(handleFilterShifts());
   };
 
   const handleChange = ({ target: { name, value } }) => {
     switch (name) {
       case 'employee':
-        setEmployee(value);
+        context.setEmployee(value);
         return;
       case 'year':
         setYear(value);
-        setPayPeriodOptions([]);
         return;
-      case 'payPeriod':
-        return setPayPeriod(payPeriodOptions.find(pp => pp.id === value));
       case 'department':
-        setDepartment(departments.find(dept => dept.id === value));
+        context.setDepartment(
+          context.departments.find(dept => dept.id === value)
+        );
         return;
       default:
         return;
     }
   };
 
-  const validateYear = year =>
+  // const onShiftsFetched = newShifts => {
+  //   setShifts(newShifts);
+
+  //   const newDepts = newShifts.reduce((acc, shift) => {
+  //     const dept = shift.department;
+  //     if (!acc.find(d => d.id === dept.id)) {
+  //       acc.push(dept);
+  //     }
+  //     return acc;
+  //   }, []);
+
+  //   context.setDepartments(newDepts);
+  //   context.setDepartment(newDepts[0]);
+  // };
+
+  const handlePayPeriodChange = e => {
+    const payPeriod = context.payPeriods.find(pp => pp.id === e.target.value);
+    console.log('period:', payPeriod);
+    context.setPayPeriod(payPeriod);
+
+    if (context.employee) {
+      context.fetchShifts({ payPeriod });
+    }
+  };
+
+  const validYear = year =>
     year.toString().match(/\d{4}/) && // Year is 4 digits
     parseInt(year, 10) > 1987 && // Year is > 1987
     parseInt(year, 10) < 2100; // Year is > 2100
 
-  const shiftQueryVariables = () => {
-    const vars = {
-      userId: employee,
-      deptId: department && department.id,
-      startDate: moment(payPeriod.startDate)
-        .startOf('Day')
-        .toISOString(),
-      endDate: moment(payPeriod.endDate)
-        .endOf('Day')
-        .toISOString(),
-    };
+  const fetchPayPeriods = async () => {
+    if (!validYear(year)) {
+      context.setPayPeriods([]);
+      context.setPayPeriod(null);
+      return;
+    }
 
-    return vars;
+    const { data } = await client.query({
+      query: PAY_PERIODS,
+      variables: { year: parseInt(year, 10) },
+      fetchPolicy: 'no-cache',
+    });
+
+    context.setPayPeriods(data.payPeriods);
+    context.setPayPeriod(data.payPeriods[0]);
   };
 
-  const handleFilterShifts = () =>
-    shifts.filter(shift => shift.department.id === department.id);
+  // const handleFilterShifts = () =>
+  //   shifts.filter(
+  //     shift => shift.department.id === context.department.id
+  //   );
+
+  useEffect(() => {
+    fetchPayPeriods();
+  }, [year]);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -98,7 +116,7 @@ const SearchForm = ({
               <EmployeeSelect
                 name="employee"
                 employees={data.users}
-                value={employee}
+                value={context.employee}
                 handleChange={handleChange}
               />
             );
@@ -119,12 +137,12 @@ const SearchForm = ({
         <Select
           name="payPeriod"
           key="payPeriod"
-          onChange={handleChange}
-          value={payPeriod ? payPeriod.id : ''}
-          disabled={!validateYear(year)}
+          onChange={handlePayPeriodChange}
+          value={context.payPeriod ? context.payPeriod.id : ''}
+          disabled={!validYear(year)}
         >
-          {payPeriodOptions.length ? (
-            payPeriodOptions.map(opt => (
+          {context.payPeriods.length ? (
+            context.payPeriods.map(opt => (
               <option key={opt.id} value={opt.id}>
                 {opt.payPeriodId} ({moment(opt.startDate).format('MMM DD')} -{' '}
                 {moment(opt.endDate).format('MMM DD')})
@@ -133,31 +151,6 @@ const SearchForm = ({
           ) : (
             <option>No Pay Periods Found</option>
           )}
-
-          {/* Only Query pay periods if year is valid */}
-          {validateYear(year) && (
-            <Query
-              query={PAY_PERIODS}
-              variables={{ year: parseInt(year, 10) }}
-              fetchPolicy="no-cache"
-            >
-              {({ data }) => {
-                if (data && data.payPeriods && data.payPeriods.length) {
-                  // Compare newly queried pay periods with current state
-                  // and only update if different.
-                  const newPpIds = data.payPeriods.map(opt => opt.id);
-                  const oldPpIds = payPeriodOptions.map(opt => opt.id);
-
-                  if (!arraysEqual(newPpIds, oldPpIds)) {
-                    setPayPeriodOptions(data.payPeriods);
-                    setPayPeriod(data.payPeriods[0]);
-                  }
-                }
-
-                return null;
-              }}
-            </Query>
-          )}
         </Select>
       </FormControl>
 
@@ -165,12 +158,12 @@ const SearchForm = ({
         <label>Department</label>
         <Select
           name="department"
-          value={department ? department.id : ''}
+          value={context.department ? context.department.id : ''}
           onChange={handleChange}
-          disabled={!payPeriod}
+          disabled={!context.payPeriod || !context.employee}
         >
-          {departments.length ? (
-            departments.map(opt => (
+          {context.departments.length ? (
+            context.departments.map(opt => (
               <option key={opt.id} value={opt.id}>
                 {opt.name}
               </option>
@@ -182,55 +175,13 @@ const SearchForm = ({
       </FormControl>
 
       <FormControl>
-        <Button type="submit" text="Search" color="success" />
+        <Button
+          type="submit"
+          text="Search"
+          color="success"
+          disabled={!allowSubmit}
+        />
       </FormControl>
-
-      {/* Shifts Query wraps department select and search button */}
-      {payPeriod && (
-        <Query
-          query={USER_SHIFTS}
-          variables={shiftQueryVariables()}
-          fetchPolicy="no-cache"
-        >
-          {({ data, loading, error }) => {
-            let newShifts;
-
-            if (data && data.shifts) {
-              newShifts = data.shifts;
-
-              const newDepts = newShifts.reduce((acc, shift) => {
-                const dept = shift.department;
-                if (!acc.find(d => d.id === dept.id)) {
-                  acc.push(dept);
-                }
-                return acc;
-              }, []);
-
-              // Compare newly queried departments with current state
-              // and only update if different.
-              const newDeptIds = newDepts.map(dept => dept.id);
-              const oldDeptIds = departments.map(dept => dept.id);
-
-              // Compare newly queried shifts with current state
-              // and only update if different.
-              const newShiftIds = newShifts.map(shift => shift.id);
-              const oldShiftIds = shifts.map(shift => shift.id);
-
-              if (
-                !arraysEqual(newDeptIds, oldDeptIds) ||
-                !arraysEqual(newShiftIds, oldShiftIds)
-              ) {
-                console.log('diff!');
-                setShifts(newShifts);
-                setDepartments(newDepts);
-                setDepartment(newDepts[0]);
-              }
-            }
-
-            return null;
-          }}
-        </Query>
-      )}
     </Form>
   );
 };

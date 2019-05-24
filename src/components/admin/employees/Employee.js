@@ -5,6 +5,7 @@ import { FaPlusCircle } from 'react-icons/fa';
 
 import Box from '../../../styled/layouts/Box';
 import Modal from '../../../styled/layouts/Modal';
+import ShiftModal from '../../shared/ShiftModal';
 import { Button } from '../../../styled/elements/Button';
 import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
@@ -22,9 +23,11 @@ const Employee = ({ employeeId }) => {
   const [addingDepartment, setAddingDepartment] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedWorkStudy, setSelectedWorkStudy] = useState();
+  const [addShiftModalOpen, setAddShiftModalOpen] = useState(false);
 
   const toggleAddingDepartment = () => setAddingDepartment(!addingDepartment);
   const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
+  const toggleAddShiftModal = () => setAddShiftModalOpen(!addShiftModalOpen);
 
   const handleDepartmentSelect = e => setSelectedDepartment(e.target.value);
   const handleWorkStudySelect = ws => setSelectedWorkStudy(ws);
@@ -203,6 +206,12 @@ const Employee = ({ employeeId }) => {
                   <Button text="Edit Employee" color="primary" />
                 </Link>
                 <Button text="Deactivate Employee" color="danger" />
+
+                <Button
+                  text="Add Shift"
+                  color="success"
+                  onClick={toggleAddShiftModal}
+                />
               </EmployeeActionsWrapper>
               {workStudyModalOpen && (
                 <Modal
@@ -218,6 +227,9 @@ const Employee = ({ employeeId }) => {
                     workStudy={selectedWorkStudy}
                   />
                 </Modal>
+              )}
+              {addShiftModalOpen && (
+                <ShiftModal employee={user} close={toggleAddShiftModal} />
               )}
             </Container>
           );

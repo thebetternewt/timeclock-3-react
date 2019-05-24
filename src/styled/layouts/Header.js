@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { fixed, GRAY2 } from '../utilities';
+import { fixed, GRAY1 } from '../utilities';
 import Logo from './Logo';
 
 const HeaderWrapper = ({ children, logoWidth }) => {
@@ -22,7 +22,9 @@ const Header = styled.header`
   display: flex;
   align-items: center;
 
-  background-color: ${GRAY2};
+  background-color: ${GRAY1};
+
+  z-index: 10;
 
   a {
     display: block;
