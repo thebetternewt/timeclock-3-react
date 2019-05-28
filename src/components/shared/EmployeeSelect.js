@@ -1,11 +1,13 @@
-import React from "react";
-import { Select } from "../../styled/elements/Form";
+import React from 'react';
+import { Select } from '../../styled/elements/Form';
 
 const EmployeeSelect = ({
   employees = [],
   value,
   handleChange,
-  name = "employee"
+  name = 'employee',
+  disabled = false,
+  includeAll = false,
 }) => {
   let options = [];
 
@@ -20,8 +22,14 @@ const EmployeeSelect = ({
   }
 
   return (
-    <Select name={name} value={value} onChange={handleChange}>
+    <Select
+      name={name}
+      value={value}
+      onChange={handleChange}
+      disabled={disabled}
+    >
       <option value="">Choose Employee</option>
+      {includeAll && <option value="all">All</option>}
       {options}
     </Select>
   );

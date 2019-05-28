@@ -62,8 +62,18 @@ export const MY_SHIFTS = gql`
 `;
 
 export const USER_SHIFTS = gql`
-  query UserShifts($userId: ID!, $startDate: DateTime, $endDate: DateTime) {
-    shifts(userId: $userId, startDate: $startDate, endDate: $endDate) {
+  query UserShifts(
+    $userId: ID
+    $deptId: ID
+    $startDate: DateTime
+    $endDate: DateTime
+  ) {
+    shifts(
+      userId: $userId
+      deptId: $deptId
+      startDate: $startDate
+      endDate: $endDate
+    ) {
       id
       timeIn
       timeOut

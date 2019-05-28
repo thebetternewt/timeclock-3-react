@@ -6,7 +6,7 @@ import searchContext from './searchContext';
 import Box from '../../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import Tag from '../../../styled/elements/Tag';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import ShiftModal from '../../shared/ShiftModal';
 
 const Shifts = () => {

@@ -30,9 +30,10 @@ export const DEPARTMENT = gql`
 
 export const USERS_BY_DEPARTMENT = gql`
   query UsersByDepartment($deptId: ID!) {
-    usersByDepartment(deptId: $deptId) {
+    deptUsers: usersByDepartment(deptId: $deptId) {
       id
       name
+      netId
       isClockedIn
       lastShift {
         id

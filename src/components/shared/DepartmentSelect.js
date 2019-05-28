@@ -6,6 +6,7 @@ const DepartmentSelect = ({
   value,
   handleChange,
   name = 'department',
+  disabled = false,
 }) => {
   let options = [
     <option key="none" value="">
@@ -26,7 +27,12 @@ const DepartmentSelect = ({
   }
 
   return (
-    <Select name={name} value={value} onChange={handleChange}>
+    <Select
+      name={name}
+      value={value}
+      onChange={handleChange}
+      disabled={disabled}
+    >
       {options}
     </Select>
   );

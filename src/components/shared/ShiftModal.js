@@ -7,7 +7,7 @@ import { useMutation } from 'react-apollo-hooks';
 import searchContext from '../../components/admin/history/searchContext';
 import Modal from '../../styled/layouts/Modal';
 import DepartmentSelect from './DepartmentSelect';
-import { Button } from '../../styled/elements/Button';
+import Button from '../../styled/elements/Button';
 import { Form, Input } from '../../styled/elements/Form';
 import GraphQlErrors from './GraphQLErrors';
 import {

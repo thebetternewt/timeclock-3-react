@@ -69,7 +69,7 @@ ${({ naked }) =>
 
 `;
 
-export const Button = ({ text, loading, ...styles }) => (
+export default ({ text, loading, ...styles }) => (
   <StyledButton {...styles}>
     {loading ? (
       <Spinner size="1rem" />

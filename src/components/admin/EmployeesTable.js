@@ -4,65 +4,61 @@ import moment from 'moment';
 
 import Box from '../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../styled/utilities/Colors';
-import { Button } from '../../styled/elements/Button';
+import Button from '../../styled/elements/Button';
 import { Mutation } from 'react-apollo';
 import { CLOCK_OUT_USER } from '../../apollo/mutations/user';
 
-const Employees = ({ employees }) => {
-  // TODO: Clock out employee on button click. Need to setup special resolver for admins only.
-
-  return (
-    <EmployeesTable>
-      <EmployeeList>
-        <EmployeeListHeader>
-          <div>Name</div>
-          <div>Hours Elapsed</div>
-          <div />
-        </EmployeeListHeader>
-        {employees.map(emp => {
-          return (
-            <EmployeeItem key={emp.id}>
-              <div>{emp.name}</div>
-              <div>
-                {/* Hours elapsed since clock in. */}
-                {(
-                  moment().diff(moment(emp.lastShift.timeIn)) /
-                  1000 /
-                  60 /
-                  60
-                ).toFixed(2)}
-              </div>
-              <div>
-                <Mutation
-                  mutation={CLOCK_OUT_USER}
-                  variables={{ userId: emp.id }}
-                  refetchQueries={() => ['UsersByDepartment']}
-                >
-                  {(clockOut, { loading }) => {
-                    return (
-                      <Button
-                        color="danger"
-                        text="clock out"
-                        loading={loading}
-                        onClick={async () => {
-                          try {
-                            await clockOut();
-                          } catch (err) {
-                            console.log(err);
-                          }
-                        }}
-                      />
-                    );
-                  }}
-                </Mutation>
-              </div>
-            </EmployeeItem>
-          );
-        })}
-      </EmployeeList>
-    </EmployeesTable>
-  );
-};
+const Employees = ({ employees }) => (
+  <EmployeesTable>
+    <EmployeeList>
+      <EmployeeListHeader>
+        <div>Name</div>
+        <div>Hours Elapsed</div>
+        <div />
+      </EmployeeListHeader>
+      {employees.map(emp => {
+        return (
+          <EmployeeItem key={emp.id}>
+            <div>{emp.name}</div>
+            <div>
+              {/* Hours elapsed since clock in. */}
+              {(
+                moment().diff(moment(emp.lastShift.timeIn)) /
+                1000 /
+                60 /
+                60
+              ).toFixed(2)}
+            </div>
+            <div>
+              <Mutation
+                mutation={CLOCK_OUT_USER}
+                variables={{ userId: emp.id }}
+                refetchQueries={() => ['UsersByDepartment']}
+              >
+                {(clockOut, { loading }) => {
+                  return (
+                    <Button
+                      color="danger"
+                      text="clock out"
+                      loading={loading}
+                      onClick={async () => {
+                        try {
+                          await clockOut();
+                        } catch (err) {
+                          console.log(err);
+                        }
+                      }}
+                    />
+                  );
+                }}
+              </Mutation>
+            </div>
+          </EmployeeItem>
+        );
+      })}
+    </EmployeeList>
+  </EmployeesTable>
+);
 
 const EmployeesTable = styled(Box)`
   width: 100%;

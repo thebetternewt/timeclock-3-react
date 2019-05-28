@@ -13,7 +13,7 @@ import {
   DELETE_WORK_STUDY,
 } from '../../../../apollo/mutations/workStudy';
 import GraphQlErrors from '../../../shared/GraphQLErrors';
-import { Button } from '../../../../styled/elements/Button';
+import Button from '../../../../styled/elements/Button';
 import { arraysEqual } from '../../../../util/arrays';
 
 import 'react-datepicker/dist/react-datepicker.css';

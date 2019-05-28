@@ -9,7 +9,7 @@ import {
   Select,
   Input,
 } from '../../../styled/elements/Form';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import { client } from '../../../apollo/client';
 import { USERS } from '../../../apollo/queries/user';
 import EmployeeSelect from '../../shared/EmployeeSelect';

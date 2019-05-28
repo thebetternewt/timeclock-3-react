@@ -7,7 +7,7 @@ import { Formik } from 'formik';
 import Box from '../../styled/layouts/Box';
 import Logo from '../../styled/layouts/Logo';
 import { Form, Input } from '../../styled/elements/Form';
-import { Button } from '../../styled/elements/Button';
+import Button from '../../styled/elements/Button';
 import { LOGIN } from '../../apollo/mutations/user';
 import GraphQlErrors from '../shared/GraphQLErrors';
 import { ME } from '../../apollo/queries/user';

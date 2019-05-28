@@ -6,7 +6,7 @@ import { FaPlusCircle } from 'react-icons/fa';
 import Box from '../../../styled/layouts/Box';
 import Modal from '../../../styled/layouts/Modal';
 import ShiftModal from '../../shared/ShiftModal';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';

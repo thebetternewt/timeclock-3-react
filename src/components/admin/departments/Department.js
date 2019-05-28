@@ -6,7 +6,7 @@ import { FaPlusCircle } from 'react-icons/fa';
 
 import Box from '../../../styled/layouts/Box';
 import Container from '../../../styled/layouts/Container';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';
 import { DEPARTMENT } from '../../../apollo/queries/department';

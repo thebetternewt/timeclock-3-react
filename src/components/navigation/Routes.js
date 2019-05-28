@@ -15,7 +15,8 @@ import { ME } from '../../apollo/queries/user';
 import Department from '../admin/departments/Department';
 import CreateDepartment from '../admin/departments/Create';
 import EditDepartment from '../admin/departments/Edit';
-import TimeSheets from '../timesheets/TimeSheetForm';
+import TimeSheets from '../employee/timeSheets/TimeSheets';
+import AdminTimeSheets from '../admin/timeSheets/TimeSheets';
 
 const Routes = () => {
   return (
@@ -42,6 +43,7 @@ const Routes = () => {
                   <EditEmployee path="/admin/employees/:employeeId/edit" />
                   <Employees path="/admin/employees" />
                   <AdminHistory path="/admin/history" />
+                  <AdminTimeSheets path="/admin/timesheets" />
                   <Departments path="/admin/departments" />
                   <Department path="/admin/departments/:departmentId" />
                   <EditDepartment path="/admin/departments/:departmentId/edit" />

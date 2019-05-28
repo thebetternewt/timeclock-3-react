@@ -6,7 +6,7 @@ import moment from 'moment';
 import Timer from './Timer';
 import Box from '../../styled/layouts/Box';
 import { Form } from '../../styled/elements/Form';
-import { Button } from '../../styled/elements/Button';
+import Button from '../../styled/elements/Button';
 import { Query, Mutation } from 'react-apollo';
 import { ME } from '../../apollo/queries/user';
 import { CLOCK_IN, CLOCK_OUT } from '../../apollo/mutations/user';

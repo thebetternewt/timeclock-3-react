@@ -9,7 +9,7 @@ import {
   Select,
   Input,
 } from '../../../styled/elements/Form';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import { arraysEqual } from '../../../util/arrays';
 import { MY_SHIFTS } from '../../../apollo/queries/user';
 

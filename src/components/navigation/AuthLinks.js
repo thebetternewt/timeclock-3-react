@@ -3,7 +3,7 @@ import { Link } from '@reach/router';
 import { Mutation } from 'react-apollo';
 
 import { LOGOUT } from '../../apollo/mutations/user';
-import { Button } from '../../styled/elements/Button';
+import Button from '../../styled/elements/Button';
 
 const AuthLinks = ({ isAuth }) => (
   <>

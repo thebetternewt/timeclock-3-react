@@ -6,7 +6,7 @@ import { FaPlusCircle } from 'react-icons/fa';
 
 import DepartmentSelect from '../../shared/DepartmentSelect';
 import Container from '../../../styled/layouts/Container';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import { DEPARTMENTS } from '../../../apollo/queries/department';
 
 const Departments = () => {

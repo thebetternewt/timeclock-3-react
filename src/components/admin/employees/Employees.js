@@ -6,7 +6,7 @@ import { FaPlusCircle } from 'react-icons/fa';
 import { USERS } from '../../../apollo/queries/user';
 import EmployeeSelect from '../../shared/EmployeeSelect';
 import Container from '../../../styled/layouts/Container';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 import { Link } from '@reach/router';
 
 const Employees = () => {

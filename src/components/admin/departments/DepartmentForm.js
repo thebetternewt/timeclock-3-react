@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, FormControl, Input } from '../../../styled/elements/Form';
 import GraphQlErrors from '../../shared/GraphQLErrors';
-import { Button } from '../../../styled/elements/Button';
+import Button from '../../../styled/elements/Button';
 
 const DepartmentForm = ({
   values,
