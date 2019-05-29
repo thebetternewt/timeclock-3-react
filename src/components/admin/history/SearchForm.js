@@ -100,6 +100,8 @@ const SearchForm = () => {
 
 	useEffect(() => {
 		fetchPayPeriods();
+		// fix external dependency warning
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [year]);
 
 	return (
