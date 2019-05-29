@@ -9,72 +9,73 @@ import { DEPARTMENT } from '../../../apollo/queries/department';
 import { UPDATE_DEPARTMENT } from '../../../apollo/mutations/department';
 
 const Edit = ({ departmentId }) => {
-  const handleSubmit = async (e, { values, mutate }) => {
-    e.preventDefault();
+	const handleSubmit = async (e, { values, mutate }) => {
+		e.preventDefault();
 
-    try {
-      const result = await mutate();
-      console.log('result:', result);
-      navigate(`/admin/departments/${result.data.updateDepartment.id}`);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+		try {
+			const result = await mutate();
+			console.log('result:', result);
+			navigate(`/admin/departments/${result.data.updateDepartment.id}`);
+		} catch (err) {
+			console.log(err);
+		}
+	};
 
-  return (
-    <div style={{ width: 500 }}>
-      <h1 className="title">Edit Department</h1>
+	return (
+		<div style={{ width: 500 }}>
+			<h1 className="title">Edit Department</h1>
 
-      <Query query={DEPARTMENT} variables={{ id: departmentId }}>
-        {({ data, loading }) => {
-          console.log('data:', data);
-          if (loading) {
-            return <SpinnerWrapper size="60px" />;
-          }
+			<Query query={DEPARTMENT} variables={{ id: departmentId }}>
+				{({ data, loading }) => {
+					console.log('data:', data);
+					if (loading) {
+						return <SpinnerWrapper size="60px" />;
+					}
 
-          if (data && data.department) {
-            return (
-              <Formik initialValues={data.department}>
-                {({ values, handleChange }) => {
-                  const variables = {
-                    name: values.name,
-                  };
+					if (data && data.department) {
+						return (
+							<Formik initialValues={data.department}>
+								{({ values, handleChange }) => {
+									const variables = {
+										name: values.name,
+									};
 
-                  return (
-                    <Mutation
-                      mutation={UPDATE_DEPARTMENT}
-                      variables={{
-                        deptId: data.department.id,
-                        data: variables,
-                      }}
-                    >
-                      {(edit, { loading, error }) => {
-                        console.log(error);
-                        return (
-                          <DepartmentForm
-                            values={values}
-                            handleChange={handleChange}
-                            handleSubmit={e =>
-                              handleSubmit(e, { values, mutate: edit })
-                            }
-                            error={error}
-                            loading={loading}
-                            buttonText="Edit Department"
-                          />
-                        );
-                      }}
-                    </Mutation>
-                  );
-                }}
-              </Formik>
-            );
-          }
+									return (
+										<Mutation
+											mutation={UPDATE_DEPARTMENT}
+											variables={{
+												deptId: data.department.id,
+												data: variables,
+											}}
+											refetchQueries={() => ['Departments']}
+										>
+											{(edit, { loading, error }) => {
+												console.log(error);
+												return (
+													<DepartmentForm
+														values={values}
+														handleChange={handleChange}
+														handleSubmit={e =>
+															handleSubmit(e, { values, mutate: edit })
+														}
+														error={error}
+														loading={loading}
+														buttonText="Edit Department"
+													/>
+												);
+											}}
+										</Mutation>
+									);
+								}}
+							</Formik>
+						);
+					}
 
-          return null;
-        }}
-      </Query>
-    </div>
-  );
+					return null;
+				}}
+			</Query>
+		</div>
+	);
 };
 
 export default Edit;

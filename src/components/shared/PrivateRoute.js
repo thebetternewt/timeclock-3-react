@@ -1,34 +1,17 @@
 import React from 'react';
 import { Redirect } from '@reach/router';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
 import { ME } from '../../apollo/queries/user';
 
 const PrivateRoute = ({ component: Component, location, ...rest }) => {
-  console.log('private route...');
+	const { data } = useQuery(ME);
 
-  return (
-    <Query query={ME}>
-      {({ data, loading }) => {
-        console.log('loading:', loading);
-        console.log('data:', data);
-        if (!loading && !data) {
-          console.log('not logged in...');
-          // If user session expired, redirect to login.
-          return <Redirect to="/login" noThrow />;
-        } else if (data) {
-          return <Component {...rest} />;
-        }
-
-        return null;
-      }}
-    </Query>
-  );
-
-  // If token does exist, update authContext with user data.
-  // if (token && !authContext.user) {
-  //   const user = jwt.decode(token)
-  //   authContext.setAuthenticatedUser(user)
-  // }
+	if (!data.me) {
+		// If user session expired, redirect to login.
+		return <Redirect to="/login" noThrow />;
+	} else if (data) {
+		return <Component {...rest} />;
+	}
 };
 
 export default PrivateRoute;

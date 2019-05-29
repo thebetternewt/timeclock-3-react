@@ -12,35 +12,35 @@ import { IoMdLogOut } from 'react-icons/io';
 import NavLink from './SideNavLink';
 import { LOGOUT } from '../../apollo/mutations/user';
 
-const AdminLinks = () => {
+const SuperVisorLinks = () => {
 	return (
 		<ul>
 			<li>
-				<NavLink to="/admin">
+				<NavLink to="/supervisor">
 					<FaRegChartBar />
 					Dashboard
 				</NavLink>
 			</li>
 			<li>
-				<NavLink to="/admin/employees">
+				<NavLink to="/supervisor/employees">
 					<FaUsers />
 					Employees
 				</NavLink>
 			</li>
 			<li>
-				<NavLink to="/admin/departments">
+				<NavLink to="/supervisor/departments">
 					<FaRegBuilding />
 					Departments
 				</NavLink>
 			</li>
 			<li>
-				<NavLink to="/admin/history">
+				<NavLink to="/supervisor/history">
 					<FaHistory />
 					History
 				</NavLink>
 			</li>
 			<li>
-				<NavLink to="/admin/timesheets">
+				<NavLink to="/supervisor/timesheets">
 					<FaRegFileAlt />
 					Timesheets
 				</NavLink>
@@ -70,4 +70,4 @@ const AdminLinks = () => {
 	);
 };
 
-export default AdminLinks;
+export default SuperVisorLinks;
