@@ -8,26 +8,38 @@ export const LIGHT_GRAY = '#EEEEEE';
 export const PRIMARY = '#2980B1';
 export const SUCCESS = '#01E7BD';
 export const DANGER = '#CE2A2A';
+export const INFO = '#A23B72';
+export const WARNING = '#FEC601';
 
 export const getColor = color => {
-  switch (color) {
-    case 'primary':
-      return `
+	switch (color) {
+		case 'primary':
+			return `
           background: ${PRIMARY};
           color: #fff;
         `;
-    case 'success':
-      return `
+		case 'success':
+			return `
           background: ${SUCCESS};
           color: ${GRAY1};
         `;
-    case 'danger':
-      return `
+		case 'danger':
+			return `
           background: ${DANGER};
           color: #fff;
         `;
-    default: {
-      return `background: #ddd;`;
-    }
-  }
+		case 'info':
+			return `
+          background: ${INFO};
+          color: #fff;
+          `;
+		case 'warning':
+			return `
+          background: ${WARNING};
+          color: ${GRAY1};
+          `;
+		default: {
+			return `background: #ddd;`;
+		}
+	}
 };

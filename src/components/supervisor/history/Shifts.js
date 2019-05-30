@@ -1,12 +1,21 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 
+import searchContext from './searchContext';
 import Box from '../../../styled/layouts/Box';
-import Tag from '../../../styled/elements/Tag';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
+import Tag from '../../../styled/elements/Tag';
+import Button from '../../../styled/elements/Button';
+import ShiftModal from '../../shared/ShiftModal';
 
-const Shifts = ({ shifts }) => {
+const Shifts = () => {
+	const [selectedShift, setSelectedShift] = useState();
+	const [showShiftModal, setShowShiftModal] = useState(false);
+	const { filteredShifts } = useContext(searchContext);
+
+	const toggleShiftModal = () => setShowShiftModal(!showShiftModal);
+
 	return (
 		<ShiftsTable>
 			<ShiftList>
@@ -15,7 +24,7 @@ const Shifts = ({ shifts }) => {
 					<div>Time out</div>
 					<div>Hours Elapsed</div>
 				</ShiftListHeader>
-				{shifts.map(shift => {
+				{filteredShifts.map(shift => {
 					const hoursElapsed = (shift.minutesElapsed / 60).toFixed(2);
 					return (
 						<ShiftItem key={shift.id}>
@@ -28,15 +37,28 @@ const Shifts = ({ shifts }) => {
 							<div style={{ display: 'flex' }}>
 								{shift.timeOut ? hoursElapsed : '--'}
 								{shift.workStudy && (
-									<Tag color="info" style={{ margin: '0 auto' }}>
+									<Tag color="primary" style={{ marginLeft: 5 }}>
 										WS
 									</Tag>
 								)}
+							</div>
+							<div>
+								<Button
+									text="view"
+									color="primary"
+									onClick={() => {
+										setSelectedShift(shift);
+										toggleShiftModal();
+									}}
+								/>
 							</div>
 						</ShiftItem>
 					);
 				})}
 			</ShiftList>
+			{showShiftModal && (
+				<ShiftModal shift={selectedShift} close={toggleShiftModal} />
+			)}
 		</ShiftsTable>
 	);
 };

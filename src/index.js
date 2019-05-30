@@ -8,11 +8,11 @@ import * as serviceWorker from './serviceWorker';
 import { client } from './apollo/client';
 
 const app = (
-  <ApolloProvider client={client}>
-    <ApolloHooksProvider client={client}>
-      <App />
-    </ApolloHooksProvider>
-  </ApolloProvider>
+	<ApolloProvider client={client}>
+		<ApolloHooksProvider client={client}>
+			<App />
+		</ApolloHooksProvider>
+	</ApolloProvider>
 );
 
 ReactDOM.render(app, document.getElementById('root'));

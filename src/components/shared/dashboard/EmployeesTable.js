@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 
+import Tag from '../../../styled/elements/Tag';
+
 import Box from '../../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import Button from '../../../styled/elements/Button';
@@ -29,6 +31,7 @@ const Employees = ({ employees }) => (
 								60
 							).toFixed(2)}
 						</div>
+
 						<div>
 							<Mutation
 								mutation={CLOCK_OUT_USER}

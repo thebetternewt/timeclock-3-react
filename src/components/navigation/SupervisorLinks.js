@@ -4,7 +4,6 @@ import {
 	FaRegChartBar,
 	FaRegFileAlt,
 	FaHistory,
-	FaUsers,
 	FaRegBuilding,
 } from 'react-icons/fa';
 import { IoMdLogOut } from 'react-icons/io';
@@ -21,12 +20,7 @@ const SuperVisorLinks = () => {
 					Dashboard
 				</NavLink>
 			</li>
-			<li>
-				<NavLink to="/supervisor/employees">
-					<FaUsers />
-					Employees
-				</NavLink>
-			</li>
+
 			<li>
 				<NavLink to="/supervisor/departments">
 					<FaRegBuilding />

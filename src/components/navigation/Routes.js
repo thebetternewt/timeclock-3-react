@@ -1,26 +1,36 @@
 import React from 'react';
 import { Router, Location, Redirect } from '@reach/router';
-import Login from '../auth/Login';
-import EmployeeDashboard from '../employee/dashboard/Dashboard';
-import AdminDashboard from '../admin/dashboard/Dashboard';
-import SupervisorDashboard from '../supervisor/dashboard/Dashboard';
-import History from '../employee/history/History';
-import Employees from '../admin/employees/Employees';
-import Employee from '../admin/employees/Employee';
-import CreateEmployee from '../shared/employees/Create';
-import EditEmployee from '../shared/employees/Edit';
-import AdminHistory from '../admin/history/History';
-import Departments from '../admin/departments/Departments';
 import { Query } from 'react-apollo';
 import { ME } from '../../apollo/queries/user';
+
+import Login from '../auth/Login';
+
+import EmployeeDashboard from '../employee/dashboard/Dashboard';
+import History from '../employee/history/History';
+import TimeSheets from '../employee/timeSheets/TimeSheets';
+
+import CreateEmployee from '../shared/employees/Create';
+import EditEmployee from '../shared/employees/Edit';
+import SupervisorCreateEmployee from '../shared/employees/Create';
+import SupervisorEditEmployee from '../shared/employees/Edit';
+
+import AdminDashboard from '../admin/dashboard/Dashboard';
+import Employees from '../admin/employees/Employees';
+import Employee from '../admin/employees/Employee';
+import AdminHistory from '../admin/history/History';
+import Departments from '../admin/departments/Departments';
 import Department from '../admin/departments/Department';
 import CreateDepartment from '../admin/departments/Create';
 import EditDepartment from '../admin/departments/Edit';
-import TimeSheets from '../employee/timeSheets/TimeSheets';
 import AdminTimeSheets from '../admin/timeSheets/TimeSheets';
+
+import SupervisorDashboard from '../supervisor/dashboard/Dashboard';
 import SupervisorEmployees from '../supervisor/employees/Employees';
-import SupervisorCreateEmployee from '../shared/employees/Create';
-import SupervisorEditEmployee from '../shared/employees/Edit';
+import SupervisorDepartments from '../supervisor/departments/Departments';
+import SupervisorDepartment from '../supervisor/departments/Department';
+import SupervisorEditDepartment from '../supervisor/departments/Edit';
+import SupervisorHistory from '../supervisor/history/History';
+import SupervisorTimeSheets from '../supervisor/timeSheets/TimeSheets';
 
 const Routes = () => {
 	return (
@@ -42,9 +52,9 @@ const Routes = () => {
 									<EmployeeDashboard path="/" />
 									<History path="/history" />
 									<TimeSheets path="/timesheets" />
+									<Employee path="/admin/employees/:employeeId" />
 
 									<AdminDashboard path="/admin" />
-									<Employee path="/admin/employees/:employeeId" />
 									<CreateEmployee path="/admin/employees/new" />
 									<EditEmployee path="/admin/employees/:employeeId/edit" />
 									<Employees path="/admin/employees" />
@@ -59,6 +69,12 @@ const Routes = () => {
 									<SupervisorEmployees path="/supervisor/employees" />
 									<SupervisorCreateEmployee path="/supervisor/employees/new" />
 									<SupervisorEditEmployee path="/supervisor/employees/:employeeId/edit" />
+									<SupervisorDepartments path="/supervisor/departments" />
+									<SupervisorDepartment path="/supervisor/departments/:departmentId" />
+									<SupervisorEditDepartment path="/supervisor/departments/:departmentId/edit" />
+									<SupervisorCreateEmployee path="/supervisor/departments/:departmentId/new" />
+									<SupervisorHistory path="/supervisor/history" />
+									<SupervisorTimeSheets path="/supervisor/timesheets" />
 								</Router>
 							);
 						}}

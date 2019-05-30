@@ -37,7 +37,7 @@ const Shifts = () => {
 							<div style={{ display: 'flex' }}>
 								{shift.timeOut ? hoursElapsed : '--'}
 								{shift.workStudy && (
-									<Tag color="primary" style={{ marginLeft: 5 }}>
+									<Tag color="info" style={{ margin: '0 auto' }}>
 										WS
 									</Tag>
 								)}
