@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from '@reach/router';
+import { Link, Match } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
 import { FaPlusCircle } from 'react-icons/fa';
 
@@ -25,6 +25,7 @@ const Department = ({ departmentId }) => {
   const [addingEmployee, setAddingEmployee] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState('');
 
+
   const toggleAddingSupervisor = () => setAddingSupervisor(!addingSupervisor);
   const toggleAddingEmployee = () => setAddingEmployee(!addingEmployee);
 
@@ -32,8 +33,9 @@ const Department = ({ departmentId }) => {
   const handleEmployeeSelect = e => setSelectedEmployee(e.target.value);
 
   return (
-    <div>
-      <Query
+    <Match path="/admin/*">
+      {({match: admin}) => {
+        return (<Query
         query={DEPARTMENT}
         variables={{ id: departmentId }}
         fetchPolicy="no-cache"
@@ -51,7 +53,7 @@ const Department = ({ departmentId }) => {
             <Container direction="column">
               <h1 className="title">{department && department.name}</h1>
               {/* Supervisors */}
-              <DepartmentDetailBox>
+              {admin && <DepartmentDetailBox>
                 <ListHeader>Supervisors</ListHeader>
                 <List>
                   {department &&
@@ -69,18 +71,20 @@ const Department = ({ departmentId }) => {
                                   color="danger"
                                   loading={loading}
                                   onClick={async () => {
+                                    if (window.confirm(`Are you sure you want to remove ${sup.name} from supervising ${department.name}?`)) { 
                                     try {
-                                      await remove({
-                                        variables: {
-                                          userId: sup.id,
-                                          deptId: departmentId,
-                                        },
-                                        refetchQueries: () => ['Department'],
-                                      });
-                                    } catch (err) {
-                                      console.log(err);
+                                        await remove({
+                                          variables: {
+                                            userId: sup.id,
+                                            deptId: departmentId,
+                                          },
+                                          refetchQueries: () => ['Department'],
+                                        });
+                                      } catch (err) {
+                                        console.log(err);
+                                      }
                                     }
-                                  }}
+                                    }}
                                 />
                               );
                             }}
@@ -139,6 +143,7 @@ const Department = ({ departmentId }) => {
                       onClick={toggleAddingSupervisor}
                       text="Cancel"
                     />
+                    
                   </DepartmentActionsWrapper>
                 ) : (
                   <Button
@@ -152,7 +157,7 @@ const Department = ({ departmentId }) => {
                     onClick={toggleAddingSupervisor}
                   />
                 )}
-              </DepartmentDetailBox>
+              </DepartmentDetailBox>}
 
               {/* Employees */}
               <DepartmentDetailBox>
@@ -165,6 +170,7 @@ const Department = ({ departmentId }) => {
                           {user.name} ({user.netId})
                         </div>
                         <div>
+                          
                           <Mutation mutation={REMOVE_FROM_DEPT}>
                             {(remove, { loading }) => {
                               return (
@@ -173,7 +179,9 @@ const Department = ({ departmentId }) => {
                                   color="danger"
                                   loading={loading}
                                   onClick={async () => {
+                                    if (window.confirm(`Are you sure you want to remove ${user.name} from ${department.name}?`)) { 
                                     try {
+
                                       await remove({
                                         variables: {
                                           userId: user.id,
@@ -184,11 +192,23 @@ const Department = ({ departmentId }) => {
                                     } catch (err) {
                                       console.log(err);
                                     }
+                                  }
                                   }}
                                 />
                               );
                             }}
                           </Mutation>
+                          
+                          <Link to={`../../employees/${user.id}`}>
+                          <Button 
+                          text="view"
+                          color="primary"
+                          loading={loading}
+                          style={{marginRight: '1rem'}}
+                          />
+                          </Link>
+
+
                         </div>
                       </Item>
                     ))}
@@ -243,6 +263,11 @@ const Department = ({ departmentId }) => {
                       onClick={toggleAddingEmployee}
                       text="Cancel"
                     />
+                    <Link to="new">
+                    <Button
+                    color="primary"
+                    text="Create New Employee" 
+                    /></Link>
                   </DepartmentActionsWrapper>
                 ) : (
                   <Button
@@ -258,16 +283,18 @@ const Department = ({ departmentId }) => {
                 )}
               </DepartmentDetailBox>
 
-              <DepartmentActionsWrapper>
+              {admin && <DepartmentActionsWrapper>
                 <Link to="edit">
                   <Button text="Edit Department" color="primary" />
                 </Link>
-              </DepartmentActionsWrapper>
+              </DepartmentActionsWrapper>}
             </Container>
           );
         }}
       </Query>
-    </div>
+      )
+    }}
+    </Match>
   );
 };
 

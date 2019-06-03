@@ -47,7 +47,7 @@ const Edit = ({ departmentId }) => {
 												deptId: data.department.id,
 												data: variables,
 											}}
-											refetchQueries={() => ['Departments']}
+											refetchQueries={() => ['Departments', 'Me']}
 										>
 											{(edit, { loading, error }) => {
 												console.log(error);

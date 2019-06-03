@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import moment from 'moment';
 
-import Tag from '../../../styled/elements/Tag';
-
 import Box from '../../../styled/layouts/Box';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import Button from '../../../styled/elements/Button';

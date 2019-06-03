@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { Link, Match } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
+import { useMutation } from 'react-apollo-hooks';
 import { FaPlusCircle } from 'react-icons/fa';
 
 import Box from '../../../styled/layouts/Box';
-import Modal from '../../../styled/layouts/Modal';
-import ShiftModal from '../../shared/ShiftModal';
+import ShiftModal from '../ShiftModal';
+import WorkStudyModal from './workStudy/WorkStudyModal';
 import Button from '../../../styled/elements/Button';
 import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';
 import { USER } from '../../../apollo/queries/user';
-import { ADD_TO_DEPT, REMOVE_FROM_DEPT } from '../../../apollo/mutations/user';
-import { Link } from '@reach/router';
-import WorkStudyForm from './workstudy/WorkStudyForm';
+import { ADD_TO_DEPT, REMOVE_FROM_DEPT, DEACTIVATE_USER, ACTIVATE_USER } from '../../../apollo/mutations/user';
 import Container from '../../../styled/layouts/Container';
 import { DEPARTMENTS } from '../../../apollo/queries/department';
-import DepartmentSelect from '../../shared/DepartmentSelect';
+import DepartmentSelect from '../DepartmentSelect';
+import History from '../history/History'
 
 const Employee = ({ employeeId }) => {
   const [workStudyModalOpen, setWorkStudyModalOpen] = useState(false);
@@ -24,6 +25,10 @@ const Employee = ({ employeeId }) => {
   const [selectedDepartment, setSelectedDepartment] = useState('');
   const [selectedWorkStudy, setSelectedWorkStudy] = useState();
   const [addShiftModalOpen, setAddShiftModalOpen] = useState(false);
+  const [activateLoading, setActivateLoading] = useState(false)
+
+  const deactivate = useMutation(DEACTIVATE_USER, {refetchQueries: () => ['User']})
+  const activate = useMutation(ACTIVATE_USER, {refetchQueries: () => ['User']})
 
   const toggleAddingDepartment = () => setAddingDepartment(!addingDepartment);
   const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
@@ -33,8 +38,9 @@ const Employee = ({ employeeId }) => {
   const handleWorkStudySelect = ws => setSelectedWorkStudy(ws);
 
   return (
-    <div>
-      <Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
+    <Match path="/admin/*">
+      {({match: admin}) => (
+         <Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
         {({ data, loading }) => {
           let user;
           if (loading) {
@@ -63,8 +69,13 @@ const Employee = ({ employeeId }) => {
                   {user.active && <Tag color="success">Active</Tag>}
                 </DetailColumn>
               </EmployeeDetail>
+
+
+            <History />
+
+
               {/* Departments */}
-              <EmployeeDetailBox>
+              {admin && <EmployeeDetailBox>
                 <ListHeader>Departments</ListHeader>
                 <List>
                   {user &&
@@ -76,21 +87,21 @@ const Employee = ({ employeeId }) => {
                             mutation={REMOVE_FROM_DEPT}
                             variables={{ userId: user.id, deptId: dept.id }}
                             refetchQueries={() => ['User']}
-                          >
+                            >
                             {(remove, { loading }) => {
                               return (
                                 <Button
-                                  text="remove"
-                                  color="danger"
-                                  loading={loading}
-                                  onClick={async () => {
-                                    try {
-                                      await remove();
-                                    } catch (err) {
-                                      console.log(err);
+                                text="remove"
+                                color="danger"
+                                loading={loading}
+                                onClick={async () => {
+                                  try {
+                                    await remove();
+                                  } catch (err) {
+                                    console.log(err);
                                     }
                                   }}
-                                />
+                                  />
                               );
                             }}
                           </Mutation>
@@ -111,11 +122,11 @@ const Employee = ({ employeeId }) => {
 
                         return (
                           <DepartmentSelect
-                            departments={departments}
+                          departments={departments}
                             handleChange={handleDepartmentSelect}
                             value={selectedDepartment}
-                          />
-                        );
+                            />
+                            );
                       }}
                     </Query>
                     <Mutation mutation={ADD_TO_DEPT}>
@@ -139,15 +150,15 @@ const Employee = ({ employeeId }) => {
                               }
                             }}
                             text="Add"
-                          />
-                        );
+                            />
+                            );
                       }}
                     </Mutation>
                     <Button
                       color="danger"
                       onClick={toggleAddingDepartment}
                       text="Cancel"
-                    />
+                      />
                   </EmployeeActionsWrapper>
                 ) : (
                   <Button
@@ -160,8 +171,9 @@ const Employee = ({ employeeId }) => {
                     style={{ marginTop: '1rem' }}
                     onClick={toggleAddingDepartment}
                   />
-                )}
+                  )}
               </EmployeeDetailBox>
+              }
 
               {/* Workstudy */}
               <EmployeeDetailBox>
@@ -182,7 +194,7 @@ const Employee = ({ employeeId }) => {
                               handleWorkStudySelect(ws);
                               toggleWorkStudyModal();
                             }}
-                          />
+                            />
                         </div>
                       </Item>
                     ))}
@@ -199,43 +211,56 @@ const Employee = ({ employeeId }) => {
                     setSelectedWorkStudy(null);
                     toggleWorkStudyModal();
                   }}
-                />
+                  />
               </EmployeeDetailBox>
               <EmployeeActionsWrapper>
                 <Link to="edit">
                   <Button text="Edit Employee" color="primary" />
                 </Link>
-                <Button text="Deactivate Employee" color="danger" />
+                <Button 
+                  text={user.active ? "Deactivate Employee" : 'Activate Employee'}
+                  color="danger"
+                  loading={activateLoading}
+                  onClick={
+                    async () => {
+                      const variables = {netId: user.netId}
+                      setActivateLoading(true)
+                      
+                      if (user.active) {
+                        await deactivate({variables})
+                      } else {
+                        await activate ({variables})
+                      }
+                      setActivateLoading(false)
+                    }
+                  }
+                />
 
                 <Button
                   text="Add Shift"
                   color="success"
                   onClick={toggleAddShiftModal}
-                />
-              </EmployeeActionsWrapper>
-              {workStudyModalOpen && (
-                <Modal
-                  title={
-                    selectedWorkStudy ? `Edit Work Study` : `Add Work Study`
-                  }
-                  close={toggleWorkStudyModal}
-                >
-                  <WorkStudyForm
-                    employee={user}
-                    departments={user.departments}
-                    close={toggleWorkStudyModal}
-                    workStudy={selectedWorkStudy}
                   />
-                </Modal>
-              )}
+              </EmployeeActionsWrapper>
+
+              {workStudyModalOpen &&
+                <WorkStudyModal
+                  close={toggleWorkStudyModal}
+                  employee={user}
+                  departments={user.departments}
+                  workStudy={selectedWorkStudy}
+                />
+              }
+
               {addShiftModalOpen && (
                 <ShiftModal employee={user} close={toggleAddShiftModal} />
-              )}
+                )}
             </Container>
           );
         }}
       </Query>
-    </div>
+      )}
+    </Match>
   );
 };
 

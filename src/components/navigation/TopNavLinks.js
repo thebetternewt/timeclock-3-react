@@ -1,20 +1,11 @@
 import React from 'react';
 import { Location } from '@reach/router';
-import { useQuery } from 'react-apollo-hooks';
 
 import TopNavLink from './TopNavLink';
-import { ME } from '../../apollo/queries/user';
 
-const TopNavLinks = () => {
-	let admin = false;
-	let supervisor = false;
-
-	const { data } = useQuery(ME);
-
-	if (data.me) {
-		admin = data.me.admin;
-		supervisor = !!data.me.supervisedDepartments.length;
-	}
+const TopNavLinks = ({ user }) => {
+	const admin = user ? user.admin : false;
+	const supervisor = user ? !!user.supervisedDepartments.length : false;
 
 	return (
 		<Location>

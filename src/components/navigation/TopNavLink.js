@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Location } from '@reach/router';
 
-export default ({ ...props }) => (
+export default props => (
 	<Location>
 		{({ location }) => {
 			return (

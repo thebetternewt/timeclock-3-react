@@ -37,8 +37,8 @@ const SearchForm = () => {
 				setYear(value);
 				return;
 			case 'department':
-				context.setDepartment(
-					context.departments.find(dept => dept.id === value)
+				context.setSupervisedDepartment(
+					context.SupervisedDepartments.find(dept => dept.id === value)
 				);
 				return;
 			default:
@@ -146,7 +146,6 @@ const SearchForm = () => {
 					name="department"
 					value={context.department ? context.department.id : ''}
 					onChange={handleChange}
-					disabled={!context.payPeriod || !context.employee}
 				>
 					{context.departments.length ? (
 						context.departments.map(opt => (

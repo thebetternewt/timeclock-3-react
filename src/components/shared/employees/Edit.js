@@ -19,8 +19,7 @@ const Edit = ({ employeeId }) => {
 
 		try {
 			const result = await edit();
-			console.log('result:', result);
-			navigate(`/admin/employees/${result.data.updateUser.id}`);
+			navigate('.');
 		} catch (err) {
 			console.log(err);
 		}
@@ -30,9 +29,8 @@ const Edit = ({ employeeId }) => {
 		<div style={{ width: 500 }}>
 			<h1 className="title">Edit Employee</h1>
 
-			<Query query={USER} variables={{ id: employeeId }}>
+			<Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
 				{({ data, loading }) => {
-					console.log('data:', data);
 					if (loading) {
 						return <SpinnerWrapper size="60px" />;
 					}
@@ -44,19 +42,21 @@ const Edit = ({ employeeId }) => {
 							>
 								{({ values, handleChange }) => {
 									const variables = {
-										id: data.user.id,
 										firstName: values.firstName,
 										lastName: values.lastName,
 										netId: values.netId,
 										nineDigitId: values.nineDigitId,
 										email: values.email,
-										password: values.password,
 									};
+
+									if (values.password) {
+										variables.password = values.password;
+									}
 
 									return (
 										<Mutation
 											mutation={UPDATE_USER}
-											variables={{ data: variables }}
+											variables={{ id: data.user.id, data: variables }}
 										>
 											{(edit, { loading, error }) => {
 												console.log(error);
@@ -69,7 +69,7 @@ const Edit = ({ employeeId }) => {
 														}
 														error={error}
 														loading={loading}
-														buttonText="Edit Employee"
+														buttonText="Save"
 													/>
 												);
 											}}

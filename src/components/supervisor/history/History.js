@@ -11,6 +11,8 @@ import SearchForm from './SearchForm';
 import Shifts from './Shifts';
 import { GRAY3 } from '../../../styled/utilities/Colors';
 import { USER_SHIFTS } from '../../../apollo/queries/user';
+import { ME } from '../../../apollo/queries/user';
+import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
 import { client } from '../../../apollo/client';
 
 const History = () => {
@@ -20,6 +22,8 @@ const History = () => {
 	const [payPeriod, setPayPeriod] = useState();
 	const [departments, setDepartments] = useState([]);
 	const [department, setDepartment] = useState();
+	const [supervisedDepts, setSupervisedDeparts] = useState([]);
+	const [supervisedDept, setSeupervisedDept] = useState();
 
 	const hoursElapsed = shifts
 		.reduce((total, shift) => total + shift.minutesElapsed / 60, 0)
@@ -27,17 +31,37 @@ const History = () => {
 
 	const onShiftsFetched = newShifts => {
 		setShifts(newShifts);
+	}
 
-		const newDepts = newShifts.reduce((acc, shift) => {
-			const dept = shift.department;
-			if (!acc.find(d => d.id === dept.id)) {
-				acc.push(dept);
-			}
-			return acc;
-		}, []);
+	const onSupervisoedDepartmentsFetched = newDepts => {
+		setSupervisedDeparts(newDepts)
+		setSeupervisedDept(newDepts[0])
+	}
 
-		setDepartments(newDepts);
-		setDepartment(newDepts[0]);
+	// 	const newDepts = newShifts.reduce((acc, shift) => {
+	// 		const dept = shift.department;
+	// 		if (!acc.find(d => d.id === dept.id)) {
+	// 			acc.push(dept);
+	// 		}
+	// 		return acc;
+	// 	}, []);
+
+	// 	setDepartments(newDepts);
+	// 	setDepartment(newDepts[0]);
+	// };
+
+	const newDepts = async ({ supervisedDepartments: dept = department }) => {
+		const { data } = await client.query({
+			query: ME,
+			variables: {
+				userId: employee,
+				deptId: department && department.id,
+				
+			},
+			fetchPolicy: 'no-cache',
+		});
+
+		onSupervisoedDepartmentsFetched(data.supervisedDepartments);
 	};
 
 	const fetchShifts = async ({ payPeriod: period = payPeriod }) => {

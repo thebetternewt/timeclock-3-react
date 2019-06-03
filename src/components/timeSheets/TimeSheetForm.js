@@ -3,22 +3,21 @@ import moment from 'moment';
 import { Query } from 'react-apollo';
 import { useQuery } from 'react-apollo-hooks';
 
-import { PAY_PERIODS } from '../../apollo/queries/payPeriod';
 import { Form, FormControl, Select, Input } from '../../styled/elements/Form';
 import Button from '../../styled/elements/Button';
+import { client } from '../../apollo/client';
 import { ME, USER_SHIFTS } from '../../apollo/queries/user';
+import { PAY_PERIODS } from '../../apollo/queries/payPeriod';
+import { USERS_BY_DEPARTMENT } from '../../apollo/queries/department';
 import Container from '../../styled/layouts/Container';
 import TimeSheet from './TimeSheet';
-import { USERS_BY_DEPARTMENT } from '../../apollo/queries/department';
-import { client } from '../../apollo/client';
 import DepartmentSelect from '../shared/DepartmentSelect';
 import EmployeeSelect from '../shared/EmployeeSelect';
 
-const TimeSheetForm = ({ admin = false }) => {
+const TimeSheetForm = ({ admin = false, departments = [] }) => {
 	const [year, setYear] = useState(moment().year());
 	const [payPeriod, setPayPeriod] = useState();
 	const [payPeriods, setPayPeriods] = useState([]);
-	const [departments, setDepartments] = useState([]);
 	const [department, setDepartment] = useState();
 	const [employees, setEmployees] = useState([]);
 	const [employee, setEmployee] = useState();
@@ -28,10 +27,7 @@ const TimeSheetForm = ({ admin = false }) => {
 	const { data: meData } = useQuery(ME);
 	if (meData.me && !me) {
 		setMe(meData.me);
-		setDepartments(meData.me.departments);
 	}
-
-	console.log('me:', me);
 
 	const validateYear = year =>
 		year.toString().match(/\d{4}/) && // Year is 4 digits
@@ -143,7 +139,7 @@ const TimeSheetForm = ({ admin = false }) => {
 					<FormControl>
 						<label>Department</label>
 						<DepartmentSelect
-							departments={me && me.departments}
+							departments={departments}
 							value={department ? department.id : ''}
 							handleChange={handleChange}
 							disabled={!payPeriod}

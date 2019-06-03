@@ -18,21 +18,19 @@ const Layout = ({ children }) => {
 	return (
 		<Query query={ME}>
 			{({ data }) => {
-				let isAuth = false;
 				let me;
 
 				if (data && data.me) {
 					me = data.me;
-					isAuth = true;
 					toggleSidebar(true);
 				}
 
 				return (
 					<div>
 						<Header logoWidth={SIDEBAR_WIDTH}>
-							<TopNav />
+							<TopNav user={me} />
 							<AuthLinksWrapper>
-								{isAuth && (
+								{me && (
 									<Link to="/">
 										<Avatar>
 											<span>{me.name}</span>
@@ -40,7 +38,7 @@ const Layout = ({ children }) => {
 										</Avatar>
 									</Link>
 								)}
-								<AuthLinks isAuth={isAuth} />
+								<AuthLinks isAuth={!!me} />
 							</AuthLinksWrapper>
 						</Header>
 						{showSidebar && <Sidebar width={SIDEBAR_WIDTH} />}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Router, Location, Redirect } from '@reach/router';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
 import { ME } from '../../apollo/queries/user';
 
 import Login from '../auth/Login';
@@ -16,72 +16,81 @@ import SupervisorEditEmployee from '../shared/employees/Edit';
 
 import AdminDashboard from '../admin/dashboard/Dashboard';
 import Employees from '../admin/employees/Employees';
-import Employee from '../admin/employees/Employee';
+import Employee from '../shared/employees/Employee';
 import AdminHistory from '../admin/history/History';
 import Departments from '../admin/departments/Departments';
-import Department from '../admin/departments/Department';
+import Department from '../shared/departments/Department';
 import CreateDepartment from '../admin/departments/Create';
 import EditDepartment from '../admin/departments/Edit';
 import AdminTimeSheets from '../admin/timeSheets/TimeSheets';
 
 import SupervisorDashboard from '../supervisor/dashboard/Dashboard';
-import SupervisorEmployees from '../supervisor/employees/Employees';
+// import SupervisorEmployees from '../supervisor/employees/Employees';
+import SupervisorEmployee from '../shared/employees/Employee';
 import SupervisorDepartments from '../supervisor/departments/Departments';
-import SupervisorDepartment from '../supervisor/departments/Department';
-import SupervisorEditDepartment from '../supervisor/departments/Edit';
+import SupervisorDepartment from '../shared/departments/Department';
 import SupervisorHistory from '../supervisor/history/History';
 import SupervisorTimeSheets from '../supervisor/timeSheets/TimeSheets';
 
 const Routes = () => {
+	const { data: meData } = useQuery(ME);
+
+	const { me } = meData;
+
 	return (
-		<>
-			<Query query={ME}>
-				{({ data }) => (
-					<Location>
-						{({ location }) => {
-							if (data && data.me && !data.me.admin) {
-								if (location.pathname.match('admin')) {
-									return <Redirect to="/" noThrow />;
-								}
-							}
+		<Location>
+			{({ location }) => {
+				if (me && !me.admin) {
+					if (location.pathname.match('admin')) {
+						return <Redirect to="/" noThrow />;
+					}
+				}
 
-							return (
-								<Router>
-									<Login path="/login" />
+				if (me && !me.supervisor) {
+					if (location.pathname.match('supervisor')) {
+						return <Redirect to="/" noThrow />;
+					}
+				}
 
-									<EmployeeDashboard path="/" />
-									<History path="/history" />
-									<TimeSheets path="/timesheets" />
-									<Employee path="/admin/employees/:employeeId" />
+				if (me && !me.admin && !me.supervisor) {
+					if (location.pathname.match('employees')) {
+						return <Redirect to="/" noThrow />;
+					}
+				}
 
-									<AdminDashboard path="/admin" />
-									<CreateEmployee path="/admin/employees/new" />
-									<EditEmployee path="/admin/employees/:employeeId/edit" />
-									<Employees path="/admin/employees" />
-									<AdminHistory path="/admin/history" />
-									<AdminTimeSheets path="/admin/timesheets" />
-									<Departments path="/admin/departments" />
-									<Department path="/admin/departments/:departmentId" />
-									<EditDepartment path="/admin/departments/:departmentId/edit" />
-									<CreateDepartment path="/admin/departments/new" />
+				return (
+					<Router>
+						<Login path="/login" />
 
-									<SupervisorDashboard path="/supervisor" />
-									<SupervisorEmployees path="/supervisor/employees" />
-									<SupervisorCreateEmployee path="/supervisor/employees/new" />
-									<SupervisorEditEmployee path="/supervisor/employees/:employeeId/edit" />
-									<SupervisorDepartments path="/supervisor/departments" />
-									<SupervisorDepartment path="/supervisor/departments/:departmentId" />
-									<SupervisorEditDepartment path="/supervisor/departments/:departmentId/edit" />
-									<SupervisorCreateEmployee path="/supervisor/departments/:departmentId/new" />
-									<SupervisorHistory path="/supervisor/history" />
-									<SupervisorTimeSheets path="/supervisor/timesheets" />
-								</Router>
-							);
-						}}
-					</Location>
-				)}
-			</Query>
-		</>
+						<EmployeeDashboard path="/" />
+						<History path="/history" />
+						<TimeSheets path="/timesheets" />
+						<Employee path="/admin/employees/:employeeId" />
+						<CreateEmployee path="/admin/employees/new" />
+
+						<EditEmployee path="/admin/employees/:employeeId/edit" />
+						<AdminDashboard path="/admin" />
+						<Employees path="/admin/employees" />
+						<AdminHistory path="/admin/history" />
+						<AdminTimeSheets path="/admin/timesheets" />
+						<Departments path="/admin/departments" />
+						<Department path="/admin/departments/:departmentId" />
+						<EditDepartment path="/admin/departments/:departmentId/edit" />
+						<CreateDepartment path="/admin/departments/new" />
+
+						<SupervisorDashboard path="/supervisor" />
+						{/* <SupervisorEmployees path="/supervisor/employees" /> */}
+						<SupervisorEmployee path="/supervisor/employees/:employeeId" />
+						<SupervisorCreateEmployee path="/supervisor/employees/new" />
+						<SupervisorEditEmployee path="/supervisor/employees/:employeeId/edit" />
+						<SupervisorDepartments path="/supervisor/departments" />
+						<SupervisorDepartment path="/supervisor/departments/:departmentId" />
+						<SupervisorHistory path="/supervisor/history" />
+						<SupervisorTimeSheets path="/supervisor/timesheets" />
+					</Router>
+				);
+			}}
+		</Location>
 	);
 };
 

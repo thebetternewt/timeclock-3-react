@@ -6,8 +6,9 @@ export default createContext({
 	payPeriod: null,
 	departments: [],
 	department: null,
+	supervisedDepts: [],
+	supervisedDept: null,
 	shifts: [],
-	supervisedDepartments: [],
 	setEmployee: () => {},
 	setPayPeriods: () => {},
 	setPayPeriod: () => {},
@@ -15,4 +16,6 @@ export default createContext({
 	setDepartment: () => {},
 	setShifts: () => {},
 	fetchShifts: () => {},
+	setSupervisedDepts: () => {},
+	setSupervisedDept: () => {},
 });

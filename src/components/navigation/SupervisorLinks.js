@@ -21,12 +21,12 @@ const SuperVisorLinks = () => {
 				</NavLink>
 			</li>
 
-			<li>
+			{/* <li>
 				<NavLink to="/supervisor/departments">
 					<FaRegBuilding />
 					Departments
 				</NavLink>
-			</li>
+			</li> */}
 			<li>
 				<NavLink to="/supervisor/history">
 					<FaHistory />

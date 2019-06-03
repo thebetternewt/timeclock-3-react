@@ -98,7 +98,6 @@ const EmployeeForm = ({
 					{({ navigate }) => {
 						return (
 							<Button
-								color="danger"
 								text="Cancel"
 								onClick={e => {
 									e.preventDefault();
