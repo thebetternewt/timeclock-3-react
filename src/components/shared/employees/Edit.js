@@ -18,7 +18,7 @@ const Edit = ({ employeeId }) => {
 		}
 
 		try {
-			const result = await edit();
+			await edit();
 			navigate('.');
 		} catch (err) {
 			console.log(err);

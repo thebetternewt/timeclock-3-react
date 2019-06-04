@@ -3,7 +3,6 @@ import { Mutation } from 'react-apollo';
 import {
 	FaRegChartBar,
 	FaRegFileAlt,
-	FaHistory,
 	FaUsers,
 	FaRegBuilding,
 } from 'react-icons/fa';
@@ -30,12 +29,6 @@ const AdminLinks = () => (
 			<NavLink to="/admin/departments">
 				<FaRegBuilding />
 				Departments
-			</NavLink>
-		</li>
-		<li>
-			<NavLink to="/admin/history">
-				<FaHistory />
-				History
 			</NavLink>
 		</li>
 		<li>

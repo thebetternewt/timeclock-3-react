@@ -19,7 +19,7 @@ import { DEPARTMENTS } from '../../../apollo/queries/department';
 import DepartmentSelect from '../DepartmentSelect';
 import History from '../history/History'
 
-const Employee = ({ employeeId }) => {
+const Employee = ({employeeId}) => {
   const [workStudyModalOpen, setWorkStudyModalOpen] = useState(false);
   const [addingDepartment, setAddingDepartment] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState('');
@@ -43,6 +43,7 @@ const Employee = ({ employeeId }) => {
          <Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
         {({ data, loading }) => {
           let user;
+
           if (loading) {
             return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
           }
@@ -70,9 +71,37 @@ const Employee = ({ employeeId }) => {
                 </DetailColumn>
               </EmployeeDetail>
 
+              <EmployeeActionsWrapper>
+                <Link to="edit">
+                  <Button text="Edit Employee" color="primary" />
+                </Link>
+                <Button 
+                  text={user.active ? "Deactivate Employee" : 'Activate Employee'}
+                  color="danger"
+                  loading={activateLoading}
+                  onClick={
+                    async () => {
+                      const variables = {netId: user.netId}
+                      setActivateLoading(true)
+                      
+                      if (user.active) {
+                        await deactivate({variables})
+                      } else {
+                        await activate ({variables})
+                      }
+                      setActivateLoading(false)
+                    }
+                  }
+                />
 
-            <History />
+                <Button
+                  text="Add Shift"
+                  color="success"
+                  onClick={toggleAddShiftModal}
+                  />
+              </EmployeeActionsWrapper>
 
+              <History employee={user} />
 
               {/* Departments */}
               {admin && <EmployeeDetailBox>
@@ -213,35 +242,6 @@ const Employee = ({ employeeId }) => {
                   }}
                   />
               </EmployeeDetailBox>
-              <EmployeeActionsWrapper>
-                <Link to="edit">
-                  <Button text="Edit Employee" color="primary" />
-                </Link>
-                <Button 
-                  text={user.active ? "Deactivate Employee" : 'Activate Employee'}
-                  color="danger"
-                  loading={activateLoading}
-                  onClick={
-                    async () => {
-                      const variables = {netId: user.netId}
-                      setActivateLoading(true)
-                      
-                      if (user.active) {
-                        await deactivate({variables})
-                      } else {
-                        await activate ({variables})
-                      }
-                      setActivateLoading(false)
-                    }
-                  }
-                />
-
-                <Button
-                  text="Add Shift"
-                  color="success"
-                  onClick={toggleAddShiftModal}
-                  />
-              </EmployeeActionsWrapper>
 
               {workStudyModalOpen &&
                 <WorkStudyModal
@@ -278,11 +278,12 @@ const DetailColumn = styled.div`
 `;
 
 const EmployeeDetailBox = styled(Box)`
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 `;
 
 const EmployeeActionsWrapper = styled.div`
   display: flex;
+  margin: 0 0 2rem;
 
   select,
   button {

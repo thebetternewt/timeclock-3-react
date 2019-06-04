@@ -1,11 +1,6 @@
 import React from 'react';
 import { Mutation } from 'react-apollo';
-import {
-	FaRegChartBar,
-	FaRegFileAlt,
-	FaHistory,
-	FaRegBuilding,
-} from 'react-icons/fa';
+import { FaRegChartBar, FaRegFileAlt } from 'react-icons/fa';
 import { IoMdLogOut } from 'react-icons/io';
 
 import NavLink from './SideNavLink';
@@ -18,19 +13,6 @@ const SuperVisorLinks = () => {
 				<NavLink to="/supervisor">
 					<FaRegChartBar />
 					Dashboard
-				</NavLink>
-			</li>
-
-			{/* <li>
-				<NavLink to="/supervisor/departments">
-					<FaRegBuilding />
-					Departments
-				</NavLink>
-			</li> */}
-			<li>
-				<NavLink to="/supervisor/history">
-					<FaHistory />
-					History
 				</NavLink>
 			</li>
 			<li>

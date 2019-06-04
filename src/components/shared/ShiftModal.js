@@ -1,10 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
 import { parse } from 'date-fns';
 import { useMutation } from 'react-apollo-hooks';
 
-import searchContext from '../../components/admin/history/searchContext';
 import Modal from '../../styled/layouts/Modal';
 import DepartmentSelect from './DepartmentSelect';
 import Button from '../../styled/elements/Button';
@@ -27,8 +26,6 @@ const ShiftModal = ({ employee, shift, close }) => {
 	const [error, setError] = useState();
 	const [loading, setLoading] = useState(false);
 
-	const context = useContext(searchContext);
-
 	const emp = shift ? shift.user : employee;
 	const editing = !!shift;
 
@@ -48,7 +45,9 @@ const ShiftModal = ({ employee, shift, close }) => {
 	}
 
 	const shiftMutation = editing ? UPDATE_SHIFT : CREATE_SHIFT;
-	const mutate = useMutation(shiftMutation, { variables });
+	const mutate = useMutation(shiftMutation, {
+		variables,
+	});
 	const destroy = useMutation(DELETE_SHIFT, {
 		variables: { id: editing && shift.id },
 	});
@@ -57,28 +56,26 @@ const ShiftModal = ({ employee, shift, close }) => {
 		e.preventDefault();
 		try {
 			setLoading(true);
-			await mutate();
-			await context.fetchShifts({});
-			setLoading(false);
+			await mutate({ refetchQueries: () => ['UserShifts'] });
 			close();
 		} catch (err) {
 			setError(err);
 			console.log(err);
 		}
+		setLoading(false);
 	};
 
 	const handleDeleteShift = async e => {
 		e.preventDefault();
 		try {
 			setLoading(true);
-			await destroy();
-			await context.fetchShifts({});
-			setLoading(false);
+			await destroy({ refetchQueries: () => ['UserShifts'] });
 			close();
 		} catch (err) {
 			setError(err);
 			console.log(err);
 		}
+		setLoading(false);
 	};
 
 	const handleTimeInChange = date => setTimeIn(date);

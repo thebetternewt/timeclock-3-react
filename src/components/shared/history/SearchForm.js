@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import moment from 'moment';
-import { Query } from 'react-apollo';
+import React, { useContext } from 'react';
+import { format } from 'date-fns';
+import { useQuery } from 'react-apollo-hooks';
 
 import { PAY_PERIODS } from '../../../apollo/queries/payPeriod';
 import {
@@ -10,39 +10,37 @@ import {
 	Input,
 } from '../../../styled/elements/Form';
 import Button from '../../../styled/elements/Button';
-import { arraysEqual } from '../../../util/arrays';
-import { MY_SHIFTS } from '../../../apollo/queries/user';
+import searchContext from './searchContext';
 
-const SearchForm = ({
-	setShiftsInHistory,
-	setPayPeriodInHistory,
-	setDepartmentInHistory,
-}) => {
-	const [year, setYear] = useState(moment().year());
-	const [payPeriod, setPayPeriod] = useState();
-	const [payPeriodOptions, setPayPeriodOptions] = useState([]);
-	const [departments, setDepartments] = useState([]);
-	const [department, setDepartment] = useState();
-	const [shifts, setShifts] = useState([]);
+const SearchForm = () => {
+	const context = useContext(searchContext);
 
-	const handleSubmit = e => {
+	const { data: ppData } = useQuery(PAY_PERIODS, {
+		variables: { year: parseInt(context.year, 10) },
+	});
+
+	if (ppData.payPeriods) context.setPayPeriods(ppData.payPeriods);
+
+	const handleSubmit = async e => {
 		e.preventDefault();
-		setShiftsInHistory(handleFilterShifts());
-		setPayPeriodInHistory(payPeriod);
-		setDepartmentInHistory(department);
+		context.setShowShifts(true);
 	};
 
-	const handleChange = ({ target: { name, value } }) => {
+	const handleChange = async ({ target: { name, value } }) => {
+		context.setShowShifts(false);
+
 		switch (name) {
 			case 'year':
-				setYear(value);
-				setPayPeriodOptions([]);
+				context.setYear(value);
 				return;
 			case 'payPeriod':
-				setPayPeriod(payPeriodOptions.find(pp => pp.id === value));
+				const payPeriod = context.payPeriods.find(pp => pp.id === value);
+				context.setPayPeriod(payPeriod);
 				return;
 			case 'department':
-				setDepartment(departments.find(dept => dept.id === value));
+				context.setDepartment(
+					context.departments.find(dept => dept.id === value)
+				);
 				return;
 			default:
 				return;
@@ -54,31 +52,13 @@ const SearchForm = ({
 		parseInt(year, 10) > 1987 && // Year is > 1987
 		parseInt(year, 10) < 2100; // Year is > 2100
 
-	const shiftQueryVariables = () => {
-		const vars = {
-			startDate: moment(payPeriod.startDate)
-				.startOf('Day')
-				.toISOString(),
-			endDate: moment(payPeriod.endDate)
-				.endOf('Day')
-				.toISOString(),
-		};
-
-		console.log('vars:', vars);
-
-		return vars;
-	};
-
-	const handleFilterShifts = () =>
-		shifts.filter(shift => shift.department.id === department.id);
-
 	return (
 		<Form onSubmit={handleSubmit}>
 			<FormControl>
 				<label>Calendar Year</label>
 				<Input
 					name="year"
-					value={year}
+					value={context.year}
 					placeholder={new Date().getFullYear()}
 					onChange={handleChange}
 				/>
@@ -87,45 +67,19 @@ const SearchForm = ({
 				<label>Pay Period</label>
 				<Select
 					name="payPeriod"
-					key="payPeriod"
 					onChange={handleChange}
-					value={payPeriod ? payPeriod.id : ''}
-					disabled={!validateYear(year)}
+					value={context.payPeriod ? context.payPeriod.id : ''}
+					disabled={!validateYear(context.year)}
 				>
-					{payPeriodOptions.length ? (
-						payPeriodOptions.map(opt => (
+					{context.payPeriods.length ? (
+						context.payPeriods.map(opt => (
 							<option key={opt.id} value={opt.id}>
-								{opt.payPeriodId} ({moment(opt.startDate).format('MMM DD')} -{' '}
-								{moment(opt.endDate).format('MMM DD')})
+								{opt.payPeriodId} ({format(opt.startDate, 'MMM DD')}) - (
+								{format(opt.endDate, 'MMM DD')})
 							</option>
 						))
 					) : (
 						<option>No Pay Periods Found</option>
-					)}
-
-					{/* Only Query pay periods if year is valid */}
-					{validateYear(year) && (
-						<Query
-							query={PAY_PERIODS}
-							variables={{ year: parseInt(year, 10) }}
-							fetchPolicy="no-cache"
-						>
-							{({ data }) => {
-								if (data && data.payPeriods && data.payPeriods.length) {
-									// Compare newly queried pay periods with current state
-									// and only update if different.
-									const newPpIds = data.payPeriods.map(opt => opt.id);
-									const oldPpIds = payPeriodOptions.map(opt => opt.id);
-
-									if (!arraysEqual(newPpIds, oldPpIds)) {
-										setPayPeriodOptions(data.payPeriods);
-										setPayPeriod(data.payPeriods[0]);
-									}
-								}
-
-								return null;
-							}}
-						</Query>
 					)}
 				</Select>
 			</FormControl>
@@ -134,12 +88,12 @@ const SearchForm = ({
 				<label>Department</label>
 				<Select
 					name="department"
-					value={department ? department.id : ''}
+					value={context.department ? context.department.id : ''}
 					onChange={handleChange}
-					disabled={!payPeriod}
+					disabled={!context.payPeriod}
 				>
-					{departments.length ? (
-						departments.map(opt => (
+					{context.departments.length ? (
+						context.departments.map(opt => (
 							<option key={opt.id} value={opt.id}>
 								{opt.name}
 							</option>
@@ -153,52 +107,6 @@ const SearchForm = ({
 			<FormControl>
 				<Button type="submit" text="Search" color="success" />
 			</FormControl>
-
-			{/* Shifts Query wraps department select and search button */}
-			{payPeriod && (
-				<Query
-					query={MY_SHIFTS}
-					variables={shiftQueryVariables()}
-					fetchPolicy="no-cache"
-				>
-					{({ data, loading, error }) => {
-						let shifts;
-
-						if (data && data.myShifts) {
-							shifts = data.myShifts;
-
-							const depts = shifts.reduce((acc, shift) => {
-								const dept = shift.department;
-								if (!acc.find(d => d.id === dept.id)) {
-									acc.push(dept);
-								}
-								return acc;
-							}, []);
-
-							// Compare newly queried departments with current state
-							// and only update if different.
-							const newDeptIds = depts.map(dept => dept.id);
-							const oldDeptIds = departments.map(dept => dept.id);
-
-							// Compare newly queried shifts with current state
-							// and only update if different.
-							const newShiftIds = shifts.map(shift => shift.id);
-							const oldShiftIds = shifts.map(shift => shift.id);
-
-							if (
-								!arraysEqual(newDeptIds, oldDeptIds) ||
-								!arraysEqual(newShiftIds, oldShiftIds)
-							) {
-								setShifts(shifts);
-								setDepartments(depts);
-								setDepartment(depts[0]);
-							}
-						}
-
-						return null;
-					}}
-				</Query>
-			)}
 		</Form>
 	);
 };
