@@ -5,6 +5,7 @@ import {
 	FaRegFileAlt,
 	FaUsers,
 	FaRegBuilding,
+	FaRegCalendarAlt,
 } from 'react-icons/fa';
 import { IoMdLogOut } from 'react-icons/io';
 
@@ -35,6 +36,12 @@ const AdminLinks = () => (
 			<NavLink to="/admin/timesheets">
 				<FaRegFileAlt />
 				Timesheets
+			</NavLink>
+		</li>
+		<li>
+			<NavLink to="/admin/payperiods">
+				<FaRegCalendarAlt />
+				Pay Periods
 			</NavLink>
 		</li>
 		<li>
