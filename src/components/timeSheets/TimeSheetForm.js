@@ -202,8 +202,6 @@ const TimeSheetForm = ({ admin = false, departments = [] }) => {
 									}));
 								}
 
-								console.log('emps:', emps);
-
 								return (
 									<TimeSheet
 										employees={emps}

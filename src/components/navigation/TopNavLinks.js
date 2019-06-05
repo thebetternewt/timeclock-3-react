@@ -12,8 +12,8 @@ const TopNavLinks = ({ user }) => {
 			{() => (
 				<>
 					<TopNavLink to="/">Home</TopNavLink>
-					{admin && <TopNavLink to="/admin">Admin</TopNavLink>}
 					{supervisor && <TopNavLink to="/supervisor">Supervisor</TopNavLink>}
+					{admin && <TopNavLink to="/admin">Admin</TopNavLink>}
 				</>
 			)}
 		</Location>
