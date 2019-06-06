@@ -45,14 +45,15 @@ export default ({
 			columns: [
 				{ image: 'logo', width: 200 },
 				{ width: '*', text: '' },
+				{ text: 'For internal use only.', fontSize: 8 },
 				{
 					width: 'auto',
 					fontSize: 8,
 					alignment: 'right',
 					table: {
 						body: [
-							['', { text: workStudy ? 'Work Study' : 'Wages', bold: true }],
-							['Total Hours Keyed', finalHours.toFixed(2)],
+							[{ text: workStudy ? 'Work Study' : 'Wages', bold: true }],
+							[finalHours.toFixed(2)],
 						],
 					},
 				},
@@ -170,6 +171,16 @@ export default ({
 					],
 				],
 			},
+		},
+		{
+			text: 'Confirmation',
+			bold: true,
+			fontSize: 8,
+		},
+		{
+			text:
+				'I hereby certify that the information above is accurate and correct.',
+			fontSize: 8,
 		},
 
 		{
