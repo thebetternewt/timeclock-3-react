@@ -3,11 +3,15 @@ import styled from 'styled-components';
 import { Link, Match } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
 import { useMutation } from 'react-apollo-hooks';
-import { FaPlusCircle } from 'react-icons/fa';
+import { parse, format } from 'date-fns';
+
+import { FaPlusCircle, FaTrashAlt, FaPencilAlt } from 'react-icons/fa';
+
 
 import Box from '../../../styled/layouts/Box';
 import ShiftModal from '../ShiftModal';
 import WorkStudyModal from './workStudy/WorkStudyModal';
+import { DANGER, LIGHT_GRAY } from '../../../styled/utilities';
 import Button from '../../../styled/elements/Button';
 import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
@@ -120,8 +124,10 @@ const Employee = ({employeeId}) => {
                             {(remove, { loading }) => {
                               return (
                                 <Button
-                                text="remove"
+                                text={() => <FaTrashAlt />}
                                 color="danger"
+                                invert
+                                naked
                                 loading={loading}
                                 onClick={async () => {
                                   try {
@@ -130,6 +136,7 @@ const Employee = ({employeeId}) => {
                                     console.log(err);
                                     }
                                   }}
+                                  style={{fontSize: '1.2rem', color: DANGER}}
                                   />
                               );
                             }}
@@ -210,22 +217,33 @@ const Employee = ({employeeId}) => {
                 <List>
                   {user &&
                     user.workStudy.map(ws => (
-                      <Item key={ws.id}>
-                        <div style={{ flexGrow: 1 }}>
-                          {ws.department.name} ({ws.period.name}{' '}
-                          {ws.period.year})
-                        </div>
-                        <div>
+                      <WorkStudyItem key={ws.id}>
+                      <div className="detail">
+                    <div className="department">
+                      {ws.department.name}
+                    </div>
+                    <div className="period">
+                    <span style={{fontWeight: 'bold'}}>{ws.period.name} {ws.period.year}</span>
+                      <br />
+                     {format(ws.startDate, 'MMM DD')} -{' '}
+                      {format(ws.endDate, 'MMM DD')}
+                    </div>
+                  </div>
+                  <div className="amount">${ws.amount}.00</div>
+                  
+                  
+                        <div className="actions">
                           <Button
-                            text="view"
-                            color="primary"
+                            text={() => <FaPencilAlt />}
+                            naked
+                            small
                             onClick={() => {
                               handleWorkStudySelect(ws);
                               toggleWorkStudyModal();
                             }}
                             />
                         </div>
-                      </Item>
+                            </WorkStudyItem>
                     ))}
                 </List>
                 <Button
@@ -294,6 +312,41 @@ const EmployeeActionsWrapper = styled.div`
   select {
     width: 200px;
   }
+`;
+
+const WorkStudyItem = styled(Item)`
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	background-color: ${LIGHT_GRAY};
+	color: #000;
+
+	margin: 5px 0;
+	padding: 8px 15px;
+	border-radius: 3px;
+
+	.detail {
+		flex-basis: 220px;
+	}
+
+	.department {
+		font-weight: 500,
+		color: #333;
+    margin-bottom: 0.2rem;
+	}
+
+	.period {
+		color: #555;
+		font-size: 0.8em;
+	}
+
+	.amount {
+		margin-left: 1.3rem;
+	}
+
+	.actions {
+		margin-left: auto;
+	}
 `;
 
 export default Employee;

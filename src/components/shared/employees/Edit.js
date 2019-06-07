@@ -18,7 +18,7 @@ const Edit = ({ employeeId }) => {
 		}
 
 		try {
-			await edit();
+			await edit({ refetchQueries: () => ['Department'] });
 			navigate('.');
 		} catch (err) {
 			console.log(err);

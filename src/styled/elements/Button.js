@@ -3,12 +3,12 @@ import styled from 'styled-components';
 
 import Spinner from './Spinner';
 import {
-  SUCCESS,
-  PRIMARY,
-  GRAY1,
-  DANGER,
-  GRAY5,
-  LIGHT_GRAY,
+	SUCCESS,
+	PRIMARY,
+	GRAY1,
+	DANGER,
+	GRAY5,
+	LIGHT_GRAY,
 } from '../utilities';
 
 const StyledButton = styled.button`
@@ -34,31 +34,32 @@ const StyledButton = styled.button`
   }
 
   ${({ color }) => {
-    switch (color) {
-      case 'primary':
-        return `
+		switch (color) {
+			case 'primary':
+				return `
           background: ${PRIMARY};
           color: #fff;
         `;
-      case 'success':
-        return `
+			case 'success':
+				return `
           background: ${SUCCESS};
           color: ${GRAY1};
         `;
-      case 'danger':
-        return `
+			case 'danger':
+				return `
           background: ${DANGER};
           color: #fff;
         `;
-      default: {
-        return `background: #ddd;`;
-      }
-    }
-  }};
+			default: {
+				return `background: #ddd;`;
+			}
+		}
+	}};
 
+               
 ${({ naked }) =>
-  naked &&
-  `
+	naked &&
+	`
   background: transparent;
   color: inherit;
   display: inline;
@@ -70,13 +71,13 @@ ${({ naked }) =>
 `;
 
 export default ({ text, loading, ...styles }) => (
-  <StyledButton {...styles}>
-    {loading ? (
-      <Spinner size="1rem" />
-    ) : text && typeof text === 'string' ? (
-      text
-    ) : (
-      text()
-    )}
-  </StyledButton>
+	<StyledButton {...styles}>
+		{loading ? (
+			<Spinner size="1rem" />
+		) : text && typeof text === 'string' ? (
+			text
+		) : (
+			text()
+		)}
+	</StyledButton>
 );

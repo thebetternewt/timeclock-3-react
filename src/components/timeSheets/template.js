@@ -42,24 +42,40 @@ export default ({
 
 	return [
 		{
+			headlineLevel: 1,
 			columns: [
 				{ image: 'logo', width: 200 },
 				{ width: '*', text: '' },
-				{ text: 'For internal use only.', fontSize: 8 },
 				{
-					width: 'auto',
-					fontSize: 8,
 					alignment: 'right',
-					table: {
-						body: [
-							[{ text: workStudy ? 'Work Study' : 'Wages', bold: true }],
-							[finalHours.toFixed(2)],
-						],
-					},
+					width: 100,
+					stack: [
+						{
+							text: 'Internal use only:',
+							fontSize: 8,
+							bold: true,
+							margin: [0, 0, 0, 3],
+						},
+						{
+							fontSize: 8,
+							table: {
+								widths: ['*'],
+								body: [
+									[
+										{
+											text: workStudy ? 'Work Study' : 'Wages',
+											bold: true,
+										},
+									],
+									[finalHours.toFixed(2)],
+								],
+							},
+						},
+					],
 				},
 			],
 
-			pageBreak: 'before',
+			// pageBreak: 'before',
 			margin: [0, 0, 0, 20],
 		},
 
@@ -173,45 +189,51 @@ export default ({
 			},
 		},
 		{
-			text: 'Confirmation',
-			bold: true,
-			fontSize: 8,
-		},
-		{
-			text:
-				'I hereby certify that the information above is accurate and correct.',
-			fontSize: 8,
-		},
+			id: `confirm${workStudy ? '-ws' : ''}`,
+			stack: [
+				{
+					text: 'Confirmation',
+					bold: true,
+					fontSize: 9,
+					margin: [0, 10, 0, 0],
+				},
+				{
+					text:
+						'I hereby certify that the information above is accurate and correct.',
+					fontSize: 8,
+				},
 
-		{
-			text:
-				'________________________________________________________________________',
-			margin: [0, 30, 0, 5],
-			style: { alignment: 'right' },
-		},
-		{
-			fontSize: 10,
-			columns: [
-				{ text: 'Student Signature', margin: [0, 5] },
-				{ text: 'Date', margin: [0, 5] },
+				{
+					text:
+						'________________________________________________________________________',
+					margin: [0, 30, 0, 5],
+					style: { alignment: 'left' },
+				},
+				{
+					fontSize: 10,
+					columns: [
+						{ text: 'Student Signature', margin: [0, 5] },
+						{ text: 'Date', margin: [0, 5] },
+					],
+
+					style: { alignment: 'left' },
+				},
+				{
+					text:
+						'________________________________________________________________________',
+					margin: [0, 30, 0, 5],
+					style: { alignment: 'left' },
+				},
+				{
+					fontSize: 10,
+					columns: [
+						{ text: 'Supervisor Signature', margin: [0, 5] },
+						{ text: 'Date', margin: [0, 5] },
+					],
+
+					style: { alignment: 'left' },
+				},
 			],
-
-			style: { alignment: 'right' },
-		},
-		{
-			text:
-				'________________________________________________________________________',
-			margin: [0, 30, 0, 5],
-			style: { alignment: 'right' },
-		},
-		{
-			fontSize: 10,
-			columns: [
-				{ text: 'Supervisor Signature', margin: [0, 5] },
-				{ text: 'Date', margin: [0, 5] },
-			],
-
-			style: { alignment: 'right' },
 		},
 	];
 };

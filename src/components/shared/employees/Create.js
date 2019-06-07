@@ -42,7 +42,11 @@ const Create = () => {
 					const { confirm, ...variables } = values;
 
 					return (
-						<Mutation mutation={REGISTER} variables={{ data: variables }}>
+						<Mutation
+							mutation={REGISTER}
+							variables={{ data: variables }}
+							refetchQueries={() => ['Department']}
+						>
 							{(register, { loading, error }) => {
 								console.log(error);
 								return (

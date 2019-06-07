@@ -115,6 +115,26 @@ const TimeSheet = ({ employees, payPeriod, department, endPrinting }) => {
 
 	const docDefinition = {
 		content,
+		pageBreakBefore: function(currentNode) {
+			// Insert page break before logo if not first page.
+			if (
+				currentNode.startPosition.verticalRatio !== 0 &&
+				currentNode.headlineLevel === 1
+			) {
+				return true;
+			}
+
+			// Insert page break before confirm if signatures span multiple pages.
+			if (
+				currentNode.id &&
+				currentNode.id.match('confirm') &&
+				currentNode.pageNumbers.length > 1
+			) {
+				return true;
+			}
+
+			return false;
+		},
 		images: {
 			logo,
 		},

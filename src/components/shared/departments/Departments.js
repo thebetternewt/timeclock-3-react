@@ -26,14 +26,16 @@ const Departments = ({ departments = [] }) => {
 							handleChange={handleDepartmentSelect}
 							value={department}
 						/>
-						<Link to={department || ''}>
-							<Button
-								color="success"
-								text="View"
-								style={{ marginLeft: '2rem', width: 120 }}
-								disabled={!department}
-							/>
-						</Link>
+						{department && (
+							<Link to={department}>
+								<Button
+									color="success"
+									text="View"
+									style={{ marginLeft: '2rem', width: 120 }}
+									disabled={!department}
+								/>
+							</Link>
+						)}
 					</DepartmentSelectWrapper>
 
 					{admin && (

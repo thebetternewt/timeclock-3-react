@@ -165,6 +165,7 @@ const TimeSheetForm = ({ admin = false, departments = [] }) => {
 							text="Print"
 							color={allowSubmit ? 'success' : 'default'}
 							disabled={!allowSubmit}
+							style={{ marginLeft: 'auto' }}
 						/>
 					</FormControl>
 				</Form>

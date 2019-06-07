@@ -263,7 +263,7 @@ const Department = ({ departmentId }) => {
                       onClick={toggleAddingEmployee}
                       text="Cancel"
                     />
-                    <Link to="new">
+                    <Link to="../../employees/new">
                     <Button
                     color="primary"
                     text="Create New Employee" 

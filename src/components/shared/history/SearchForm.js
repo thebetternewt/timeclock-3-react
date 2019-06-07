@@ -19,7 +19,15 @@ const SearchForm = () => {
 		variables: { year: parseInt(context.year, 10) },
 	});
 
-	if (ppData.payPeriods) context.setPayPeriods(ppData.payPeriods);
+	const { payPeriods = [] } = ppData;
+
+	if (payPeriods.length) {
+		context.setPayPeriods(payPeriods);
+		// Set initial pay period if not already set in context.
+		if (!context.payPeriod) context.setPayPeriod(payPeriods[0]);
+	}
+
+	console.log('ctx:', context);
 
 	const handleSubmit = async e => {
 		e.preventDefault();
@@ -105,7 +113,12 @@ const SearchForm = () => {
 			</FormControl>
 
 			<FormControl>
-				<Button type="submit" text="Search" color="success" />
+				<Button
+					type="submit"
+					text="Search"
+					color="success"
+					style={{ marginLeft: 'auto' }}
+				/>
 			</FormControl>
 		</Form>
 	);

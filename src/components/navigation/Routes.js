@@ -22,6 +22,7 @@ import Department from '../shared/departments/Department';
 import CreateDepartment from '../admin/departments/Create';
 import EditDepartment from '../admin/departments/Edit';
 import AdminTimeSheets from '../admin/timeSheets/TimeSheets';
+import PayPeriods from '../admin/payPeriods/PayPeriods';
 
 import SupervisorDashboard from '../supervisor/dashboard/Dashboard';
 import SupervisorEmployee from '../shared/employees/Employee';
@@ -73,6 +74,7 @@ const Routes = () => {
 						<Department path="/admin/departments/:departmentId" />
 						<EditDepartment path="/admin/departments/:departmentId/edit" />
 						<CreateDepartment path="/admin/departments/new" />
+						<PayPeriods path="/admin/payperiods" />
 
 						<SupervisorDashboard path="/supervisor" />
 						<SupervisorEmployee path="/supervisor/employees/:employeeId" />

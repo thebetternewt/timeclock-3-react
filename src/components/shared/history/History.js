@@ -31,7 +31,9 @@ const History = ({ employee }) => {
 
 	departments = user.departments;
 
-	if (!department) setDepartment(departments[0]);
+	if (!department && departments.length) {
+		setDepartment(departments[0]);
+	}
 
 	const hoursElapsed = shifts
 		.reduce((total, shift) => total + shift.minutesElapsed / 60, 0)

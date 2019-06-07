@@ -2,23 +2,23 @@ import React, { useState, useContext } from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import { parse, format, startOfDay, endOfDay } from 'date-fns';
 import styled from 'styled-components';
+import { FaMoon, FaGraduationCap, FaPencilAlt } from 'react-icons/fa';
 
 import Box from '../../../styled/layouts/Box';
-import Tag from '../../../styled/elements/Tag';
 import Button from '../../../styled/elements/Button';
 import ShiftModal from '../../shared/ShiftModal';
 import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import { USER_SHIFTS } from '../../../apollo/queries/user';
 
 import SearchContext from './searchContext';
+import { Location } from '@reach/router';
+import { Item } from '../../../styled/elements/List';
 
 const Shifts = () => {
 	const [selectedShift, setSelectedShift] = useState();
 	const [showShiftModal, setShowShiftModal] = useState(false);
 
 	const context = useContext(SearchContext);
-
-	let shifts = [];
 
 	const { data: shiftData } = useQuery(USER_SHIFTS, {
 		variables: {
@@ -29,55 +29,72 @@ const Shifts = () => {
 		},
 	});
 
-	if (shiftData.shifts) {
-		shifts = shiftData.shifts;
-		context.setShifts(shiftData.shifts);
+	const { shifts = [] } = shiftData;
+
+	console.log('shifts:', shifts);
+
+	if (shifts.length) {
+		context.setShifts(shifts);
 	}
 
 	const toggleShiftModal = () => setShowShiftModal(!showShiftModal);
 
 	return (
-		<ShiftsTable>
-			<ShiftList>
-				<ShiftListHeader>
-					<div>Time in</div>
-					<div>Time out</div>
-					<div>Hours Elapsed</div>
-				</ShiftListHeader>
-				{shifts.map(shift => {
-					const hoursElapsed = (shift.minutesElapsed / 60).toFixed(2);
-					return (
-						<ShiftItem key={shift.id}>
-							<div>{format(shift.timeIn, 'MMM DD, h:mm a')}</div>
-							<div>
-								{shift.timeOut ? format(shift.timeOut, 'MMM DD, h:mm a') : '--'}
-							</div>
-							<div style={{ display: 'flex' }}>
-								{shift.timeOut ? hoursElapsed : '--'}
-								{shift.workStudy && (
-									<Tag color="info" style={{ margin: '0 auto' }}>
-										WS
-									</Tag>
-								)}
-							</div>
-							<div>
-								<Button
-									text="view"
-									color="primary"
-									onClick={() => {
-										setSelectedShift(shift);
-										toggleShiftModal();
-									}}
-								/>
-							</div>
-						</ShiftItem>
-					);
-				})}
-			</ShiftList>
-			{showShiftModal && (
-				<ShiftModal shift={selectedShift} close={toggleShiftModal} />
+		<Location>
+			{({ location: { pathname } }) => (
+				<ShiftsTable>
+					<ShiftList>
+						{shifts
+							.filter(shift => shift.timeOut)
+							.map(shift => {
+								const hoursElapsed = (shift.minutesElapsed / 60).toFixed(2);
+								return (
+									<ShiftItem key={shift.id}>
+										<div className="timestamp">
+											<div className="day">
+												{format(shift.timeIn, 'MMM DD')}
+											</div>
+											<div className="time">
+												{format(shift.timeIn, 'h:mm a')} -{' '}
+												{format(shift.timeOut, 'h:mm a')}
+											</div>
+										</div>
+										<div className="total-time">{hoursElapsed} hours</div>
+										<div className="badges">
+											{shift.workStudy && (
+												<Badge color="#660000">
+													<FaGraduationCap />
+												</Badge>
+											)}
+											{shift.nightShiftMinutes > 0 && (
+												<Badge color="indigo">
+													<FaMoon />
+												</Badge>
+											)}
+										</div>
+										{pathname !== '/history' && (
+											<div className="actions">
+												<Button
+													text={() => <FaPencilAlt />}
+													naked
+													onClick={() => {
+														setSelectedShift(shift);
+														toggleShiftModal();
+													}}
+													alt="edit"
+												/>
+											</div>
+										)}
+									</ShiftItem>
+								);
+							})}
+					</ShiftList>
+					{showShiftModal && (
+						<ShiftModal shift={selectedShift} close={toggleShiftModal} />
+					)}
+				</ShiftsTable>
 			)}
-		</ShiftsTable>
+		</Location>
 	);
 };
 
@@ -105,9 +122,10 @@ const ShiftListHeader = styled.div`
 	}
 `;
 
-const ShiftItem = styled.li`
+const ShiftItem = styled(Item)`
 	display: flex;
-	justify-content: space-between;
+	align-items: center;
+	justify-content: flex-start;
 	background-color: ${LIGHT_GRAY};
 	color: #000;
 
@@ -115,9 +133,45 @@ const ShiftItem = styled.li`
 	padding: 8px 15px;
 	border-radius: 3px;
 
-	> div {
-		flex-basis: 30%;
+	.timestamp {
+		flex-basis: 160px;
 	}
+
+	.day {
+		font-weight: 500,
+		color: #333;
+	}
+
+	.time {
+		color: #555;
+		font-size: 0.8em;
+	}
+
+	.total-time {
+		margin-left: 1.3rem;
+	}
+
+	.badges {
+		margin-left: 3rem;
+		display: flex;
+	}
+
+	.actions {
+		margin-left: auto;
+	}
+`;
+
+const Badge = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 100%;
+	color: #fff;
+	background-color: ${({ color }) => color || '#ccc'};
+	text-transform: uppercase;
+	margin-right: 10px;
 `;
 
 export default Shifts;
