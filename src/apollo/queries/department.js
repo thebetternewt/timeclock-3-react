@@ -18,11 +18,15 @@ export const DEPARTMENT = gql`
 				id
 				netId
 				name
+				firstName
+				lastName
 			}
 			users {
 				id
 				netId
 				name
+				firstName
+				lastName
 			}
 		}
 	}
@@ -33,6 +37,8 @@ export const USERS_BY_DEPARTMENT = gql`
 		deptUsers: usersByDepartment(deptId: $deptId) {
 			id
 			name
+			firstName
+			lastName
 			netId
 			nineDigitId
 			isClockedIn

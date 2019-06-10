@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, Match } from '@reach/router';
+import { Link, Location } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
 import { useMutation } from 'react-apollo-hooks';
-import { parse, format } from 'date-fns';
+import { format } from 'date-fns';
+import { USER } from '../../../apollo/queries/user'
 
-import { FaPlusCircle, FaTrashAlt, FaPencilAlt } from 'react-icons/fa';
+import { FaPlusCircle, FaTrashAlt, FaPencilAlt, FaTimes, FaCheck } from 'react-icons/fa';
 
 
 import Box from '../../../styled/layouts/Box';
 import ShiftModal from '../ShiftModal';
 import WorkStudyModal from './workStudy/WorkStudyModal';
-import { DANGER, LIGHT_GRAY } from '../../../styled/utilities';
+import { SUCCESS, DANGER, LIGHT_GRAY } from '../../../styled/utilities';
 import Button from '../../../styled/elements/Button';
-import Tag from '../../../styled/elements/Tag';
 import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';
-import { USER } from '../../../apollo/queries/user';
 import { ADD_TO_DEPT, REMOVE_FROM_DEPT, DEACTIVATE_USER, ACTIVATE_USER } from '../../../apollo/mutations/user';
 import Container from '../../../styled/layouts/Container';
 import { DEPARTMENTS } from '../../../apollo/queries/department';
@@ -42,8 +41,13 @@ const Employee = ({employeeId}) => {
   const handleWorkStudySelect = ws => setSelectedWorkStudy(ws);
 
   return (
-    <Match path="/admin/*">
-      {({match: admin}) => (
+    <Location>
+      {({location}) => {
+        const admin = !!location.pathname.match("admin")
+        const supervisor = !!location.pathname.match("supervisor")
+
+
+        return (
          <Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
         {({ data, loading }) => {
           let user;
@@ -61,42 +65,49 @@ const Employee = ({employeeId}) => {
 
           return (
             <Container direction="column">
-              <EmployeeDetail>
+                <h1 className="title">{user.name}</h1>
+              <Container >
+                <EmployeeDetail>
                 <DetailColumn>
-                  <div>First Name: {user.firstName}</div>
-                  <div>Last Name: {user.lastName}</div>
                   <div>NetID: {user.netId}</div>
-                  <div>Student ID: {user.nineDigitId}</div>
+                  <div>Student ID: {user.nineDigitId.slice(0,3)}-{user.nineDigitId.slice(3,6)}-{user.nineDigitId.slice(6,9)} </div>
                   <div>email: {user.email}</div>
-                </DetailColumn>
-                <DetailColumn>
-                  {user.admin && <Tag color="danger">Admin</Tag>}
-                  {user.active && <Tag color="success">Active</Tag>}
+
+                  <div className="status-indicator" style={{marginTop: '1rem'}}>
+                    {user.active ? <FaCheck color={SUCCESS}/> : <FaTimes color={DANGER}/>}
+                      Active</div>
+                  <div className="status-indicator" >
+                    {user.admin ? <FaCheck color={SUCCESS}/> : <FaTimes color={DANGER}/>}
+                      Admin
+                  </div>
                 </DetailColumn>
               </EmployeeDetail>
-
-              <EmployeeActionsWrapper>
+                <EmployeeActionsWrapper>
                 <Link to="edit">
                   <Button text="Edit Employee" color="primary" />
                 </Link>
+
+
+                {(admin || supervisor && !user.active) && 
                 <Button 
-                  text={user.active ? "Deactivate Employee" : 'Activate Employee'}
-                  color="danger"
-                  loading={activateLoading}
-                  onClick={
-                    async () => {
-                      const variables = {netId: user.netId}
-                      setActivateLoading(true)
-                      
-                      if (user.active) {
-                        await deactivate({variables})
-                      } else {
-                        await activate ({variables})
-                      }
-                      setActivateLoading(false)
+                text={user.active ? "Deactivate Employee" : 'Activate Employee'}
+                color="danger"
+                loading={activateLoading}
+                onClick={
+                  async () => {
+                    const variables = {netId: user.netId}
+                    setActivateLoading(true)
+                    
+                    if (user.active) {
+                      await deactivate({variables})
+                    } else {
+                      await activate ({variables})
                     }
+                    setActivateLoading(false)
                   }
+                }
                 />
+              }
 
                 <Button
                   text="Add Shift"
@@ -104,71 +115,79 @@ const Employee = ({employeeId}) => {
                   onClick={toggleAddShiftModal}
                   />
               </EmployeeActionsWrapper>
+              </Container>
 
-              <History employee={user} />
+              <div>
+                <div className="divider" />
+                <h2 className="section-title">History</h2>
+                <History employee={user} />
+              </div>
 
               {/* Departments */}
-              {admin && <EmployeeDetailBox>
-                <ListHeader>Departments</ListHeader>
-                <List>
-                  {user &&
-                    user.departments.map(dept => (
-                      <Item key={dept.id}>
-                        <div>{dept.name}</div>
-                        <div>
-                          <Mutation
-                            mutation={REMOVE_FROM_DEPT}
-                            variables={{ userId: user.id, deptId: dept.id }}
-                            refetchQueries={() => ['User']}
-                            >
-                            {(remove, { loading }) => {
-                              return (
-                                <Button
-                                text={() => <FaTrashAlt />}
-                                color="danger"
-                                invert
-                                naked
-                                loading={loading}
-                                onClick={async () => {
-                                  try {
-                                    await remove();
-                                  } catch (err) {
-                                    console.log(err);
+              {admin && 
+                <div>
+                  <div className="divider" />
+                  <h2 className="section-title">Departments</h2>
+                  <EmployeeDetailBox>
+                  <List>
+                    {user &&
+                      user.departments.map(dept => (
+                        <Item key={dept.id}>
+                          <div>{dept.name}</div>
+                          <div>
+                            <Mutation
+                              mutation={REMOVE_FROM_DEPT}
+                              variables={{ userId: user.id, deptId: dept.id }}
+                              refetchQueries={() => ['User']}
+                              >
+                              {(remove, { loading }) => {
+                                return (
+                                  <Button
+                                  text={() => <FaTrashAlt />}
+                                  color="danger"
+                                  invert
+                                  naked
+                                  loading={loading}
+                                  onClick={async () => {
+                                    try {
+                                      await remove();
+                                    } catch (err) {
+                                      console.log(err);
                                     }
                                   }}
                                   style={{fontSize: '1.2rem', color: DANGER}}
                                   />
-                              );
-                            }}
-                          </Mutation>
-                        </div>
-                      </Item>
-                    ))}
-                </List>
+                                  );
+                                }}
+                            </Mutation>
+                          </div>
+                        </Item>
+                      ))}
+                  </List>
 
-                {addingDepartment ? (
-                  <EmployeeActionsWrapper>
-                    <Query query={DEPARTMENTS}>
-                      {({ data }) => {
-                        let departments;
-
-                        if (data && data.departments) {
-                          departments = data.departments;
-                        }
-
-                        return (
-                          <DepartmentSelect
-                          departments={departments}
+                  {addingDepartment ? (
+                    <ActionsWrapper>
+                      <Query query={DEPARTMENTS}>
+                        {({ data }) => {
+                          let departments;
+                          
+                          if (data && data.departments) {
+                            departments = data.departments;
+                          }
+                          
+                          return (
+                            <DepartmentSelect
+                            departments={departments}
                             handleChange={handleDepartmentSelect}
                             value={selectedDepartment}
                             />
                             );
-                      }}
-                    </Query>
-                    <Mutation mutation={ADD_TO_DEPT}>
-                      {(addToDepartment, { loading }) => {
-                        return (
-                          <Button
+                          }}
+                      </Query>
+                      <Mutation mutation={ADD_TO_DEPT}>
+                        {(addToDepartment, { loading }) => {
+                          return (
+                            <Button
                             color="success"
                             onClick={async () => {
                               try {
@@ -188,31 +207,35 @@ const Employee = ({employeeId}) => {
                             text="Add"
                             />
                             );
-                      }}
-                    </Mutation>
+                          }}
+                      </Mutation>
+                      <Button
+                        color="danger"
+                        onClick={toggleAddingDepartment}
+                        text="Cancel"
+                        />
+                    </ActionsWrapper>
+                  ) : (
                     <Button
-                      color="danger"
+                      color="success"
+                      text={() => (
+                        <>
+                          <FaPlusCircle /> Add Department
+                        </>
+                      )}
+                      style={{ marginTop: '1rem' }}
                       onClick={toggleAddingDepartment}
-                      text="Cancel"
                       />
-                  </EmployeeActionsWrapper>
-                ) : (
-                  <Button
-                    color="success"
-                    text={() => (
-                      <>
-                        <FaPlusCircle /> Add Department
-                      </>
-                    )}
-                    style={{ marginTop: '1rem' }}
-                    onClick={toggleAddingDepartment}
-                  />
-                  )}
-              </EmployeeDetailBox>
+                      )}
+                </EmployeeDetailBox>
+                </div>
               }
 
               {/* Workstudy */}
-              <EmployeeDetailBox>
+              <div>
+                <div className="divider" />
+                <h2 className="section-title">Work Study</h2>
+                <EmployeeDetailBox>
                 <ListHeader>Workstudy</ListHeader>
                 <List>
                   {user &&
@@ -260,7 +283,7 @@ const Employee = ({employeeId}) => {
                   }}
                   />
               </EmployeeDetailBox>
-
+              </div>
               {workStudyModalOpen &&
                 <WorkStudyModal
                   close={toggleWorkStudyModal}
@@ -277,18 +300,35 @@ const Employee = ({employeeId}) => {
           );
         }}
       </Query>
-      )}
-    </Match>
+      )}}
+    </Location>
   );
 };
 
 const EmployeeDetail = styled.div`
   display: flex;
+  flex-basis: 50%;
   margin-bottom: 2rem;
 `;
 
+const Marker = styled.div`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: ${({color}) => color};
+  border-radius: 100px;
+  margin-right: 0.6rem;
+`;
+
 const DetailColumn = styled.div`
-  padding: 0 1rem;
+  .status-indicator {
+    display: flex;
+    align-items: center;
+
+    svg {
+      margin-right: 0.6rem;
+    }
+  }
 
   > * {
     margin: 0.3rem 0;
@@ -300,6 +340,16 @@ const EmployeeDetailBox = styled(Box)`
 `;
 
 const EmployeeActionsWrapper = styled.div`
+  flex-basis: 50%;
+  margin: 0 0 2rem;
+
+  button {
+    display: block;
+    width: 200px;
+  }
+`;
+
+const ActionsWrapper = styled.div`
   display: flex;
   margin: 0 0 2rem;
 
@@ -330,7 +380,7 @@ const WorkStudyItem = styled(Item)`
 	}
 
 	.department {
-		font-weight: 500,
+		font-weight: 500;
 		color: #333;
     margin-bottom: 0.2rem;
 	}

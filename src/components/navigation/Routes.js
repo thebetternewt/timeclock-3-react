@@ -6,6 +6,7 @@ import { ME } from '../../apollo/queries/user';
 import Login from '../auth/Login';
 
 import EmployeeDashboard from '../employee/dashboard/Dashboard';
+import EmployeeHistory from '../employee/history/EmployeeHistory';
 import History from '../shared/history/History';
 import TimeSheets from '../employee/timeSheets/TimeSheets';
 
@@ -61,7 +62,7 @@ const Routes = () => {
 						<Login path="/login" />
 
 						<EmployeeDashboard path="/" />
-						<History path="/history" />
+						<EmployeeHistory path="/history" />
 						<TimeSheets path="/timesheets" />
 						<Employee path="/admin/employees/:employeeId" />
 						<CreateEmployee path="/admin/employees/new" />

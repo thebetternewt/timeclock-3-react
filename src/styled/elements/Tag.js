@@ -2,14 +2,15 @@ import styled from 'styled-components';
 import { getColor } from '../utilities';
 
 const Tag = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	width: auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-  padding: 3px 8px;
-  border-radius: 3px;
+	padding: 3px 8px;
+	border-radius: 3px;
 
-  ${({ color }) => getColor(color)}
+	${({ color }) => getColor(color)}
 `;
 
 export default Tag;

@@ -27,8 +27,6 @@ const SearchForm = () => {
 		if (!context.payPeriod) context.setPayPeriod(payPeriods[0]);
 	}
 
-	console.log('ctx:', context);
-
 	const handleSubmit = async e => {
 		e.preventDefault();
 		context.setShowShifts(true);

@@ -1,8 +1,11 @@
 import React from 'react';
+import styled from 'styled-components';
 import { Location } from '@reach/router';
 import { Form, FormControl, Input } from '../../../styled/elements/Form';
 import GraphQlErrors from '../GraphQLErrors';
 import Button from '../../../styled/elements/Button';
+import MaskedInput from 'react-text-mask';
+import NumberFormat from 'react-number-format';
 
 const EmployeeForm = ({
 	values,
@@ -12,8 +15,6 @@ const EmployeeForm = ({
 	loading,
 	buttonText = 'Create Employee',
 }) => {
-	// TODO: Handle Errors
-
 	return (
 		<Form onSubmit={handleSubmit}>
 			{error && <GraphQlErrors errors={error} />}
@@ -46,11 +47,14 @@ const EmployeeForm = ({
 			</FormControl>
 			<FormControl>
 				<label>Student ID</label>
-				<Input
+				<NumberFormat
 					name="nineDigitId"
 					placeholder="123-456-789"
 					value={values.nineDigitId}
 					onChange={handleChange}
+					customInput={Input}
+					format="###-###-###"
+					mask="_"
 				/>
 			</FormControl>
 			<FormControl>
@@ -111,5 +115,16 @@ const EmployeeForm = ({
 		</Form>
 	);
 };
+
+const StudentIdInput = styled.input`
+	display: block;
+	padding: 0.5em 8px;
+	border: none;
+	border-radius: 3px;
+	font-size: 1rem;
+	width: 100%;
+
+	margin: 5px 0;
+`;
 
 export default EmployeeForm;

@@ -3,16 +3,21 @@ import moment from 'moment';
 import { Query } from 'react-apollo';
 import { useQuery } from 'react-apollo-hooks';
 
-import { Form, FormControl, Select, Input } from '../../styled/elements/Form';
-import Button from '../../styled/elements/Button';
-import { client } from '../../apollo/client';
-import { ME, USER_SHIFTS } from '../../apollo/queries/user';
-import { PAY_PERIODS } from '../../apollo/queries/payPeriod';
-import { USERS_BY_DEPARTMENT } from '../../apollo/queries/department';
-import Container from '../../styled/layouts/Container';
+import {
+	Form,
+	FormControl,
+	Select,
+	Input,
+} from '../../../styled/elements/Form';
+import Button from '../../../styled/elements/Button';
+import { client } from '../../../apollo/client';
+import { ME, USER_SHIFTS } from '../../../apollo/queries/user';
+import { PAY_PERIODS } from '../../../apollo/queries/payPeriod';
+import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
+import Container from '../../../styled/layouts/Container';
 import TimeSheet from './TimeSheet';
-import DepartmentSelect from '../shared/DepartmentSelect';
-import EmployeeSelect from '../shared/EmployeeSelect';
+import DepartmentSelect from '../../shared/DepartmentSelect';
+import EmployeeSelect from '../../shared/EmployeeSelect';
 
 const TimeSheetForm = ({ admin = false, departments = [] }) => {
 	const [year, setYear] = useState(moment().year());

@@ -16,7 +16,9 @@
 		"react-datepicker": "^2.5.0",
 		"react-dom": "^16.8.6",
 		"react-icons": "^3.6.1",
+		"react-number-format": "^4.0.8",
 		"react-scripts": "3.0.0",
+		"react-text-mask": "^5.4.3",
 		"styled-components": "^4.2.0"
 	},
 	"scripts": {

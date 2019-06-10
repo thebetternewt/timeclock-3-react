@@ -1,7 +1,7 @@
 import { gql } from 'apollo-boost';
 
 export const REGISTER = gql`
-	mutation Register($data: RegisterInput!) {
+	mutation Register($data: UserInput!) {
 		register(data: $data) {
 			id
 		}

@@ -57,6 +57,8 @@ export const MY_SHIFTS = gql`
 			user {
 				id
 				name
+				firstName
+				lastName
 			}
 		}
 	}
@@ -88,6 +90,8 @@ export const USER_SHIFTS = gql`
 			user {
 				id
 				name
+				firstName
+				lastName
 			}
 		}
 	}
@@ -98,6 +102,8 @@ export const USERS = gql`
 		users {
 			id
 			name
+			firstName
+			lastName
 			netId
 		}
 	}

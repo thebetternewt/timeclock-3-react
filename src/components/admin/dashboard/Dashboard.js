@@ -25,6 +25,7 @@ const Dashboard = () => {
 
 	return (
 		<Container direction="column">
+			<h1 className="title">Dashboard</h1>
 			<DepartmentSelectWrapper>
 				<label>Department</label>
 				<DepartmentSelect

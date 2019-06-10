@@ -1,19 +1,15 @@
 import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
 
-import TimeSheetForm from '../../timeSheets/TimeSheetForm';
+import TimeSheets from '../../shared/timeSheets/TimeSheets';
 import { DEPARTMENTS } from '../../../apollo/queries/department';
 
-const TimeSheets = () => {
+const AdminTimeSheets = () => {
 	const { data: deptData } = useQuery(DEPARTMENTS);
 
-	let departments = [];
+	const { departments = [] } = deptData;
 
-	if (deptData.departments) {
-		departments = deptData.departments;
-	}
-
-	return <TimeSheetForm admin={true} departments={departments} />;
+	return <TimeSheets admin={true} departments={departments} />;
 };
 
-export default TimeSheets;
+export default AdminTimeSheets;

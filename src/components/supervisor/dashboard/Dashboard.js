@@ -27,6 +27,7 @@ const Dashboard = () => {
 
 	return (
 		<Container direction="column">
+			<h1 className="title">Dashboard</h1>
 			<div style={{ display: 'flex', alignItems: 'flex-end' }}>
 				<DepartmentSelectWrapper>
 					<label>Department</label>

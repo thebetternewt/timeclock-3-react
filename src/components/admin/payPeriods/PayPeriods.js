@@ -17,7 +17,7 @@ const PayPeriods = () => {
 
 	return (
 		<div>
-			<h1>Pay Periods</h1>
+			<h1 className="title">Pay Periods</h1>
 			<PayPeriodForm year={year} setYear={setYear} />
 		</div>
 	);

@@ -23,12 +23,24 @@ const GlobalStyle = createGlobalStyle`
     width: 100%;
   }
 
+  .divider {
+    width: 100%;
+    height: 2px;
+    background-color: #fff;
+    opacity: 0.2;
+    margin: 4rem 0 3rem;
+  }
+
   h1.title {
-    text-transform: uppercase;
-    opacity: 0.6;
-    margin: 0  0 1em;
-    font-size: 1rem;
+    margin: 0 0 1em;
+    font-size: 2rem;
     font-weight: 500;
+  }
+
+  h2.section-title {
+    margin: 0 0 1em;
+    font-size: 1.6rem;
+    font-weight: 400;
   }
 
   a {

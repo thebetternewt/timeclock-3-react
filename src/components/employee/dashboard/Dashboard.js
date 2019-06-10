@@ -1,67 +1,48 @@
 import React from 'react';
-import moment from 'moment';
+import { startOfDay, endOfDay } from 'date-fns';
 
 import Container from '../../../styled/layouts/Container';
+import Spinner from '../../../styled/elements/Spinner';
 import ShiftClock from './ShiftClock';
 import Stats from './Stats';
 import PrivateRoute from '../../shared/PrivateRoute';
-import { Query } from 'react-apollo';
+import { useQuery } from 'react-apollo-hooks';
 import { CURRENT_PAY_PERIOD } from '../../../apollo/queries/payPeriod';
 import { MY_SHIFTS } from '../../../apollo/queries/user';
 
-const Dashboard = () => {
-	const shiftQueryVariables = ({ payPeriod }) => {
-		const vars = {
-			startDate: moment(payPeriod.startDate)
-				.startOf('Day')
-				.toISOString(),
-			endDate: moment(payPeriod.endDate)
-				.endOf('Day')
-				.toISOString(),
-		};
-		return vars;
-	};
+const StatsWrapper = ({ payPeriod }) => {
+	const { data: shiftData, loading: shiftsLoading } = useQuery(MY_SHIFTS, {
+		variables: {
+			startDate: startOfDay(payPeriod.startDate),
+			endDate: endOfDay(payPeriod.endDate),
+		},
+	});
+
+	const { myShifts } = shiftData;
 
 	return (
-		<Container>
-			<Query query={CURRENT_PAY_PERIOD}>
-				{({ data, loading: ppLoading, error: ppError }) => {
-					let payPeriod;
+		<Stats payPeriod={payPeriod} shifts={myShifts} loading={shiftsLoading} />
+	);
+};
 
-					if (data && data.payPeriod) {
-						payPeriod = data.payPeriod;
+const Dashboard = () => {
+	const { data: ppData, loading } = useQuery(CURRENT_PAY_PERIOD);
 
-						return (
-							<Query
-								query={MY_SHIFTS}
-								variables={shiftQueryVariables({ payPeriod })}
-							>
-								{({ data, loading: shiftsLoading }) => {
-									const loading = ppLoading || shiftsLoading;
+	const { payPeriod } = ppData;
 
-									if (data && data.myShifts) {
-										const { myShifts } = data;
-
-										return (
-											<Stats
-												payPeriod={payPeriod}
-												shifts={myShifts}
-												loading={loading}
-											/>
-										);
-									}
-
-									return <Stats payPeriod={payPeriod} loading={loading} />;
-								}}
-							</Query>
-						);
-					}
-					return (
-						<Stats payPeriod={payPeriod} loading={!ppError && ppLoading} />
-					);
-				}}
-			</Query>
-			<ShiftClock />
+	return (
+		<Container direction="column">
+			<h1 className="title">Dashboard</h1>
+			<div style={{ display: 'flex' }}>
+				<div style={{ flexBasis: '50%' }}>
+					{!payPeriod || loading ? (
+						<Spinner size="60px" style={{ marginTop: '3rem' }} />
+					) : (
+						<StatsWrapper payPeriod={payPeriod} />
+					)}
+				</div>
+				<ShiftClock />
+			</div>
 		</Container>
 	);
 };

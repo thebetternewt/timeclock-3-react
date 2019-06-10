@@ -18,6 +18,7 @@ import {
   REMOVE_FROM_DEPT,
   ADD_TO_DEPT,
 } from '../../../apollo/mutations/user';
+import {sortUsers} from '../../../util/arrays' 
 
 const Department = ({ departmentId }) => {
   const [addingSupervisor, setAddingSupervisor] = useState(false);
@@ -57,10 +58,10 @@ const Department = ({ departmentId }) => {
                 <ListHeader>Supervisors</ListHeader>
                 <List>
                   {department &&
-                    department.supervisors.map(sup => (
+                    sortUsers(department.supervisors, 'lastName').map(sup => (
                       <Item key={sup.id}>
                         <div>
-                          {sup.name} ({sup.netId})
+                          {sup.lastName}, {sup.firstName} ({sup.netId})
                         </div>
                         <div>
                           <Mutation mutation={REMOVE_SUPERVISOR_FROM_DEPT}>
@@ -164,13 +165,13 @@ const Department = ({ departmentId }) => {
                 <ListHeader>Employees</ListHeader>
                 <List>
                   {department &&
-                    department.users.map(user => (
+                    sortUsers(department.users, 'lastName')
+                    .map(user => (
                       <Item key={user.id}>
                         <div>
-                          {user.name} ({user.netId})
+                        {user.lastName}, {user.firstName} ({user.netId})
                         </div>
                         <div>
-                          
                           <Mutation mutation={REMOVE_FROM_DEPT}>
                             {(remove, { loading }) => {
                               return (

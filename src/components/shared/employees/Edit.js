@@ -45,7 +45,7 @@ const Edit = ({ employeeId }) => {
 										firstName: values.firstName,
 										lastName: values.lastName,
 										netId: values.netId,
-										nineDigitId: values.nineDigitId,
+										nineDigitId: values.nineDigitId.replace(/-/g, ''),
 										email: values.email,
 									};
 

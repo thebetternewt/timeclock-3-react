@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select } from '../../styled/elements/Form';
+import { sortUsers } from '../../util/arrays';
 
 const EmployeeSelect = ({
 	employees = [],
@@ -14,9 +15,9 @@ const EmployeeSelect = ({
 	if (!employees.length) {
 		options = <option value="">No employees found.</option>;
 	} else {
-		options = employees.map(emp => (
+		options = sortUsers(employees, 'lastName').map(emp => (
 			<option key={emp.id} value={emp.id}>
-				{emp.name} ({emp.netId})
+				{emp.lastName}, {emp.firstName} ({emp.netId})
 			</option>
 		));
 	}

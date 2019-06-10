@@ -39,12 +39,21 @@ const Create = () => {
 				}}
 			>
 				{({ values, handleChange }) => {
-					const { confirm, ...variables } = values;
+					const { confirm, nineDigitId, ...variables } = values;
+					console.log('vars: ', {
+						...variables,
+						nineDigitId: nineDigitId.replace(/-/g, ''),
+					});
 
 					return (
 						<Mutation
 							mutation={REGISTER}
-							variables={{ data: variables }}
+							variables={{
+								data: {
+									nineDigitId: nineDigitId.replace(/-/g, ''),
+									...variables,
+								},
+							}}
 							refetchQueries={() => ['Department']}
 						>
 							{(register, { loading, error }) => {

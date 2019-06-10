@@ -7,6 +7,7 @@ import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
 import Button from '../../../styled/elements/Button';
 import { Mutation } from 'react-apollo';
 import { CLOCK_OUT_USER } from '../../../apollo/mutations/user';
+import { sortUsers } from '../../../util/arrays';
 
 const Employees = ({ employees }) => (
 	<EmployeesTable>
@@ -16,10 +17,12 @@ const Employees = ({ employees }) => (
 				<div>Hours Elapsed</div>
 				<div />
 			</EmployeeListHeader>
-			{employees.map(emp => {
+			{sortUsers(employees, 'lastName').map(emp => {
 				return (
 					<EmployeeItem key={emp.id}>
-						<div>{emp.name}</div>
+						<div>
+							{emp.lastName}, {emp.firstName} ({emp.netId})
+						</div>
 						<div>
 							{/* Hours elapsed since clock in. */}
 							{(
