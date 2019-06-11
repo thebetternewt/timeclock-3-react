@@ -3,6 +3,7 @@ import { Query, Mutation } from 'react-apollo';
 import { format, parse } from 'date-fns';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
+import NumberFormat from 'react-number-format';
 
 import DepartmentSelect from '../../DepartmentSelect';
 import { Form, Select, Input } from '../../../../styled/elements/Form';
@@ -36,7 +37,7 @@ const WorkStudyForm = ({
 		period: ws ? ws.period : null,
 		startDate: ws ? parse(ws.startDate) : null,
 		endDate: ws ? parse(ws.endDate) : null,
-		amount: ws ? ws.amount : 0,
+		amount: ws ? ws.amount : null,
 	};
 
 	const [department, setDepartment] = useState(initialValues.department);
@@ -54,7 +55,15 @@ const WorkStudyForm = ({
 
 	const handleDepartmentChange = e =>
 		setDepartment(getDepartment(e.target.value));
-	const handleAmountChange = e => setAmount(e.target.value);
+	const handleAmountChange = e => {
+		let value = e.target.value;
+		console.log(value);
+
+		value = value.replace(/[$,]/g, '');
+
+		console.log('new', value);
+		setAmount(value);
+	};
 	const handleYearChange = e => {
 		setYear(e.target.value);
 		setPeriod(null);
@@ -138,11 +147,12 @@ const WorkStudyForm = ({
 			</Query>
 
 			<label htmlFor="amount">Work Study Amount</label>
-			<Input
+			<NumberFormat
+				customInput={Input}
 				name="amount"
-				type="number"
-				min="0"
-				step="1"
+				allowEmptyFormatting
+				thousandSeparator={true}
+				prefix={'$'}
 				value={amount}
 				onChange={handleAmountChange}
 			/>

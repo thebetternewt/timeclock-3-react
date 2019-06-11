@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link, Location } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
 import { useMutation } from 'react-apollo-hooks';
+import NumberFormat from 'react-number-format';
 import { format } from 'date-fns';
 import { USER } from '../../../apollo/queries/user'
 
@@ -252,7 +253,7 @@ const Employee = ({employeeId}) => {
                       {format(ws.endDate, 'MMM DD')}
                     </div>
                   </div>
-                  <div className="amount">${ws.amount}.00</div>
+                  <div className="amount"> <NumberFormat displayType='text' thousandSeparator prefix='$' value = {ws.amount} /> </div>
                   
                   
                         <div className="actions">
