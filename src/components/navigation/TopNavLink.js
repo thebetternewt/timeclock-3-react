@@ -7,16 +7,19 @@ export default props => (
 			return (
 				<Link
 					{...props}
-					getProps={({ isPartiallyCurrent, href }) => {
-						const admin = location.pathname.match('admin');
-						const supervisor = location.pathname.match('supervisor');
-						let isActive = isPartiallyCurrent;
+					getProps={({ href }) => {
+						const homePath = location.pathname.match(/home|login/);
+						let isActive = false;
 
 						// Set isActive false if not in admin section.
 						// ? This could possbly be inproved since a new check would have to be added for each
 						// ? major section of the site.
-						if (admin && !href.match('admin')) isActive = false;
-						if (supervisor && !href.match('supervisor')) isActive = false;
+
+						// Home paths
+						if (homePath && !href.match('supervisor')) isActive = true;
+
+						// Supervisor paths
+						if (!homePath && href.match('supervisor')) isActive = true;
 
 						return {
 							className: isActive ? 'active' : null,

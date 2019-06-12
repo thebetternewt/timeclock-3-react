@@ -109,19 +109,6 @@ const ShiftList = styled.ul`
 	margin: 0;
 `;
 
-const ShiftListHeader = styled.div`
-	display: flex;
-	justify-content: space-between;
-
-	padding: 8px 15px;
-	border-bottom: 3px solid ${GRAY4};
-	margin-bottom: 0.8rem;
-
-	> div {
-		flex-basis: 30%;
-	}
-`;
-
 const ShiftItem = styled(Item)`
 	display: flex;
 	align-items: center;

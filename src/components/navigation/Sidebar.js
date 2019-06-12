@@ -1,31 +1,56 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Location } from '@reach/router';
+import { Match } from '@reach/router';
+import { IoMdLogOut } from 'react-icons/io';
+
+import { useQuery, useMutation } from 'react-apollo-hooks';
+import { ME } from '../../apollo/queries/user';
+import { LOGOUT } from '../../apollo/mutations/user';
 
 import { fixed, GRAY4, GRAY5 } from '../../styled/utilities';
 import EmployeeLinks from './EmployeeLinks';
-import AdminLinks from './AdminLinks';
 import SupervisorLinks from './SupervisorLinks';
+import NavLink from './SideNavLink';
 
 const SidebarWrapper = ({ width }) => {
+	const logout = useMutation(LOGOUT);
+
+	const { data: meData } = useQuery(ME);
+	const { me = {} } = meData;
+
+	const elevated = me.supervisor || me.admin;
+	console.log(elevated);
+
+	const handleLogout = async e => {
+		e.preventDefault();
+		try {
+			await logout();
+			window.location = '/';
+		} catch (e) {
+			console.log(e);
+		}
+	};
+
 	return (
-		<Location>
-			{({ location: { pathname } }) => (
-				<Sidebar width={width}>
-					<Location>
-						{({ location }) => {
-							if (pathname.includes('admin')) {
-								return <AdminLinks />;
-							} else if (pathname.includes('supervisor')) {
-								return <SupervisorLinks />;
-							} else {
-								return <EmployeeLinks />;
-							}
-						}}
-					</Location>
-				</Sidebar>
-			)}
-		</Location>
+		<Sidebar width={width}>
+			<ul>
+				<Match path="/home/*">
+					{({ match }) => {
+						if (match) {
+							return <EmployeeLinks />;
+						}
+
+						return <SupervisorLinks admin={me.admin} />;
+					}}
+				</Match>
+				<li>
+					<NavLink to="/logout" onClick={handleLogout}>
+						<IoMdLogOut />
+						Log out
+					</NavLink>
+				</li>
+			</ul>
+		</Sidebar>
 	);
 };
 

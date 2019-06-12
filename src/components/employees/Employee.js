@@ -2,26 +2,26 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link, Location } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
-import { useMutation } from 'react-apollo-hooks';
+import { useQuery, useMutation } from 'react-apollo-hooks';
 import NumberFormat from 'react-number-format';
 import { format } from 'date-fns';
-import { USER } from '../../../apollo/queries/user'
 
 import { FaPlusCircle, FaTrashAlt, FaPencilAlt, FaTimes, FaCheck } from 'react-icons/fa';
 
 
-import Box from '../../../styled/layouts/Box';
-import ShiftModal from '../ShiftModal';
+import Box from '../../styled/layouts/Box';
+import ShiftModal from '../shared/ShiftModal';
 import WorkStudyModal from './workStudy/WorkStudyModal';
-import { SUCCESS, DANGER, LIGHT_GRAY } from '../../../styled/utilities';
-import Button from '../../../styled/elements/Button';
-import { List, ListHeader, Item } from '../../../styled/elements/List';
-import Spinner from '../../../styled/elements/Spinner';
-import { ADD_TO_DEPT, REMOVE_FROM_DEPT, DEACTIVATE_USER, ACTIVATE_USER } from '../../../apollo/mutations/user';
-import Container from '../../../styled/layouts/Container';
-import { DEPARTMENTS } from '../../../apollo/queries/department';
-import DepartmentSelect from '../DepartmentSelect';
-import History from '../history/History'
+import { SUCCESS, DANGER, LIGHT_GRAY } from '../../styled/utilities';
+import Button from '../../styled/elements/Button';
+import { List, ListHeader, Item } from '../../styled/elements/List';
+import Spinner from '../../styled/elements/Spinner';
+import { ME, USER } from '../../apollo/queries/user'
+import { ADD_TO_DEPT, REMOVE_FROM_DEPT, DEACTIVATE_USER, ACTIVATE_USER } from '../../apollo/mutations/user';
+import Container from '../../styled/layouts/Container';
+import { DEPARTMENTS } from '../../apollo/queries/department';
+import DepartmentSelect from '../shared/DepartmentSelect';
+import History from '../shared/history/History'
 
 const Employee = ({employeeId}) => {
   const [workStudyModalOpen, setWorkStudyModalOpen] = useState(false);
@@ -31,8 +31,28 @@ const Employee = ({employeeId}) => {
   const [addShiftModalOpen, setAddShiftModalOpen] = useState(false);
   const [activateLoading, setActivateLoading] = useState(false)
 
+  const { data: meData } = useQuery(ME);
+	const { me = {} } = meData;
+
+  const { data: userData, loading } = useQuery(USER, {
+    variables: { id: employeeId },
+    fetchPolicy: "no-cache"
+  });
+
   const deactivate = useMutation(DEACTIVATE_USER, {refetchQueries: () => ['User']})
   const activate = useMutation(ACTIVATE_USER, {refetchQueries: () => ['User']})
+  
+  let user;
+  user  = userData.user;
+
+  if (loading) {
+    return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
+  }
+    
+    if (!user) {
+    return <EmployeeDetailBox>User Not Found.</EmployeeDetailBox>;
+  }
+
 
   const toggleAddingDepartment = () => setAddingDepartment(!addingDepartment);
   const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
@@ -41,31 +61,12 @@ const Employee = ({employeeId}) => {
   const handleDepartmentSelect = e => setSelectedDepartment(e.target.value);
   const handleWorkStudySelect = ws => setSelectedWorkStudy(ws);
 
+  console.log('employee')
+
   return (
     <Location>
-      {({location}) => {
-        const admin = !!location.pathname.match("admin")
-        const supervisor = !!location.pathname.match("supervisor")
-
-
-        return (
-         <Query query={USER} variables={{ id: employeeId }} fetchPolicy="no-cache">
-        {({ data, loading }) => {
-          let user;
-
-          if (loading) {
-            return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
-          }
-          if (data && data.user) {
-            user = data.user;
-          }
-
-          if (!user) {
-            return <EmployeeDetailBox>User Not Found.</EmployeeDetailBox>;
-          }
-
-          console.log(user);
-          return (
+      {({location}) => (
+         
             <Container direction="column">
                 <h1 className="title">{user.name}</h1>
               <Container >
@@ -93,7 +94,7 @@ const Employee = ({employeeId}) => {
                 </Link>
 
 
-                {(admin || supervisor && !user.active) && 
+                {(me.admin || (me.supervisor && !user.active)) && 
                 <Button 
                 text={user.active ? "Deactivate Employee" : 'Activate Employee'}
                 color="danger"
@@ -103,10 +104,15 @@ const Employee = ({employeeId}) => {
                     const variables = {netId: user.netId}
                     setActivateLoading(true)
                     
-                    if (user.active) {
-                      await deactivate({variables})
-                    } else {
-                      await activate ({variables})
+                    try {
+
+                      if (user.active) {
+                        await deactivate({variables})
+                      } else {
+                        await activate ({variables})
+                      }
+                    } catch (err) {
+                      console.log(err)
                     }
                     setActivateLoading(false)
                   }
@@ -129,7 +135,7 @@ const Employee = ({employeeId}) => {
               </div>
 
               {/* Departments */}
-              {admin && 
+              {me.admin && 
                 <div>
                   <div className="divider" />
                   <h2 className="section-title">Departments</h2>
@@ -302,10 +308,7 @@ const Employee = ({employeeId}) => {
                 <ShiftModal employee={user} close={toggleAddShiftModal} />
                 )}
             </Container>
-          );
-        }}
-      </Query>
-      )}}
+          )}
     </Location>
   );
 };

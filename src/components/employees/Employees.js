@@ -1,14 +1,26 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
+import { useQuery } from 'react-apollo-hooks';
 
-import EmployeeSelect from '../../shared/EmployeeSelect';
-import Container from '../../../styled/layouts/Container';
-import Button from '../../../styled/elements/Button';
-import { Link } from '@reach/router';
+import { ME, USERS } from '../../apollo/queries/user';
+import EmployeeSelect from '../shared/EmployeeSelect';
+import Container from '../../styled/layouts/Container';
+import Button from '../../styled/elements/Button';
+import { Link, Redirect } from '@reach/router';
 
-const Employees = ({ employees = [] }) => {
-	const [employee, setEmployee] = useState();
+const Employees = () => {
+	const [employee, setEmployee] = useState('');
+
+	const { data: meData } = useQuery(ME);
+	const { me } = meData;
+
+	const { data: usersData } = useQuery(USERS);
+	const { users = [] } = usersData;
+
+	if (me && !me.admin && !me.supervisor) {
+		return <Redirect to="/" noThrow />;
+	}
 
 	const handleEmployeeSelect = ({ target: { value } }) => setEmployee(value);
 
@@ -18,12 +30,12 @@ const Employees = ({ employees = [] }) => {
 
 			<EmployeeSelectWrapper>
 				<EmployeeSelect
-					employees={employees}
+					employees={users}
 					handleChange={handleEmployeeSelect}
 					value={employee}
 				/>
 
-				<Link to={employee || ''}>
+				<Link to={employee}>
 					<Button
 						color="success"
 						text="View"

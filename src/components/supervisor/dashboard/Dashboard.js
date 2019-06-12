@@ -9,18 +9,29 @@ import DepartmentSelect from '../../shared/DepartmentSelect';
 import Activity from '../../shared/dashboard/Activity';
 import PrivateRoute from '../../shared/PrivateRoute';
 import { ME } from '../../../apollo/queries/user';
+import { DEPARTMENTS } from '../../../apollo/queries/department';
 
 const Dashboard = () => {
 	const [department, setDepartment] = useState();
 
-	const { data } = useQuery(ME);
+	const { data: meData } = useQuery(ME);
+	const { me = {} } = meData;
 
-	let departments = [];
+	// Fetch all departments
+	const { data: deptData } = useQuery(DEPARTMENTS);
+	const { departments: allDepts = [] } = deptData;
 
-	if (data.me) {
-		departments = data.me.supervisedDepartments;
-		if (!department) setDepartment(departments[0]);
+	let departments = allDepts;
+
+	// If current user isn't admin (only supervisor),
+	// then limit departments to supervised departments.
+	if (!me.admin) {
+		departments = me.supervisedDepartments;
 	}
+
+	// If departments are fetched && no department set as selected,
+	// then set first department as selected.
+	if (departments.length > 0 && !department) setDepartment(departments[0]);
 
 	const handleDeptChange = e =>
 		setDepartment(departments.find(dept => dept.id === e.target.value));
@@ -38,10 +49,10 @@ const Dashboard = () => {
 					/>
 				</DepartmentSelectWrapper>
 
-				<Link to={`departments/${department && department.id}`}>
+				<Link to={`/departments/${department && department.id}`}>
 					<Button
 						color="success"
-						text="View"
+						text="Manage"
 						style={{ width: 120, marginLeft: '2rem' }}
 						disabled={!department}
 					/>

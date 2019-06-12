@@ -9,6 +9,7 @@ export const ME = gql`
 			name
 			netId
 			nineDigitId
+			dsf
 			admin
 			supervisor
 			active
@@ -92,6 +93,7 @@ export const USER_SHIFTS = gql`
 				name
 				firstName
 				lastName
+				dsf
 			}
 		}
 	}
@@ -105,6 +107,7 @@ export const USERS = gql`
 			firstName
 			lastName
 			netId
+			dsf
 		}
 	}
 `;
@@ -119,6 +122,7 @@ export const USER = gql`
 			netId
 			nineDigitId
 			email
+			dsf
 			admin
 			supervisor
 			active

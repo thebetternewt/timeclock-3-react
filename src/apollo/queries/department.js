@@ -5,6 +5,9 @@ export const DEPARTMENTS = gql`
 		departments {
 			id
 			name
+			supervisors {
+				id
+			}
 		}
 	}
 `;

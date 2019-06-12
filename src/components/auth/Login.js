@@ -43,7 +43,7 @@ const Login = () => {
 	return (
 		<Query query={ME}>
 			{({ data }) => {
-				if (data && data.me) return <Redirect to="/" noThrow />;
+				if (data && data.me) return <Redirect to="/home" noThrow />;
 
 				return (
 					<LoginBox>

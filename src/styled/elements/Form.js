@@ -7,7 +7,8 @@ export const Form = styled.form`
 	max-width: 500px;
 
 	label {
-		display: block;
+		display: flex;
+		align-items: center;
 		margin: 0.5em 0 0;
 	}
 `;
@@ -21,6 +22,10 @@ export const Input = styled.input`
 	width: 100%;
 
 	margin: 5px 0;
+
+	&[type='checkbox'] {
+		margin-right: 1rem;
+	}
 `;
 
 export const FormControl = styled.div`
@@ -33,9 +38,9 @@ export const FormControl = styled.div`
 		margin-right: 1rem;
 		flex-shrink: 0;
 
-		&:after {
+		/* &:after {
 			content: ' :';
-		}
+		} */
 	}
 
 	select,

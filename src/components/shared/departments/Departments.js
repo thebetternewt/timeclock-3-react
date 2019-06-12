@@ -30,7 +30,7 @@ const Departments = ({ departments = [] }) => {
 							<Link to={department}>
 								<Button
 									color="success"
-									text="View"
+									text="Manage"
 									style={{ marginLeft: '2rem', width: 120 }}
 									disabled={!department}
 								/>
