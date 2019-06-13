@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import styled from 'styled-components';
-import { FaUserCircle } from 'react-icons/fa';
+import { FaUserCircle, FaUserNinja, FaCircle } from 'react-icons/fa';
 
 import Header from '../styled/layouts/Header';
 import TopNav from './navigation/TopNav';
@@ -34,7 +34,27 @@ const Layout = ({ children }) => {
 									<Link to="/">
 										<Avatar>
 											<span>{me.name}</span>
-											<FaUserCircle size="30" />
+											{me.admin ? (
+												<div
+													style={{
+														border: '2px solid red',
+														display: 'flex',
+														borderRadius: '50%',
+														width: 30,
+														height: 30,
+														marginLeft: '.5rem',
+														alignItems: 'center',
+														justifyContent: 'center',
+													}}
+												>
+													<FaUserNinja size="15" color="red" />
+												</div>
+											) : (
+												<FaUserCircle
+													size="30"
+													style={{ marginLeft: '.5rem' }}
+												/>
+											)}
 										</Avatar>
 									</Link>
 								)}
@@ -62,7 +82,7 @@ const Avatar = styled.div`
 	margin: 0 1rem;
 
 	svg {
-		margin-left: 0.7rem;
+		/* margin-left: 0.7rem; */
 	}
 `;
 

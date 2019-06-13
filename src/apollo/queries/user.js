@@ -9,11 +9,17 @@ export const ME = gql`
 			name
 			netId
 			nineDigitId
+			phone
+			email
+			street1
+			street2
+			city
+			state
+			zip
 			dsf
 			admin
 			supervisor
 			active
-			email
 			isClockedIn
 			lastShift {
 				id
@@ -107,7 +113,19 @@ export const USERS = gql`
 			firstName
 			lastName
 			netId
+			nineDigitId
 			dsf
+			phone
+			email
+			street1
+			street2
+			city
+			state
+			zip
+			departments {
+				id
+				name
+			}
 		}
 	}
 `;
@@ -122,6 +140,13 @@ export const USER = gql`
 			netId
 			nineDigitId
 			email
+			phone
+			email
+			street1
+			street2
+			city
+			state
+			zip
 			dsf
 			admin
 			supervisor

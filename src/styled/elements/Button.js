@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@reach/router';
 import styled from 'styled-components';
 
 import Spinner from './Spinner';
@@ -14,6 +15,8 @@ import {
 const StyledButton = styled.button`
   padding: 0.5em 8px;
   margin: 5px 0;
+  height: 2.3rem;
+  min-width: 90px;
   border: none;
   border-radius: 3px;
   font-size: 1rem;
@@ -70,14 +73,85 @@ ${({ naked }) =>
 
 `;
 
-export default ({ text, loading, ...styles }) => (
-	<StyledButton {...styles}>
-		{loading ? (
-			<Spinner size="1rem" />
-		) : text && typeof text === 'string' ? (
-			text
-		) : (
-			text()
-		)}
-	</StyledButton>
-);
+const StyledLink = styled(Link)`
+  padding: 0.5em 8px;
+  margin: 5px 0;
+  height: 2.3rem;
+  min-width: 90px;
+  border: none;
+  border-radius: 3px;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:disabled {
+    /* background: ${LIGHT_GRAY};
+    color: ${GRAY5}; */
+    cursor: not-allowed;
+  }
+
+  svg {
+    margin-right: 5px;
+  }
+
+  ${({ color }) => {
+		switch (color) {
+			case 'primary':
+				return `
+          background: ${PRIMARY};
+          color: #fff;
+        `;
+			case 'success':
+				return `
+          background: ${SUCCESS};
+          color: ${GRAY1};
+        `;
+			case 'danger':
+				return `
+          background: ${DANGER};
+          color: #fff;
+        `;
+			default: {
+				return `background: #ddd;`;
+			}
+		}
+	}};
+
+               
+${({ naked }) =>
+	naked &&
+	`
+  background: transparent;
+  color: inherit;
+  display: inline;
+  padding: 0;
+  margin: 0 1rem;
+  text-decoration: underline;
+  `}
+
+`;
+
+export default ({ text, loading, href, ...styles }) => {
+	if (href) {
+		return (
+			<StyledLink to={href} {...styles}>
+				{text && typeof text === 'string' ? text : text()}
+			</StyledLink>
+		);
+	}
+
+	return (
+		<StyledButton {...styles}>
+			{loading ? (
+				<Spinner size="1rem" />
+			) : text && typeof text === 'string' ? (
+				text
+			) : (
+				text()
+			)}
+		</StyledButton>
+	);
+};

@@ -21,7 +21,7 @@ export const Input = styled.input`
 	font-size: 1rem;
 	width: 100%;
 
-	margin: 5px 0;
+	margin: 8px 0;
 
 	&[type='checkbox'] {
 		margin-right: 1rem;

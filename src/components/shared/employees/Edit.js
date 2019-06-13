@@ -72,7 +72,7 @@ const Edit = ({ employeeId }) => {
 														}
 														error={error}
 														loading={loading}
-														buttonText="Save"
+														editing
 													/>
 												);
 											}}

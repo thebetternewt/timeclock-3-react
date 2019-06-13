@@ -16,6 +16,8 @@ const GraphQlErrors = error => {
 		gqlErrors.push(...error.errors.graphQLErrors);
 	}
 
+	console.log('gqlErrors:', gqlErrors);
+
 	gqlErrors.forEach(({ message, extensions }) => {
 		if (message === 'Argument Validation Error') {
 			extensions.exception.validationErrors.forEach(({ constraints }) => {

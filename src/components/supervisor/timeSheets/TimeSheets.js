@@ -14,7 +14,7 @@ const SupervisorTimeSheets = () => {
 		departments = meData.me.supervisedDepartments;
 	}
 
-	return <TimeSheets admin={true} departments={departments} />;
+	return <TimeSheets admin departments={departments} />;
 };
 
 export default SupervisorTimeSheets;

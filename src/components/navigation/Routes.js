@@ -10,8 +10,8 @@ import EmployeeDashboard from '../employee/dashboard/Dashboard';
 import EmployeeHistory from '../employee/history/EmployeeHistory';
 import TimeSheets from '../employee/timeSheets/TimeSheets';
 
-import CreateEmployee from '../shared/employees/Create';
-import EditEmployee from '../shared/employees/Edit';
+import CreateEmployee from '../employees/EditUser';
+import EditEmployee from '../employees/EditUser';
 // import SupervisorCreateEmployee from '../shared/employees/Create';
 // import SupervisorEditEmployee from '../shared/employees/Edit';
 

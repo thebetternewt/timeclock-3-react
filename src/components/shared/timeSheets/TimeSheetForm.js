@@ -151,7 +151,7 @@ const TimeSheetForm = ({ admin = false, departments = [] }) => {
 						/>
 					</FormControl>
 
-					{me && me.admin && admin && (
+					{admin && (
 						<FormControl>
 							<label>Employee</label>
 							<EmployeeSelect

@@ -11,7 +11,7 @@ import { List, ListHeader, Item } from '../../../styled/elements/List';
 import Spinner from '../../../styled/elements/Spinner';
 import { DEPARTMENT } from '../../../apollo/queries/department';
 import EmployeeSelect from '../../shared/EmployeeSelect';
-import { USERS } from '../../../apollo/queries/user';
+import { USERS, ME } from '../../../apollo/queries/user';
 import {
   ADD_SUPERVISOR_TO_DEPT,
   REMOVE_SUPERVISOR_FROM_DEPT,
@@ -19,6 +19,7 @@ import {
   ADD_TO_DEPT,
 } from '../../../apollo/mutations/user';
 import {sortUsers} from '../../../util/arrays' 
+import { useQuery } from 'react-apollo-hooks';
 
 const Department = ({ departmentId }) => {
   const [addingSupervisor, setAddingSupervisor] = useState(false);
@@ -33,10 +34,13 @@ const Department = ({ departmentId }) => {
   const handleSupervisorSelect = e => setSelectedSupervisor(e.target.value);
   const handleEmployeeSelect = e => setSelectedEmployee(e.target.value);
 
+  const {data: meData} = useQuery(ME);
+  const {me = {}} = meData;
+  const {admin, supervisor} = me;
+
   return (
-    <Match path="/admin/*">
-      {({match: admin}) => {
-        return (<Query
+    
+      <Query
         query={DEPARTMENT}
         variables={{ id: departmentId }}
         fetchPolicy="no-cache"
@@ -293,9 +297,6 @@ const Department = ({ departmentId }) => {
           );
         }}
       </Query>
-      )
-    }}
-    </Match>
   );
 };
 

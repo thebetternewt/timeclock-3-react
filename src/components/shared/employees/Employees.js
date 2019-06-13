@@ -6,9 +6,14 @@ import EmployeeSelect from '../../shared/EmployeeSelect';
 import Container from '../../../styled/layouts/Container';
 import Button from '../../../styled/elements/Button';
 import { Link } from '@reach/router';
+import { useQuery } from 'react-apollo-hooks';
+import { USERS } from '../../../apollo/queries/user';
 
 const Employees = ({ employees = [] }) => {
 	const [employee, setEmployee] = useState();
+
+	const { data: usersData } = useQuery(USERS);
+	const { user } = usersData;
 
 	const handleEmployeeSelect = ({ target: { value } }) => setEmployee(value);
 
