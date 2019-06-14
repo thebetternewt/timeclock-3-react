@@ -17,6 +17,7 @@ const Login = () => {
 	const [password, setPassword] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState();
+	const [showForm, setShowForm] = useState(false);
 
 	const login = useMutation(LOGIN, {
 		variables: { netId, password },
@@ -42,6 +43,28 @@ const Login = () => {
 
 	const handlePasswordChange = e => setPassword(e.target.value);
 
+	const toggleForm = () => setShowForm(!showForm);
+
+	const form = (
+		<Form onSubmit={handleSubmit}>
+			{error && <GraphQlErrors error={error} />}
+			<Input
+				name="netId"
+				placeholder="NetID"
+				onChange={handleNetIdChange}
+				value={netId}
+			/>
+			<Input
+				type="password"
+				name="password"
+				placeholder="Password"
+				onChange={handlePasswordChange}
+				value={password}
+			/>
+			<Button type="submit" color="success" text="Login" loading={loading} />
+		</Form>
+	);
+
 	return (
 		<Query query={ME}>
 			{({ data }) => {
@@ -51,36 +74,27 @@ const Login = () => {
 					<LoginBox>
 						<Logo />
 						{IN_PROD ? (
-							<Button
-								href="https://timeclockdev.library.msstate.edu/login"
-								external
-								color="success"
-								text="CAS Login"
-								style={{ marginTop: '2rem', width: 300, height: 50 }}
-							/>
+							<>
+								{showForm ? (
+									form
+								) : (
+									<Button
+										href="https://timeclockdev.library.msstate.edu/login"
+										external
+										color="success"
+										text="CAS Login"
+										style={{ marginTop: '2rem', width: 300, height: 50 }}
+									/>
+								)}
+								<p
+									onClick={toggleForm}
+									style={{ opacity: 0.5, cursor: 'pointer' }}
+								>
+									{showForm ? 'CAS Login' : 'Admin Login'}
+								</p>
+							</>
 						) : (
-							<Form onSubmit={handleSubmit}>
-								{error && <GraphQlErrors error={error} />}
-								<Input
-									name="netId"
-									placeholder="NetID"
-									onChange={handleNetIdChange}
-									value={netId}
-								/>
-								<Input
-									type="password"
-									name="password"
-									placeholder="Password"
-									onChange={handlePasswordChange}
-									value={password}
-								/>
-								<Button
-									type="submit"
-									color="success"
-									text="Login"
-									loading={loading}
-								/>
-							</Form>
+							form
 						)}
 					</LoginBox>
 				);
