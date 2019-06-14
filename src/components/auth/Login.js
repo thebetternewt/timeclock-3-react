@@ -78,13 +78,23 @@ const Login = () => {
 								{showForm ? (
 									form
 								) : (
-									<Button
-										href="https://timeclockdev.library.msstate.edu/login"
-										external
-										color="success"
-										text="CAS Login"
-										style={{ marginTop: '2rem', width: 300, height: 50 }}
-									/>
+									<>
+										<Button
+											href="https://timeclockdev.library.msstate.edu/login"
+											external
+											color="success"
+											text="CAS Login"
+											style={{ marginTop: '2rem', width: 300, height: 50 }}
+										/>
+
+										<Button
+											target="_blank"
+											href="https://timeclock.library.msstate.edu/"
+											text="Old Timeclock"
+											external
+											style={{ marginTop: '0.3rem', width: 300, height: 50 }}
+										/>
+									</>
 								)}
 								<p
 									onClick={toggleForm}
