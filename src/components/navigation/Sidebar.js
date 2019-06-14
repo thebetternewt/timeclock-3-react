@@ -28,7 +28,11 @@ const SidebarWrapper = ({ width }) => {
 		} catch (e) {
 			console.log(e);
 		}
-		window.location = '/';
+		if (process.env.NODE_ENV !== 'production') {
+			window.location = 'https://cas.its.msstate.edu/cas/logout';
+		} else {
+			window.location = '/';
+		}
 	};
 
 	return (
