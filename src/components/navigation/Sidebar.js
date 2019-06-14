@@ -25,10 +25,10 @@ const SidebarWrapper = ({ width }) => {
 		e.preventDefault();
 		try {
 			await logout();
-			window.location = '/';
 		} catch (e) {
 			console.log(e);
 		}
+		window.location = '/';
 	};
 
 	return (
@@ -44,10 +44,10 @@ const SidebarWrapper = ({ width }) => {
 					}}
 				</Match>
 				<li>
-					<NavLink to="/logout" onClick={handleLogout}>
+					<button onClick={handleLogout}>
 						<IoMdLogOut />
 						Log out
-					</NavLink>
+					</button>
 				</li>
 			</ul>
 		</Sidebar>
@@ -73,19 +73,32 @@ const Sidebar = styled.nav`
 		width: 100%;
 		height: 80px;
 
-		a {
+		a,
+		button {
+			font-family: inherit;
+			font-size: inherit;
+			background: transparent;
+			border: none;
 			display: block;
 			width: 100%;
 			height: 100%;
 			display: flex;
 			align-items: center;
-			padding-left: 40px;
+			padding: 0 0 0 40px;
 			text-transform: uppercase;
 			text-decoration: none;
 			color: inherit;
+			cursor: pointer;
+			transition: 150ms all ease;
 
 			&.active {
 				background-color: ${GRAY5};
+			}
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.7);
+				color: #333;
+				font-weight: 500;
 			}
 
 			svg {

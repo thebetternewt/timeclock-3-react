@@ -23,6 +23,8 @@ const Login = () => {
 		refetchQueries: () => ['Me'],
 	});
 
+	const IN_PROD = process.env.NODE_ENV === 'production';
+
 	const handleSubmit = async e => {
 		e.preventDefault();
 		setLoading(true);
@@ -48,28 +50,38 @@ const Login = () => {
 				return (
 					<LoginBox>
 						<Logo />
-						<Form onSubmit={handleSubmit}>
-							{error && <GraphQlErrors error={error} />}
-							<Input
-								name="netId"
-								placeholder="NetID"
-								onChange={handleNetIdChange}
-								value={netId}
-							/>
-							<Input
-								type="password"
-								name="password"
-								placeholder="Password"
-								onChange={handlePasswordChange}
-								value={password}
-							/>
+						{IN_PROD ? (
 							<Button
-								type="submit"
+								href="https://timeclockdev.library.msstate.edu/login"
+								external
 								color="success"
-								text="Login"
-								loading={loading}
+								text="CAS Login"
+								style={{ marginTop: '2rem', width: 300, height: 50 }}
 							/>
-						</Form>
+						) : (
+							<Form onSubmit={handleSubmit}>
+								{error && <GraphQlErrors error={error} />}
+								<Input
+									name="netId"
+									placeholder="NetID"
+									onChange={handleNetIdChange}
+									value={netId}
+								/>
+								<Input
+									type="password"
+									name="password"
+									placeholder="Password"
+									onChange={handlePasswordChange}
+									value={password}
+								/>
+								<Button
+									type="submit"
+									color="success"
+									text="Login"
+									loading={loading}
+								/>
+							</Form>
+						)}
 					</LoginBox>
 				);
 			}}

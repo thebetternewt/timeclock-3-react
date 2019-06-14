@@ -58,7 +58,7 @@ const Routes = () => {
 
 				return (
 					<Router>
-						<Login path="/login" />
+						<Login path="/" default />
 
 						<EmployeeDashboard path="/home" />
 						<EmployeeHistory path="/home/history" />

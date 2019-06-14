@@ -3,7 +3,6 @@ import config from '../config';
 
 export const client = new ApolloClient({
 	uri: config.graphqlEndpoint,
-	// uri: 'http://localhost:4000/graphql',
 	credentials: 'include',
 	onError: ({ graphQLErrors = false, networkError, response }) => {
 		if (graphQLErrors) {
@@ -16,8 +15,7 @@ export const client = new ApolloClient({
 
 			if (notAuthenticated) {
 				console.log('NOT AUTHENTICATED!');
-				window.location.pathname !== '/login' &&
-					window.location.replace('/login');
+				window.location.pathname !== '/' && window.location.replace('/');
 			}
 		}
 

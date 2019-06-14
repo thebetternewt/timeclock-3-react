@@ -8,7 +8,7 @@ const PrivateRoute = ({ component: Component, location, ...rest }) => {
 
 	if (!data.me) {
 		// If user session expired, redirect to login.
-		return <Redirect to="/login" noThrow />;
+		return <Redirect to="/" noThrow />;
 	} else if (data) {
 		return <Component {...rest} />;
 	}
