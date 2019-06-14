@@ -55,8 +55,6 @@ const EditUser = ({ employeeId = '' }) => {
 
 	console.log('emp:', employeeId);
 
-	const { confirm: _, department: __, ...userVariables } = values;
-
 	const { data: meData } = useQuery(ME);
 	const { me = {} } = meData;
 
@@ -88,31 +86,37 @@ const EditUser = ({ employeeId = '' }) => {
 
 	console.log('user:', user);
 
+	const {
+		confirm: _,
+		department: __,
+		phone: phoneValue,
+		password: passwordValue,
+		...userVariables
+	} = values;
+	if (phoneValue) {
+		userVariables.phone = phoneValue;
+	}
+	if (passwordValue) {
+		userVariables.password = passwordValue;
+	}
+
 	const register = useMutation(REGISTER, {
 		variables: {
-			data: {
-				...userVariables,
-				phone: userVariables.phone || null,
-				password: userVariables.password || null,
-			},
+			data: userVariables,
 		},
-		refetchQueries: () => ['User'],
+		refetchQueries: () => ['User', 'Users'],
 	});
 
 	const updateUser = useMutation(UPDATE_USER, {
 		variables: {
 			id: employeeId,
-			data: {
-				...userVariables,
-				phone: userVariables.phone || null,
-				password: userVariables.password || null,
-			},
+			data: userVariables,
 		},
-		refetchQueries: () => ['User'],
+		refetchQueries: () => ['User', 'Users'],
 	});
 
 	const addToDept = useMutation(ADD_TO_DEPT, {
-		refetchQueries: () => ['User'],
+		refetchQueries: () => ['User', 'Users'],
 	});
 
 	const checkPassword = (password, confirm) =>
@@ -180,6 +184,8 @@ const EditUser = ({ employeeId = '' }) => {
 
 		console.log('values:', values);
 
+		setLoading(true);
+
 		try {
 			if (user) {
 				await updateUser();
@@ -203,6 +209,8 @@ const EditUser = ({ employeeId = '' }) => {
 			setError(err);
 			console.log(err);
 		}
+
+		setLoading(false);
 	};
 
 	return (

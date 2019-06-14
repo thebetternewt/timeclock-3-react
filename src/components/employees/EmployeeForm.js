@@ -15,7 +15,7 @@ const EmployeeForm = ({
 	handleDeptChange,
 	handleSubmit,
 	error,
-	loading,
+	loading = false,
 	passwordsMatch,
 	departments,
 	editing = false,
@@ -73,23 +73,52 @@ const EmployeeForm = ({
 						onChange={handleChange}
 					/>
 
-					<SrOnlyLabel>Password</SrOnlyLabel>
-					<Input
-						type="password"
-						name="password"
-						placeholder="Password"
-						value={values.password}
-						onChange={handleChange}
-					/>
+					{process.env.NODE_ENV !== 'production' && (
+						<>
+							<SrOnlyLabel>Password</SrOnlyLabel>
+							<Input
+								type="password"
+								name="password"
+								placeholder="Password"
+								value={values.password}
+								onChange={handleChange}
+							/>
 
-					<SrOnlyLabel>Password Confirm</SrOnlyLabel>
-					<Input
-						type="password"
-						name="confirm"
-						placeholder="Confirm Password"
-						value={values.confirm}
-						onChange={handleChange}
-					/>
+							<SrOnlyLabel>Password Confirm</SrOnlyLabel>
+							<Input
+								type="password"
+								name="confirm"
+								placeholder="Confirm Password"
+								value={values.confirm}
+								onChange={handleChange}
+							/>
+						</>
+					)}
+					<div style={{ display: 'flex' }}>
+						<FormControl>
+							<label>
+								<Input
+									type="checkbox"
+									checked={values.dsf}
+									onChange={handleChange}
+									name="dsf"
+								/>
+								DSF
+							</label>
+						</FormControl>
+
+						<FormControl>
+							<label>
+								<Input
+									type="checkbox"
+									checked={values.admin}
+									onChange={handleChange}
+									name="admin"
+								/>
+								Admin
+							</label>
+						</FormControl>
+					</div>
 				</div>
 				<div style={{ width: 250, marginRight: '2rem' }}>
 					<SrOnlyLabel>Phone Number</SrOnlyLabel>
@@ -143,30 +172,6 @@ const EmployeeForm = ({
 				</div>
 
 				<div style={{ width: 250 }}>
-					<FormControl>
-						<label>
-							<Input
-								type="checkbox"
-								checked={values.dsf}
-								onChange={handleChange}
-								name="dsf"
-							/>
-							DSF
-						</label>
-					</FormControl>
-
-					<FormControl>
-						<label>
-							<Input
-								type="checkbox"
-								checked={values.admin}
-								onChange={handleChange}
-								name="admin"
-							/>
-							Admin
-						</label>
-					</FormControl>
-
 					{!editing &&
 						(addingDept ? (
 							<>
@@ -208,7 +213,7 @@ const EmployeeForm = ({
 					text="Save"
 					style={{ marginRight: '1rem' }}
 					loading={loading}
-					disabled={loading || !passwordsMatch}
+					disabled={loading}
 				/>
 
 				<Location>
