@@ -15,7 +15,7 @@ const Dashboard = () => {
 	const [department, setDepartment] = useState();
 
 	const { data: meData } = useQuery(ME);
-	const { me = {} } = meData;
+	const { me } = meData;
 
 	// Fetch all departments
 	const { data: deptData } = useQuery(DEPARTMENTS);
@@ -25,7 +25,7 @@ const Dashboard = () => {
 
 	// If current user isn't admin (only supervisor),
 	// then limit departments to supervised departments.
-	if (!me.admin) {
+	if (me && !me.admin) {
 		departments = me.supervisedDepartments;
 	}
 

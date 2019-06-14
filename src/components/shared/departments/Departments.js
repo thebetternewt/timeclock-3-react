@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link, Match } from '@reach/router';
 import styled from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
+import { ME } from '../../../apollo/queries/user';
 
 import DepartmentSelect from '../../shared/DepartmentSelect';
 import Container from '../../../styled/layouts/Container';
 import Button from '../../../styled/elements/Button';
+import { useQuery } from 'react-apollo-hooks';
 
 const Departments = ({ departments = [] }) => {
 	const [department, setDepartment] = useState('');
@@ -13,6 +15,9 @@ const Departments = ({ departments = [] }) => {
 	const handleDepartmentSelect = ({ target: { value } }) => {
 		setDepartment(value);
 	};
+
+	const { data: meData } = useQuery(ME);
+	const { me = {} } = meData;
 
 	return (
 		<Match path="/admin/*">
@@ -38,7 +43,7 @@ const Departments = ({ departments = [] }) => {
 						)}
 					</DepartmentSelectWrapper>
 
-					{admin && (
+					{me.admin && (
 						<Link to="new">
 							<Button
 								color="success"

@@ -12,21 +12,13 @@ import TimeSheets from '../employee/timeSheets/TimeSheets';
 
 import CreateEmployee from '../employees/EditUser';
 import EditEmployee from '../employees/EditUser';
-// import SupervisorCreateEmployee from '../shared/employees/Create';
-// import SupervisorEditEmployee from '../shared/employees/Edit';
-
-// import AdminDashboard from '../admin/dashboard/Dashboard';
 import Employee from '../employees/Employee';
-import Departments from '../admin/departments/Departments';
+import Departments from '../departments/Departments';
 import Department from '../shared/departments/Department';
-import CreateDepartment from '../admin/departments/Create';
-import EditDepartment from '../admin/departments/Edit';
-// import AdminTimeSheets from '../admin/timeSheets/TimeSheets';
+import CreateDepartment from '../departments/Create';
+import EditDepartment from '../departments/Edit';
 
 import SupervisorDashboard from '../supervisor/dashboard/Dashboard';
-// import SupervisorEmployee from '../shared/employees/Employee';
-// import SupervisorDepartments from '../supervisor/departments/Departments';
-// import SupervisorDepartment from '../shared/departments/Department';
 import SupervisorTimeSheets from '../supervisor/timeSheets/TimeSheets';
 import PayPeriods from '../supervisor/payPeriods/PayPeriods';
 
