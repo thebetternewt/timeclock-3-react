@@ -14,7 +14,7 @@ import CreateEmployee from '../employees/EditUser';
 import EditEmployee from '../employees/EditUser';
 import Employee from '../employees/Employee';
 import Departments from '../departments/Departments';
-import Department from '../shared/departments/Department';
+import Department from '../departments/Department';
 import CreateDepartment from '../departments/Create';
 import EditDepartment from '../departments/Edit';
 

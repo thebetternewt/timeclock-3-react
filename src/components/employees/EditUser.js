@@ -84,8 +84,6 @@ const EditUser = ({ employeeId = '' }) => {
 		setAdmin(user.admin);
 	}
 
-	console.log('user:', user);
-
 	const {
 		confirm: _,
 		department: __,
@@ -104,7 +102,7 @@ const EditUser = ({ employeeId = '' }) => {
 		variables: {
 			data: userVariables,
 		},
-		refetchQueries: () => ['User', 'Users'],
+		refetchQueries: () => ['User'],
 	});
 
 	const updateUser = useMutation(UPDATE_USER, {
@@ -112,11 +110,11 @@ const EditUser = ({ employeeId = '' }) => {
 			id: employeeId,
 			data: userVariables,
 		},
-		refetchQueries: () => ['User', 'Users'],
+		refetchQueries: () => ['User'],
 	});
 
 	const addToDept = useMutation(ADD_TO_DEPT, {
-		refetchQueries: () => ['User', 'Users'],
+		refetchQueries: () => ['User'],
 	});
 
 	const checkPassword = (password, confirm) =>

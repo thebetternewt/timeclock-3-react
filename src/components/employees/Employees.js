@@ -17,7 +17,7 @@ const Employees = () => {
 	const { data: meData } = useQuery(ME);
 	const { me } = meData;
 
-	const { data: usersData } = useQuery(USERS);
+	const { data: usersData } = useQuery(USERS, { fetchPolicy: 'no-cache' });
 	const { users = [] } = usersData;
 
 	const fuzzySearchOptions = {

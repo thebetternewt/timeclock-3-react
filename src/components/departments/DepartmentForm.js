@@ -5,11 +5,10 @@ import Button from '../../styled/elements/Button';
 
 const DepartmentForm = ({
 	values,
-	handleChange,
+	handleNameChange,
 	handleSubmit,
 	error,
 	loading,
-	buttonText = 'Create Department',
 }) => {
 	// TODO: Handle Errors
 
@@ -22,16 +21,12 @@ const DepartmentForm = ({
 					name="name"
 					placeholder="Marketing"
 					value={values.name}
-					onChange={handleChange}
+					onChange={handleNameChange}
 				/>
-			</FormControl>
-
-			<FormControl>
 				<Button
 					type="submit"
 					color="success"
-					text={buttonText}
-					style={{ marginLeft: '2rem' }}
+					text="Save"
 					loading={loading}
 					disabled={loading}
 				/>

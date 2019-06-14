@@ -4,21 +4,21 @@ import { Link, Match } from '@reach/router';
 import { Query, Mutation } from 'react-apollo';
 import { FaPlusCircle } from 'react-icons/fa';
 
-import Box from '../../../styled/layouts/Box';
-import Container from '../../../styled/layouts/Container';
-import Button from '../../../styled/elements/Button';
-import { List, ListHeader, Item } from '../../../styled/elements/List';
-import Spinner from '../../../styled/elements/Spinner';
-import { DEPARTMENT } from '../../../apollo/queries/department';
-import EmployeeSelect from '../../shared/EmployeeSelect';
-import { USERS, ME } from '../../../apollo/queries/user';
+import Box from '../../styled/layouts/Box';
+import Container from '../../styled/layouts/Container';
+import Button from '../../styled/elements/Button';
+import { List, ListHeader, Item } from '../../styled/elements/List';
+import Spinner from '../../styled/elements/Spinner';
+import { DEPARTMENT } from '../../apollo/queries/department';
+import EmployeeSelect from '../shared/EmployeeSelect';
+import { USERS, ME } from '../../apollo/queries/user';
 import {
   ADD_SUPERVISOR_TO_DEPT,
   REMOVE_SUPERVISOR_FROM_DEPT,
   REMOVE_FROM_DEPT,
   ADD_TO_DEPT,
-} from '../../../apollo/mutations/user';
-import {sortUsers} from '../../../util/arrays' 
+} from '../../apollo/mutations/user';
+import {sortUsers} from '../../util/arrays' 
 import { useQuery } from 'react-apollo-hooks';
 
 const Department = ({ departmentId }) => {
