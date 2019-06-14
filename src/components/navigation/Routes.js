@@ -30,20 +30,12 @@ const Routes = () => {
 	return (
 		<Location>
 			{({ location }) => {
-				if (me && !me.admin) {
-					if (location.pathname.match('admin')) {
-						return <Redirect to="/" noThrow />;
-					}
-				}
-
-				if (me && !me.supervisor) {
-					if (location.pathname.match('supervisor')) {
-						return <Redirect to="/" noThrow />;
-					}
-				}
-
 				if (me && !me.admin && !me.supervisor) {
-					if (location.pathname.match('employees')) {
+					if (
+						location.pathname.match(
+							/supervisor|employees|departments|payperiods/
+						)
+					) {
 						return <Redirect to="/" noThrow />;
 					}
 				}
