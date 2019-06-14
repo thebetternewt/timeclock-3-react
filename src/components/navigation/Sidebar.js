@@ -29,10 +29,10 @@ const SidebarWrapper = ({ width }) => {
 			console.log(e);
 		}
 
-		const { NODE_ENV, CAS_HOST } = process.env;
+		const { NODE_ENV, REACT_APP_CAS_HOST } = process.env;
 
 		if (NODE_ENV === 'production') {
-			window.location = `https://${CAS_HOST}/cas/logout`;
+			window.location = `https://${REACT_APP_CAS_HOST}/cas/logout`;
 		} else {
 			window.location = '/';
 		}
