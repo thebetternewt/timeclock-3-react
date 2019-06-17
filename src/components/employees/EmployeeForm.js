@@ -101,28 +101,23 @@ const EmployeeForm = ({
 					)}
 					<div style={{ display: 'flex' }}>
 						<FormControl>
-							<label>
-								<Input
-									type="checkbox"
-									checked={values.dsf}
-									onChange={handleChange}
-									name="dsf"
-									style={{ WebkitAppearance: 'checkbox' }}
-								/>
-								DSF
-							</label>
+							<Input
+								type="checkbox"
+								checked={values.dsf}
+								onChange={handleChange}
+								name="dsf"
+							/>
+							<label>DSF</label>
 						</FormControl>
 
 						<FormControl>
-							<label>
-								<Input
-									type="checkbox"
-									checked={values.admin}
-									onChange={handleChange}
-									name="admin"
-								/>
-								Admin
-							</label>
+							<Input
+								type="checkbox"
+								checked={values.admin}
+								onChange={handleChange}
+								name="admin"
+							/>
+							<label>Admin</label>
 						</FormControl>
 					</div>
 				</div>
