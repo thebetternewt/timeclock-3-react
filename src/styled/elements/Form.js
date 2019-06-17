@@ -25,6 +25,7 @@ export const Input = styled.input`
 
 	&[type='checkbox'] {
 		margin-right: 1rem;
+		-webkit-appearance: checkbox;
 	}
 `;
 
