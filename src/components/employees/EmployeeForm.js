@@ -107,6 +107,7 @@ const EmployeeForm = ({
 									checked={values.dsf}
 									onChange={handleChange}
 									name="dsf"
+									style={{ WebkitAppearance: 'checkbox' }}
 								/>
 								DSF
 							</label>
