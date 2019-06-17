@@ -4,21 +4,24 @@ import { useQuery } from 'react-apollo-hooks';
 import { ME } from '../../apollo/queries/user';
 
 import Login from '../auth/Login';
+
+import EmployeeDashboard from '../home/dashboard/Dashboard';
+import EmployeeHistory from '../home/history/EmployeeHistory';
+import TimeSheets from '../home/timeSheets/TimeSheets';
+
 import Employees from '../employees/Employees';
-
-import EmployeeDashboard from '../employee/dashboard/Dashboard';
-import EmployeeHistory from '../employee/history/EmployeeHistory';
-import TimeSheets from '../employee/timeSheets/TimeSheets';
-
+import Employee from '../employees/Employee';
 import CreateEmployee from '../employees/EditUser';
 import EditEmployee from '../employees/EditUser';
-import Employee from '../employees/Employee';
+
 import Departments from '../departments/Departments';
 import Department from '../departments/Department';
-import CreateDepartment from '../departments/Create';
-import EditDepartment from '../departments/Edit';
+import CreateDepartment from '../departments/EditDepartment';
+import EditDepartment from '../departments/EditDepartment';
 
-import SupervisorDashboard from '../supervisor/dashboard/Dashboard';
+import SupervisorDashboard from '../supervisor/dashboard/SupervisorDashboard';
+import DepartmentActivity from '../supervisor/dashboard/Activity';
+
 import SupervisorTimeSheets from '../supervisor/timeSheets/TimeSheets';
 import PayPeriods from '../supervisor/payPeriods/PayPeriods';
 
@@ -48,7 +51,10 @@ const Routes = () => {
 						<EmployeeHistory path="/home/history" />
 						<TimeSheets path="/home/timesheets" />
 
-						<SupervisorDashboard path="/supervisor" />
+						<SupervisorDashboard path="/supervisor">
+							<DepartmentActivity path=":departmentId" />
+						</SupervisorDashboard>
+
 						<SupervisorTimeSheets path="/supervisor/timesheets" />
 
 						<Employee path="/employees/:employeeId" />

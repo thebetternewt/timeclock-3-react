@@ -12,7 +12,7 @@ import {
 	LIGHT_GRAY,
 } from '../utilities';
 
-const Button = ({ text, loading, href, external, ...styles }) => {
+const Button = ({ naked, text, loading, href, external, ...styles }) => {
 	if (href) {
 		if (external) {
 			return (

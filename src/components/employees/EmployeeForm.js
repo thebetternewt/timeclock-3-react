@@ -5,7 +5,12 @@ import NumberFormat from 'react-number-format';
 import { FaPlusCircle } from 'react-icons/fa';
 
 import Button from '../../styled/elements/Button';
-import { Form, FormControl, Input } from '../../styled/elements/Form';
+import {
+	Form,
+	FormControl,
+	Input,
+	SrOnlyLabel,
+} from '../../styled/elements/Form';
 import GraphQlErrors from '../shared/GraphQLErrors';
 import DepartmentSelect from '../shared/DepartmentSelect';
 
@@ -233,16 +238,5 @@ const EmployeeForm = ({
 		</Form>
 	);
 };
-
-const SrOnlyLabel = styled.label`
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	padding: 0;
-	margin: -1px;
-	overflow: hidden;
-	clip: rect(0, 0, 0, 0);
-	border: 0;
-`;
 
 export default EmployeeForm;

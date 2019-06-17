@@ -7,6 +7,17 @@ export const DEPARTMENTS = gql`
 			name
 			supervisors {
 				id
+				netId
+				name
+				lastName
+				firstName
+			}
+			users {
+				id
+				netId
+				name
+				firstName
+				lastName
 			}
 		}
 	}
@@ -21,8 +32,8 @@ export const DEPARTMENT = gql`
 				id
 				netId
 				name
-				firstName
 				lastName
+				firstName
 			}
 			users {
 				id

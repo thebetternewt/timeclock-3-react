@@ -1,5 +1,6 @@
 import React from 'react';
-import { Form, FormControl, Input } from '../../styled/elements/Form';
+import { Location } from '@reach/router';
+import { Form, SrOnlyLabel, Input } from '../../styled/elements/Form';
 import GraphQlErrors from '../shared/GraphQLErrors';
 import Button from '../../styled/elements/Button';
 
@@ -9,30 +10,44 @@ const DepartmentForm = ({
 	handleSubmit,
 	error,
 	loading,
-}) => {
-	// TODO: Handle Errors
+}) => (
+	<Form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
+		{error && <GraphQlErrors errors={error} />}
 
-	return (
-		<Form onSubmit={handleSubmit}>
-			{error && <GraphQlErrors errors={error} />}
-			<FormControl>
-				<label>Name</label>
-				<Input
-					name="name"
-					placeholder="Marketing"
-					value={values.name}
-					onChange={handleNameChange}
-				/>
-				<Button
-					type="submit"
-					color="success"
-					text="Save"
-					loading={loading}
-					disabled={loading}
-				/>
-			</FormControl>
-		</Form>
-	);
-};
+		<label htmlFor="name">Name</label>
+		<Input
+			name="name"
+			id="name"
+			placeholder="Name (e.g. Marketing)"
+			value={values.name}
+			onChange={handleNameChange}
+		/>
+
+		<div style={{ display: 'flex', marginTop: '1rem' }}>
+			<Button
+				type="submit"
+				color="success"
+				text="Save"
+				style={{ marginRight: '1rem' }}
+				loading={loading}
+				disabled={loading}
+			/>
+
+			<Location>
+				{({ navigate }) => {
+					return (
+						<Button
+							text="Cancel"
+							onClick={e => {
+								e.preventDefault();
+								navigate('.');
+							}}
+						/>
+					);
+				}}
+			</Location>
+		</div>
+	</Form>
+);
 
 export default DepartmentForm;

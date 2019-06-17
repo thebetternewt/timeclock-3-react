@@ -23,7 +23,9 @@ import { DEPARTMENTS } from '../../apollo/queries/department';
 import DepartmentSelect from '../shared/DepartmentSelect';
 import History from '../shared/history/History'
 
-const Employee = ({employeeId}) => {
+const Employee = ({employeeId, ...props}) => {
+  console.log('emp props:', props)
+
   const [workStudyModalOpen, setWorkStudyModalOpen] = useState(false);
   const [addingDepartment, setAddingDepartment] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState('');

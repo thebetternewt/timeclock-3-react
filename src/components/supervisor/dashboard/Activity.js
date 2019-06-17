@@ -2,14 +2,16 @@ import React from 'react';
 import { useQuery } from 'react-apollo-hooks';
 import styled from 'styled-components';
 
-import Box from '../../../styled/layouts/Box';
-import EmployeesTable from './EmployeesTable';
+import ActiveEmployeeCard from './ActiveEmployeeCard';
 import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
 import Spinner from '../../../styled/elements/Spinner';
 
-const ActivityWrapper = ({ department }) => {
+const ActivityWrapper = ({ departmentId, ...props }) => {
+	console.log('activy props:', props);
+
 	const { data, loading } = useQuery(USERS_BY_DEPARTMENT, {
-		variables: { deptId: department.id },
+		variables: { deptId: departmentId },
+		fetchPolicy: 'no-cache',
 	});
 
 	if (!data.deptUsers || loading) {
@@ -20,7 +22,7 @@ const ActivityWrapper = ({ department }) => {
 
 	if (data.deptUsers) {
 		clockedInEmployees = data.deptUsers.filter(
-			emp => emp.isClockedIn && emp.lastShift.department.id === department.id
+			emp => emp.isClockedIn && emp.lastShift.department.id === departmentId
 		);
 	}
 
@@ -29,12 +31,17 @@ const ActivityWrapper = ({ department }) => {
 			<div className="employee-count">
 				Employee Count: {data.deptUsers.length}
 			</div>
-			<Box>
-				<div className="heading">
-					Clocked in employees: {clockedInEmployees.length}
-				</div>
-				<EmployeesTable employees={clockedInEmployees} />
-			</Box>
+			<div style={{ marginTop: '1rem' }} className="divider" />
+			<div>
+				<h2 className="section-title">
+					Clocked in Employees: {clockedInEmployees.length}
+				</h2>
+				<EmployeeCardGrid>
+					{clockedInEmployees.map(user => (
+						<ActiveEmployeeCard employee={user} key={user.id} />
+					))}
+				</EmployeeCardGrid>
+			</div>
 		</Activity>
 	);
 };
@@ -45,7 +52,7 @@ const Activity = styled.div`
 	width: 800px;
 
 	.employee-count {
-		opacity: 0.7;
+		opacity: 0.8;
 		margin-bottom: 0.3em;
 		font-weight: 400;
 		font-size: 1rem;
@@ -54,12 +61,18 @@ const Activity = styled.div`
 
 	.heading {
 		text-transform: uppercase;
-		opacity: 0.7;
-		margin-bottom: 0.3em;
+		opacity: 0.8;
 		font-weight: 400;
 		font-size: 1rem;
-		margin: 0;
+		margin: 0 0 1rem;
 	}
+`;
+
+const EmployeeCardGrid = styled.div`
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 1rem;
 `;
 
 export default ActivityWrapper;

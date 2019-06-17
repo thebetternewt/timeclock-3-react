@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { useMutation, useQuery } from 'react-apollo-hooks';
-import { Formik } from 'formik';
+import React, { useState, useEffect } from 'react';
+import { useMutation, useQuery, useApolloClient } from 'react-apollo-hooks';
 import { navigate } from '@reach/router';
 
 import DepartmentForm from './DepartmentForm';
@@ -11,17 +10,32 @@ import {
 	CREATE_DEPARTMENT,
 } from '../../apollo/mutations/department';
 
-const Edit = ({ departmentId }) => {
+const EditDepartment = ({ departmentId }) => {
+	const [department, setDepartment] = useState();
+	const [name, setName] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
-	const [name, setName] = useState('');
 
-	const { data: deptData, loading: deptLoading } = useQuery(DEPARTMENT, {
-		variables: { id: departmentId },
-		fetchPolicy: 'no-cache',
-	});
-	const { department } = deptData;
-	if (department && !name) setName(department.name);
+	const client = useApolloClient();
+
+	useEffect(() => {
+		async function fetchDepartment() {
+			const { data, loading } = await client.query({
+				query: DEPARTMENT,
+				variables: { id: departmentId },
+				fetchPolicy: 'no-cache',
+			});
+
+			setLoading(loading);
+
+			if (data.department) {
+				setDepartment(data.department);
+				setName(data.department.name);
+			}
+		}
+
+		if (departmentId) fetchDepartment();
+	}, []);
 
 	const updateDepartment = useMutation(UPDATE_DEPARTMENT, {
 		variables: { deptId: department && department.id, data: { name } },
@@ -41,28 +55,15 @@ const Edit = ({ departmentId }) => {
 		setLoading(true);
 
 		try {
-			//if check goes here
-			// if (department) {
-			// 	await updateDepartment();
+			if (department) {
+				await updateDepartment();
 
-			// 	navigate('.');
-			// } else {
-			// 	const result = await register();
+				navigate('.');
+			} else {
+				const result = await createDepartment();
 
-			// 	if (department) {
-			// 		await addToDept({
-			// 			variables: {
-			// 				userId: result.data.register.id,
-			// 				deptId: values.department,
-			// 			},
-			// 		});
-			// 	}
-
-			// 	navigate(result.data.register.id);
-			// }
-
-			const result = await updateDepartment();
-			navigate(`/departments/${result.data.updateDepartment.id}`);
+				navigate(`/departments/${result.data.createDepartment.id}`);
+			}
 		} catch (err) {
 			console.log(err);
 			setError(err);
@@ -77,17 +78,21 @@ const Edit = ({ departmentId }) => {
 
 	return (
 		<div style={{ width: 500 }}>
-			<h1 className="title">Edit Department</h1>
+			<h1 className="title">
+				{departmentId
+					? `Edit ${department ? department.name : ''}`
+					: 'Create Department'}
+			</h1>
 
 			<DepartmentForm
 				values={{ name }}
 				handleNameChange={handleNameChange}
 				handleSubmit={handleSubmit}
 				error={error}
-				loading={loading || deptLoading}
+				loading={loading}
 			/>
 		</div>
 	);
 };
 
-export default Edit;
+export default EditDepartment;
