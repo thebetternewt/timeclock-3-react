@@ -7,46 +7,89 @@ import Button from '../../../styled/elements/Button';
 import { IoMdInformationCircleOutline } from 'react-icons/io';
 import { PRIMARY } from '../../../styled/utilities';
 
-const ActiveEmployeeCard = ({ employee, loading }) => {
+const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 	const clockOutUser = useMutation(CLOCK_OUT_USER, {
 		variables: { userId: employee.id },
 		refetchQueries: () => ['UsersByDepartment'],
 	});
 
+	console.log('emp:', employee);
+
+	const { lastShift } = employee;
+
+	let cardContent;
+
+	if (clockedIn) {
+		cardContent = (
+			<div className="card-content">
+				<p>Time in: {format(lastShift.timeIn, 'hh:mm A')}</p>
+				<p>
+					Hours Elapsed:{' '}
+					{(differenceInMinutes(new Date(), lastShift.timeIn) / 60).toFixed(2)}
+				</p>
+			</div>
+		);
+	} else if (!clockedIn && lastShift) {
+		cardContent = (
+			<div className="card-content">
+				<h5>Last Shift</h5>
+				<p>{lastShift.department.name}</p>
+				<p>{format(lastShift.timeIn, 'MMM DD')}</p>
+				<p>
+					{format(lastShift.timeIn, 'hh:mm A')} -{' '}
+					{format(lastShift.timeOut, 'hh:mm A')}
+				</p>
+				<p>
+					{(
+						differenceInMinutes(lastShift.timeOut, lastShift.timeIn) / 60
+					).toFixed(2)}{' '}
+					hours
+				</p>
+			</div>
+		);
+	} else {
+		cardContent = (
+			<div className="card-content">
+				{' '}
+				<p>
+					<em>No shifts available</em>
+				</p>
+			</div>
+		);
+	}
+
 	return (
-		<Card>
-			<h4>{employee.name}</h4>
-			<p>Time in: {format(employee.lastShift.timeIn, 'hh:mm A')}</p>
-			<p>
-				Hours Elapsed:{' '}
-				{(
-					differenceInMinutes(new Date(), employee.lastShift.timeIn) / 60
-				).toFixed(2)}
-			</p>
-			<div className="footer">
+		<Card clockedIn={clockedIn}>
+			<h4 className="card-title">{employee.name}</h4>
+			{cardContent}
+			<div className="card-footer">
 				<Button
 					href={`/employees/${employee.id}`}
 					color="primary"
 					text="Details"
 				/>
-				<Button
-					color="danger"
-					text="Clock Out"
-					loading={loading}
-					onClick={async () => {
-						try {
-							await clockOutUser();
-						} catch (err) {
-							console.log(err);
-						}
-					}}
-				/>
+				{clockedIn && (
+					<Button
+						color="danger"
+						text="Clock Out"
+						loading={loading}
+						onClick={async () => {
+							try {
+								await clockOutUser();
+							} catch (err) {
+								console.log(err);
+							}
+						}}
+					/>
+				)}
 			</div>
 		</Card>
 	);
 };
 
 const Card = styled.div`
+	display: flex;
+	flex-direction: column;
 	background-color: #eee;
 	color: #111;
 	border-radius: 3px;
@@ -55,8 +98,23 @@ const Card = styled.div`
 	height: 100%;
 	transition: 200ms all ease;
 
-	h4 {
+	${props => {
+		console.log('card props:', props);
+		if (props.clockedIn) {
+			return `box-shadow: 3px 5px 12px ${PRIMARY};`;
+		}
+	}}
+
+	.card-title {
 		margin: 0 0 0.8em;
+	}
+
+	.card-content {
+		flex-grow: 1;
+
+		h5 {
+			margin: 0;
+		}
 	}
 
 	p {
@@ -64,12 +122,7 @@ const Card = styled.div`
 		font-size: 0.8rem;
 	}
 
-	&:hover {
-		box-shadow: 5px 7px 15px rgba(0, 0, 0, 0.5);
-		background-color: #fff;
-	}
-
-	.footer {
+	.card-footer {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;

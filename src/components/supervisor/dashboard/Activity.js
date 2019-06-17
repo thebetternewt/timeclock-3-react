@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import ActiveEmployeeCard from './ActiveEmployeeCard';
 import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
 import Spinner from '../../../styled/elements/Spinner';
+import { redirectTo, Redirect } from '@reach/router';
 
 const ActivityWrapper = ({ departmentId, ...props }) => {
 	console.log('activy props:', props);
@@ -14,30 +15,46 @@ const ActivityWrapper = ({ departmentId, ...props }) => {
 		fetchPolicy: 'no-cache',
 	});
 
-	if (!data.deptUsers || loading) {
+	const { deptUsers = [] } = data;
+
+	if (loading) {
 		return <Spinner size="60px" />;
 	}
 
-	let clockedInEmployees = [];
-
-	if (data.deptUsers) {
-		clockedInEmployees = data.deptUsers.filter(
-			emp => emp.isClockedIn && emp.lastShift.department.id === departmentId
-		);
+	if (!data.deptUsers) {
+		return <Redirect to="/supervisor" />;
 	}
+
+	let clockedInEmployees = [];
+	let clockedOutEmployees = [];
+
+	clockedInEmployees = deptUsers.filter(
+		emp => emp.isClockedIn && emp.lastShift.department.id === departmentId
+	);
+
+	const clockedInIds = clockedInEmployees.map(emp => emp.id);
+
+	clockedOutEmployees = deptUsers.filter(emp => !clockedInIds.includes(emp.id));
 
 	return (
 		<Activity>
-			<div className="employee-count">
-				Employee Count: {data.deptUsers.length}
-			</div>
-			<div style={{ marginTop: '1rem' }} className="divider" />
-			<div>
+			<div className="clocked-in">
 				<h2 className="section-title">
 					Clocked in Employees: {clockedInEmployees.length}
 				</h2>
 				<EmployeeCardGrid>
 					{clockedInEmployees.map(user => (
+						<ActiveEmployeeCard employee={user} key={user.id} clockedIn />
+					))}
+				</EmployeeCardGrid>
+			</div>
+			<div className="clocked-out">
+				<div className="divider" />
+				<h2 className="section-title">
+					Clocked out Employees: {clockedOutEmployees.length}
+				</h2>
+				<EmployeeCardGrid>
+					{clockedOutEmployees.map(user => (
 						<ActiveEmployeeCard employee={user} key={user.id} />
 					))}
 				</EmployeeCardGrid>
@@ -50,13 +67,10 @@ const Activity = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 800px;
+	margin-bottom: 3rem;
 
-	.employee-count {
-		opacity: 0.8;
-		margin-bottom: 0.3em;
-		font-weight: 400;
-		font-size: 1rem;
-		margin: 1rem 0 2rem;
+	.clocked-in {
+		margin: 3rem 0;
 	}
 
 	.heading {

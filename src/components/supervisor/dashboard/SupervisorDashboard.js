@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
+import { Link } from '@reach/router';
 import { useQuery } from 'react-apollo-hooks';
 import styled from 'styled-components';
-import { Link, navigate } from '@reach/router';
 
 import Button from '../../../styled/elements/Button';
 import Container from '../../../styled/layouts/Container';
 import DepartmentSelect from '../../shared/DepartmentSelect';
-import Activity from './Activity';
 import PrivateRoute from '../../shared/PrivateRoute';
 import { ME } from '../../../apollo/queries/user';
 import { DEPARTMENTS } from '../../../apollo/queries/department';
 import { sortDepartments } from '../../../util/arrays';
 
-const SupervisorDashboard = ({ ...props }) => {
+const SupervisorDashboard = ({ children, navigate, ...props }) => {
 	console.log('dash-props:', props);
-	const [department, setDepartment] = useState();
+	console.log('splat:', props['*']);
+	const [departmentId, setDepartmentId] = useState();
 
 	const { data: meData } = useQuery(ME);
 	const { me } = meData;
@@ -36,12 +36,21 @@ const SupervisorDashboard = ({ ...props }) => {
 
 	// If departments are fetched && no department set as selected,
 	// then set first department as selected.
-	if (departments.length > 0 && !department) setDepartment(departments[0]);
+	if (departments.length > 0 && !departmentId) {
+		const selectedDepartmentId = props['*'];
+		if (selectedDepartmentId) {
+			setDepartmentId(selectedDepartmentId);
+			navigate(selectedDepartmentId);
+		} else {
+			setDepartmentId(departments[0].id);
+			navigate(departments[0].id);
+		}
+	}
 
 	const handleDeptChange = async e => {
 		const deptId = e.target.value;
-		setDepartment(departments.find(dept => dept.id === deptId));
-		await navigate(`/supervisor/${deptId}`);
+		setDepartmentId(deptId);
+		navigate(`/supervisor/${deptId}`);
 	};
 
 	return (
@@ -53,25 +62,22 @@ const SupervisorDashboard = ({ ...props }) => {
 						<label>Department</label>
 						<DepartmentSelect
 							departments={departments}
-							value={department ? department.id : ''}
+							value={departmentId}
 							handleChange={handleDeptChange}
 						/>
 					</DepartmentSelectWrapper>
 
-					<Link to={`/departments/${department && department.id}`}>
+					<Link to={`/departments/${departmentId}`}>
 						<Button
 							color="success"
 							text="Manage"
 							style={{ width: 120, marginLeft: '2rem' }}
-							disabled={!department}
+							disabled={!departmentId}
 						/>
 					</Link>
 				</div>
 			</Container>
-			<Container>
-				{/* {department && <Activity department={department} />} */}
-				{props.children}
-			</Container>
+			<Container>{children}</Container>
 		</>
 	);
 };
