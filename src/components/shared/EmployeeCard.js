@@ -2,11 +2,19 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../styled/elements/Button';
 
-const EmployeeCard = ({ employee }) => {
+const EmployeeCard = ({
+	employee,
+	action,
+	actionText,
+	actionColor = 'danger',
+	loading,
+}) => {
 	// console.log(employee);
 	return (
 		<Card>
-			<h4>{employee.name}</h4>
+			<h4>
+				{employee.lastName}, {employee.firstName}
+			</h4>
 			<p className="netId">{employee.netId}</p>
 			<p className="studentId">
 				Student ID: {employee.nineDigitId.slice(0, 3)}-
@@ -19,20 +27,20 @@ const EmployeeCard = ({ employee }) => {
 					color="primary"
 					text="Details"
 				/>
-				{/* {clockedIn && (
+				{action && (
 					<Button
-						color="danger"
-						text="Clock Out"
+						color={actionColor}
+						text={actionText}
 						loading={loading}
 						onClick={async () => {
 							try {
-								await clockOutUser();
+								await action();
 							} catch (err) {
 								console.log(err);
 							}
 						}}
 					/>
-				)} */}
+				)}
 			</div>
 		</Card>
 	);
@@ -58,12 +66,42 @@ const Card = styled.div`
 		font-size: 0.8rem;
 	}
 
-	&:hover {
-		box-shadow: 5px 7px 15px rgba(0, 0, 0, 0.5);
-		background-color: #fff;
-		/* font-weight: bold; */
-		/* text-transform: uppercase; */
-		transform: scale(1.1);
+	.card-title {
+		margin: 0 0 0.8em;
+	}
+
+	.card-content {
+		flex-grow: 1;
+
+		h5 {
+			margin: 0;
+		}
+	}
+
+	p {
+		margin: 0.3em 0;
+		font-size: 0.8rem;
+	}
+
+	.card-footer {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin: 1rem 0 0;
+		padding-top: 5px;
+		border-top: 1px solid #ddd;
+
+		a,
+		button {
+			font-size: 0.9em;
+			padding: 5px;
+			height: auto;
+			width: auto;
+
+			&:not(:last-child) {
+				margin-right: 5px;
+			}
+		}
 	}
 `;
 

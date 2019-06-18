@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { navigate } from '@reach/router';
 import { useMutation, useQuery } from 'react-apollo-hooks';
+import queryString from 'query-string';
 
 import { DEPARTMENTS } from '../../apollo/queries/department';
 import { ME, USER } from '../../apollo/queries/user';
@@ -13,7 +14,9 @@ import EmployeeForm from './EmployeeForm';
 import Container from '../../styled/layouts/Container';
 import Spinner from '../../styled/elements/Spinner';
 
-const EditUser = ({ employeeId = '' }) => {
+const EditUser = ({ employeeId = '', location }) => {
+	const { deptId } = queryString.parse(location.search);
+
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [netId, setNetId] = useState('');
@@ -32,7 +35,7 @@ const EditUser = ({ employeeId = '' }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const [passwordsMatch, setPasswordsMatch] = useState(true);
-	const [department, setDepartment] = useState('');
+	const [department, setDepartment] = useState(deptId || '');
 
 	const values = {
 		nineDigitId,
@@ -52,8 +55,6 @@ const EditUser = ({ employeeId = '' }) => {
 		admin,
 		department,
 	};
-
-	console.log('emp:', employeeId);
 
 	const { data: meData } = useQuery(ME);
 	const { me = {} } = meData;

@@ -1,11 +1,12 @@
 import React from 'react';
+import { Redirect } from '@reach/router';
 import { useQuery } from 'react-apollo-hooks';
 import styled from 'styled-components';
 
 import ActiveEmployeeCard from './ActiveEmployeeCard';
 import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
 import Spinner from '../../../styled/elements/Spinner';
-import { redirectTo, Redirect } from '@reach/router';
+import { sortUsers } from '../../../util/arrays';
 
 const ActivityWrapper = ({ departmentId, ...props }) => {
 	console.log('activy props:', props);
@@ -43,7 +44,7 @@ const ActivityWrapper = ({ departmentId, ...props }) => {
 					Clocked in Employees: {clockedInEmployees.length}
 				</h2>
 				<EmployeeCardGrid>
-					{clockedInEmployees.map(user => (
+					{sortUsers(clockedInEmployees, 'lastName').map(user => (
 						<ActiveEmployeeCard employee={user} key={user.id} clockedIn />
 					))}
 				</EmployeeCardGrid>
@@ -54,7 +55,7 @@ const ActivityWrapper = ({ departmentId, ...props }) => {
 					Clocked out Employees: {clockedOutEmployees.length}
 				</h2>
 				<EmployeeCardGrid>
-					{clockedOutEmployees.map(user => (
+					{sortUsers(clockedOutEmployees, 'lastName').map(user => (
 						<ActiveEmployeeCard employee={user} key={user.id} />
 					))}
 				</EmployeeCardGrid>

@@ -1,317 +1,329 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link, Match } from '@reach/router';
-import { Query, Mutation } from 'react-apollo';
+
+import Fuse from 'fuse.js';
+import { Link } from '@reach/router';
 import { FaPlusCircle } from 'react-icons/fa';
+import Select from 'react-select';
 
 import Box from '../../styled/layouts/Box';
 import Container from '../../styled/layouts/Container';
 import Button from '../../styled/elements/Button';
 import { List, ListHeader, Item } from '../../styled/elements/List';
 import Spinner from '../../styled/elements/Spinner';
-import { DEPARTMENT } from '../../apollo/queries/department';
+import {
+	DEPARTMENT,
+	USERS_BY_DEPARTMENT,
+} from '../../apollo/queries/department';
 import EmployeeSelect from '../shared/EmployeeSelect';
 import { USERS, ME } from '../../apollo/queries/user';
 import {
-  ADD_SUPERVISOR_TO_DEPT,
-  REMOVE_SUPERVISOR_FROM_DEPT,
-  REMOVE_FROM_DEPT,
-  ADD_TO_DEPT,
+	ADD_SUPERVISOR_TO_DEPT,
+	REMOVE_SUPERVISOR_FROM_DEPT,
+	REMOVE_FROM_DEPT,
+	ADD_TO_DEPT,
 } from '../../apollo/mutations/user';
-import {sortUsers} from '../../util/arrays' 
-import { useQuery } from 'react-apollo-hooks';
+import { sortUsers } from '../../util/arrays';
+import { useQuery, useMutation } from 'react-apollo-hooks';
+import EmployeeCard from '../shared/EmployeeCard';
+import { Input } from '../../styled/elements/Form';
 
 const Department = ({ departmentId }) => {
-  const [addingSupervisor, setAddingSupervisor] = useState(false);
-  const [selectedSupervisor, setSelectedSupervisor] = useState('');
-  const [addingEmployee, setAddingEmployee] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState('');
+	const [addingSupervisor, setAddingSupervisor] = useState(false);
+	const [selectedSupervisor, setSelectedSupervisor] = useState('');
+	const [addingEmployee, setAddingEmployee] = useState(false);
+	const [selectedEmployee, setSelectedEmployee] = useState('');
+	const [searchString, setSearchString] = useState('');
+	const [loading, setLoading] = useState(false);
 
+	const toggleAddingSupervisor = () => setAddingSupervisor(!addingSupervisor);
+	const toggleAddingEmployee = () => setAddingEmployee(!addingEmployee);
 
-  const toggleAddingSupervisor = () => setAddingSupervisor(!addingSupervisor);
-  const toggleAddingEmployee = () => setAddingEmployee(!addingEmployee);
+	const handleSupervisorSelect = e => setSelectedSupervisor(e.target.value);
 
-  const handleSupervisorSelect = e => setSelectedSupervisor(e.target.value);
-  const handleEmployeeSelect = e => setSelectedEmployee(e.target.value);
+	const handleEmployeeSearchSelect = opt => setSelectedEmployee(opt.value);
+	const handleSupervisorSearchSelect = opt => setSelectedSupervisor(opt.value);
 
-  const {data: meData} = useQuery(ME);
-  const {me = {}} = meData;
-  const {admin, supervisor} = me;
+	// users in the department
+	const { data: deptData, loading: deptLoading } = useQuery(DEPARTMENT, {
+		variables: { id: departmentId },
+		fetchPolicy: 'no-cache',
+	});
+	const { department = {} } = deptData;
+	const { users: employees = [] } = department;
 
-  return (
-    
-      <Query
-        query={DEPARTMENT}
-        variables={{ id: departmentId }}
-        fetchPolicy="no-cache"
-      >
-        {({ data, loading }) => {
-          let department;
-          if (loading) {
-            return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
-          }
-          if (data && data.department) {
-            department = data.department;
-          }
+	// users in the system to choose to add to the department
+	const { data: usersData } = useQuery(USERS, { fetchPolicy: 'no-cache' });
+	const { users: allUsers = [] } = usersData;
 
-          return (
-            <Container direction="column">
-              <h1 className="title">{department && department.name}</h1>
-              {/* Supervisors */}
-              {admin && <DepartmentDetailBox>
-                <ListHeader>Supervisors</ListHeader>
-                <List>
-                  {department &&
-                    sortUsers(department.supervisors, 'lastName').map(sup => (
-                      <Item key={sup.id}>
-                        <div>
-                          {sup.lastName}, {sup.firstName} ({sup.netId})
-                        </div>
-                        <div>
-                          <Mutation mutation={REMOVE_SUPERVISOR_FROM_DEPT}>
-                            {(remove, { loading }) => {
-                              return (
-                                <Button
-                                  text="remove"
-                                  color="danger"
-                                  loading={loading}
-                                  onClick={async () => {
-                                    if (window.confirm(`Are you sure you want to remove ${sup.name} from supervising ${department.name}?`)) { 
-                                    try {
-                                        await remove({
-                                          variables: {
-                                            userId: sup.id,
-                                            deptId: departmentId,
-                                          },
-                                          refetchQueries: () => ['Department'],
-                                        });
-                                      } catch (err) {
-                                        console.log(err);
-                                      }
-                                    }
-                                    }}
-                                />
-                              );
-                            }}
-                          </Mutation>
-                        </div>
-                      </Item>
-                    ))}
-                </List>
+	const { data: meData, loading: meLoading } = useQuery(ME);
+	const { me = {} } = meData;
+	const { admin, supervisor } = me;
 
-                {addingSupervisor ? (
-                  <DepartmentActionsWrapper>
-                    <Query query={USERS}>
-                      {({ data }) => {
-                        let users;
+	const removeFromDept = useMutation(REMOVE_FROM_DEPT);
+	const handleRemove = async user => {
+		if (
+			window.confirm(
+				`Are you sure you want to remove ${user.name} from  ${department.name}?`
+			)
+		) {
+			try {
+				await removeFromDept({
+					variables: { userId: user.id, deptId: departmentId },
+					refetchQueries: () => ['Department'],
+				});
+			} catch (err) {
+				console.log(err);
+			}
+		}
+	};
 
-                        if (data && data.users) {
-                          users = data.users;
-                        }
+	const addToDept = useMutation(ADD_TO_DEPT);
+	const handleAdd = async () => {
+		try {
+			await addToDept({
+				variables: { userId: selectedEmployee, deptId: departmentId },
+				refetchQueries: () => ['Department'],
+			});
+		} catch (err) {
+			console.log(err);
+		}
+		setSelectedEmployee('');
+		setAddingEmployee(false);
+	};
 
-                        return (
-                          <EmployeeSelect
-                            employees={users}
-                            handleChange={handleSupervisorSelect}
-                            value={selectedSupervisor}
-                          />
-                        );
-                      }}
-                    </Query>
-                    <Mutation mutation={ADD_SUPERVISOR_TO_DEPT}>
-                      {(addToDepartment, { loading }) => {
-                        return (
-                          <Button
-                            color="success"
-                            onClick={async () => {
-                              try {
-                                await addToDepartment({
-                                  variables: {
-                                    userId: selectedSupervisor,
-                                    deptId: departmentId,
-                                  },
-                                  refetchQueries: () => ['Department'],
-                                });
-                                toggleAddingSupervisor();
-                                setSelectedSupervisor('');
-                              } catch (err) {
-                                console.log(err);
-                              }
-                            }}
-                            text="Add"
-                          />
-                        );
-                      }}
-                    </Mutation>
-                    <Button
-                      color="danger"
-                      onClick={toggleAddingSupervisor}
-                      text="Cancel"
-                    />
-                    
-                  </DepartmentActionsWrapper>
-                ) : (
-                  <Button
-                    color="success"
-                    text={() => (
-                      <>
-                        <FaPlusCircle /> Add Supervisor
-                      </>
-                    )}
-                    style={{ marginTop: '1rem' }}
-                    onClick={toggleAddingSupervisor}
-                  />
-                )}
-              </DepartmentDetailBox>}
+	const addSupervisorToDept = useMutation(ADD_SUPERVISOR_TO_DEPT);
+	const handleAddSupervisor = async () => {
+		try {
+			await addSupervisorToDept({
+				variables: { userId: selectedSupervisor, deptId: departmentId },
+				refetchQueries: () => ['Department'],
+			});
+		} catch (err) {
+			console.log(err);
+		}
+		setSelectedSupervisor('');
+		setAddingSupervisor(false);
+	};
 
-              {/* Employees */}
-              <DepartmentDetailBox>
-                <ListHeader>Employees</ListHeader>
-                <List>
-                  {department &&
-                    sortUsers(department.users, 'lastName')
-                    .map(user => (
-                      <Item key={user.id}>
-                        <div>
-                        {user.lastName}, {user.firstName} ({user.netId})
-                        </div>
-                        <div>
-                          <Mutation mutation={REMOVE_FROM_DEPT}>
-                            {(remove, { loading }) => {
-                              return (
-                                <Button
-                                  text="remove"
-                                  color="danger"
-                                  loading={loading}
-                                  onClick={async () => {
-                                    if (window.confirm(`Are you sure you want to remove ${user.name} from ${department.name}?`)) { 
-                                    try {
+	const removeSupervisorFromDept = useMutation(REMOVE_SUPERVISOR_FROM_DEPT);
+	const handleRemoveSupervisor = async user => {
+		if (
+			window.confirm(
+				`Are you sure you want to remove ${user.name} from supervising ${
+					department.name
+				}?`
+			)
+		) {
+			setLoading(true);
+			try {
+				await removeSupervisorFromDept({
+					variables: { userId: user.id, deptId: departmentId },
+					refetchQueries: () => ['Department'],
+				});
+			} catch (err) {
+				console.log(err);
+			}
+			setLoading(false);
+		}
+	};
 
-                                      await remove({
-                                        variables: {
-                                          userId: user.id,
-                                          deptId: departmentId,
-                                        },
-                                        refetchQueries: () => ['Department'],
-                                      });
-                                    } catch (err) {
-                                      console.log(err);
-                                    }
-                                  }
-                                  }}
-                                />
-                              );
-                            }}
-                          </Mutation>
-                          
-                          <Link to={`../../employees/${user.id}`}>
-                          <Button 
-                          text="view"
-                          color="primary"
-                          loading={loading}
-                          style={{marginRight: '1rem'}}
-                          />
-                          </Link>
+	const dataLoading = deptLoading || meLoading;
 
+	if (dataLoading) {
+		return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
+	}
 
-                        </div>
-                      </Item>
-                    ))}
-                </List>
+	const employeesForHire = allUsers.filter(
+		user => !employees.find(emp => emp.id === user.id)
+	);
 
-                {addingEmployee ? (
-                  <DepartmentActionsWrapper>
-                    <Query query={USERS}>
-                      {({ data }) => {
-                        let users;
+	const nonSupervisors = allUsers.filter(
+		user => !department.supervisors.find(emp => emp.id === user.id)
+	);
 
-                        if (data && data.users) {
-                          users = data.users;
-                        }
+	const supervisorOptions = sortUsers(nonSupervisors, 'lastName').map(emp => ({
+		value: emp.id,
+		label: `${emp.lastName}, ${emp.firstName} (${emp.netId})`,
+	}));
 
-                        return (
-                          <EmployeeSelect
-                            employees={users}
-                            handleChange={handleEmployeeSelect}
-                            value={selectedEmployee}
-                          />
-                        );
-                      }}
-                    </Query>
-                    <Mutation mutation={ADD_TO_DEPT}>
-                      {(addToDepartment, { loading }) => {
-                        return (
-                          <Button
-                            color="success"
-                            onClick={async () => {
-                              try {
-                                await addToDepartment({
-                                  variables: {
-                                    userId: selectedEmployee,
-                                    deptId: departmentId,
-                                  },
-                                  refetchQueries: () => ['Department'],
-                                });
-                                toggleAddingEmployee();
-                                setSelectedEmployee('');
-                              } catch (err) {
-                                console.log(err);
-                              }
-                            }}
-                            text="Add"
-                          />
-                        );
-                      }}
-                    </Mutation>
-                    <Button
-                      color="danger"
-                      onClick={toggleAddingEmployee}
-                      text="Cancel"
-                    />
-                    <Link to="../../employees/new">
-                    <Button
-                    color="primary"
-                    text="Create New Employee" 
-                    /></Link>
-                  </DepartmentActionsWrapper>
-                ) : (
-                  <Button
-                    color="success"
-                    text={() => (
-                      <>
-                        <FaPlusCircle /> Add Employee
-                      </>
-                    )}
-                    style={{ marginTop: '1rem' }}
-                    onClick={toggleAddingEmployee}
-                  />
-                )}
-              </DepartmentDetailBox>
+	const employeeOptions = sortUsers(employeesForHire, 'lastName').map(emp => ({
+		value: emp.id,
+		label: `${emp.lastName}, ${emp.firstName} (${emp.netId})`,
+	}));
 
-              {admin && <DepartmentActionsWrapper>
-                <Link to="edit">
-                  <Button text="Edit Department" color="primary" />
-                </Link>
-              </DepartmentActionsWrapper>}
-            </Container>
-          );
-        }}
-      </Query>
-  );
+	const selectStyles = {
+		container: base => ({
+			...base,
+			width: 500,
+			marginRight: '2rem',
+			color: '#333',
+		}),
+		menu: base => ({
+			...base,
+			marginTop: -6,
+			borderRadius: `0 0 3px 3px`,
+		}),
+	};
+
+	return (
+		<div>
+			<Container direction="column">
+				<div style={{ display: 'flex' }}>
+					<h1 className="title">{department.name}</h1>
+					{admin && (
+						<DepartmentActionsWrapper>
+							<Button
+								href="edit"
+								text="edit"
+								naked
+								style={{
+									display: 'flex',
+									alignSelf: 'flex-end',
+									width: 'auto',
+									minWidth: 0,
+								}}
+							/>
+						</DepartmentActionsWrapper>
+					)}
+				</div>
+			</Container>
+
+			{/* Supervisors */}
+			{admin && (
+				<Container direction="column">
+					<h2 className="section-title">Supervisors</h2>
+
+					{addingSupervisor ? (
+						<DepartmentActionsWrapper>
+							<Select
+								options={supervisorOptions}
+								placeholder="Search for employee (first name, last name, netId)"
+								styles={selectStyles}
+								onChange={handleSupervisorSearchSelect}
+								maxMenuHeight={120}
+							/>
+
+							<Button
+								color="success"
+								onClick={handleAddSupervisor}
+								text="Add"
+							/>
+
+							<Button
+								color="danger"
+								onClick={toggleAddingSupervisor}
+								text="Cancel"
+							/>
+							<Link to="../../employees/new">
+								<Button color="primary" text="Create New" />
+							</Link>
+						</DepartmentActionsWrapper>
+					) : (
+						<DepartmentActionsWrapper>
+							<Button
+								color="success"
+								text={() => (
+									<>
+										<FaPlusCircle /> Add New
+									</>
+								)}
+								onClick={toggleAddingSupervisor}
+							/>
+						</DepartmentActionsWrapper>
+					)}
+
+					<EmployeeCardGrid>
+						{sortUsers(department.supervisors, 'lastName').map(user => (
+							<EmployeeCard
+								key={user.id}
+								employee={user}
+								action={() => handleRemoveSupervisor(user)}
+								actionText={'Remove'}
+								// loading={loading}
+							/>
+						))}
+					</EmployeeCardGrid>
+				</Container>
+			)}
+
+			{/* Employees */}
+			<Container direction="column">
+				<div className="divider" />
+				<h2 className="section-title">Employees</h2>
+
+				{addingEmployee ? (
+					<DepartmentActionsWrapper>
+						<Select
+							options={employeeOptions}
+							placeholder="Search for employee (first name, last name, netId)"
+							styles={selectStyles}
+							onChange={handleEmployeeSearchSelect}
+							maxMenuHeight={120}
+						/>
+
+						<Button color="success" onClick={handleAdd} text="Add" />
+
+						<Button
+							color="danger"
+							onClick={toggleAddingEmployee}
+							text="Cancel"
+						/>
+						<Link to={`../../employees/new?deptId=${departmentId}`}>
+							<Button color="primary" text="Create New" />
+						</Link>
+					</DepartmentActionsWrapper>
+				) : (
+					<DepartmentActionsWrapper>
+						<Button
+							color="success"
+							text={() => (
+								<>
+									<FaPlusCircle /> Add New
+								</>
+							)}
+							onClick={toggleAddingEmployee}
+						/>
+					</DepartmentActionsWrapper>
+				)}
+
+				<EmployeeCardGrid>
+					{sortUsers(employees, 'lastName').map(user => (
+						<EmployeeCard
+							key={user.id}
+							employee={user}
+							action={() => handleRemove(user)}
+							actionText={'Remove'}
+							// loading={loading}
+						/>
+					))}
+				</EmployeeCardGrid>
+			</Container>
+		</div>
+	);
 };
 
 const DepartmentDetailBox = styled(Box)`
-  margin-bottom: 2rem;
+	margin-bottom: 2rem;
 `;
 
 const DepartmentActionsWrapper = styled.div`
-  display: flex;
+	display: flex;
+	align-items: center;
+	margin-bottom: 2rem;
 
-  select,
-  button {
-    margin-right: 1rem;
-    min-width: 100px;
-  }
+	button {
+		margin-right: 1rem;
+		min-width: 100px;
+		padding: 0 1rem;
+	}
+`;
+
+const EmployeeCardGrid = styled.div`
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-gap: 1rem;
 `;
 
 export default Department;

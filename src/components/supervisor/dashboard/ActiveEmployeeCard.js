@@ -50,7 +50,6 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 	} else {
 		cardContent = (
 			<div className="card-content">
-				{' '}
 				<p>
 					<em>No shifts available</em>
 				</p>
@@ -60,7 +59,9 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 
 	return (
 		<Card clockedIn={clockedIn}>
-			<h4 className="card-title">{employee.name}</h4>
+			<h4 className="card-title">
+				{employee.lastName}, {employee.firstName}
+			</h4>
 			{cardContent}
 			<div className="card-footer">
 				<Button
