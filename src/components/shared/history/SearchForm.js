@@ -2,7 +2,10 @@ import React, { useContext } from 'react';
 import { format } from 'date-fns';
 import { useQuery } from 'react-apollo-hooks';
 
-import { PAY_PERIODS } from '../../../apollo/queries/payPeriod';
+import {
+	PAY_PERIODS,
+	CURRENT_PAY_PERIOD,
+} from '../../../apollo/queries/payPeriod';
 import {
 	Form,
 	FormControl,
@@ -18,14 +21,19 @@ const SearchForm = () => {
 	const { data: ppData } = useQuery(PAY_PERIODS, {
 		variables: { year: parseInt(context.year, 10) },
 	});
-
 	const { payPeriods = [] } = ppData;
+
+	const { data: pp } = useQuery(CURRENT_PAY_PERIOD);
+	const { payPeriod: currentPeriod } = pp;
 
 	if (payPeriods.length) {
 		context.setPayPeriods(payPeriods);
 		// Set initial pay period if not already set in context.
 		if (!context.payPeriod) context.setPayPeriod(payPeriods[0]);
 	}
+
+	// Set current pay period selection.
+	if (currentPeriod) context.setPayPeriod(currentPeriod);
 
 	const handleSubmit = async e => {
 		e.preventDefault();

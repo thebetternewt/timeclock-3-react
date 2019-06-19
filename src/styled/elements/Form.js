@@ -21,7 +21,7 @@ export const Input = styled.input`
 	font-size: 1rem;
 	width: 100%;
 
-	margin: 8px 0;
+	margin: 5px 0;
 
 	&[type='checkbox'] {
 		margin-right: 1rem;
@@ -50,7 +50,6 @@ export const FormControl = styled.div`
 	button,
 	.field-loader-wrapper {
 		flex-basis: 60%;
-		margin: 5px;
 		height: 34px;
 	}
 `;

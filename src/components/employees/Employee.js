@@ -87,24 +87,44 @@ const Employee = ({ employeeId }) => {
 									Student ID: {user.nineDigitId.slice(0, 3)}-
 									{user.nineDigitId.slice(3, 6)}-{user.nineDigitId.slice(6, 9)}{' '}
 								</div>
-								<div>email: {user.email}</div>
+								<div>Email: {user.email}</div>
+								{user.phone && <div>Phone: {user.phone}</div>}
+								<div className="divider" />
 
-								<div className="status-indicator" style={{ marginTop: '1rem' }}>
-									{user.active ? (
-										<FaCheck color={SUCCESS} />
-									) : (
-										<FaTimes color={DANGER} />
-									)}
-									Active
-								</div>
+								{user.street1 && (
+									<div className="address">
+										<h3>Address:</h3>
+										<p>{user.street1}</p>
+										<p>{user.street2}</p>
+										<p>
+											{user.city}, {user.state} {user.zip}
+										</p>
+										<div className="divider" />
+									</div>
+								)}
 
-								<div className="status-indicator">
-									{user.admin ? (
-										<FaCheck color={SUCCESS} />
-									) : (
-										<FaTimes color={DANGER} />
-									)}
-									Admin
+								<div className="status">
+									<h3>Status:</h3>
+									<div
+										className="status-indicator"
+										style={{ marginTop: '1rem' }}
+									>
+										{user.active ? (
+											<FaCheck color={SUCCESS} />
+										) : (
+											<FaTimes color={DANGER} />
+										)}
+										Active
+									</div>
+
+									<div className="status-indicator">
+										{user.admin ? (
+											<FaCheck color={SUCCESS} />
+										) : (
+											<FaTimes color={DANGER} />
+										)}
+										Admin
+									</div>
 								</div>
 							</DetailColumn>
 							<DetailColumn>
@@ -245,16 +265,26 @@ const EmployeeDetail = styled.div`
 	margin-bottom: 2rem;
 `;
 
-const Marker = styled.div`
-	display: inline-block;
-	width: 8px;
-	height: 8px;
-	background-color: ${({ color }) => color};
-	border-radius: 100px;
-	margin-right: 0.6rem;
-`;
-
 const DetailColumn = styled.div`
+	h3 {
+		font-weight: normal;
+		margin-bottom: 0.5rem;
+		margin-top: 0;
+	}
+
+	.divider {
+		margin: 2rem 0 0.3rem;
+	}
+
+	.address,
+	.status {
+		margin-top: 1rem;
+
+		p {
+			margin: 0.1em;
+		}
+	}
+
 	.status-indicator {
 		display: flex;
 		align-items: center;
@@ -266,12 +296,6 @@ const DetailColumn = styled.div`
 
 	.user-departments {
 		margin-left: 3rem;
-
-		h3 {
-			font-weight: normal;
-			margin-bottom: 0.5rem;
-			margin-top: 0;
-		}
 
 		ul {
 			margin-top: 0;

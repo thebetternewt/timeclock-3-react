@@ -92,11 +92,14 @@ const ShiftModal = ({ employee, shift, close }) => {
 			<Form>
 				{error && <GraphQlErrors error={error} />}
 				{!shift && (
-					<DepartmentSelect
-						departments={emp.departments}
-						handleChange={handleDepartmentSelect}
-						value={department && department.id}
-					/>
+					<>
+						<label htmlFor="department">Department</label>
+						<DepartmentSelect
+							departments={emp.departments}
+							handleChange={handleDepartmentSelect}
+							value={department && department.id}
+						/>
+					</>
 				)}
 				<div style={{ display: 'flex' }}>
 					<div style={{ marginRight: '1rem' }}>
@@ -172,6 +175,7 @@ const ShiftModal = ({ employee, shift, close }) => {
 
 const ModalActions = styled.div`
 	display: flex;
+	margin-top: 1rem;
 
 	button {
 		margin-right: 1rem;
