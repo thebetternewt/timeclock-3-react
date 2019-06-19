@@ -178,29 +178,34 @@ const WorkStudyForm = ({
 
 					{editingDates && (
 						<div style={{ display: 'flex' }}>
-							<DatePicker
-								customInput={<Input style={{ marginRight: '1rem' }} />}
-								name="startDate"
-								selected={startDate}
-								selectsStart
-								startDate={startDate}
-								endDate={startDate}
-								minDate={parse(period.startDate)}
-								maxDate={parse(period.endDate)}
-								onChange={handleStartDateChange}
-							/>
-
-							<DatePicker
-								customInput={<Input />}
-								name="endDate"
-								selected={endDate}
-								selectsEnd
-								startDate={startDate}
-								endDate={endDate}
-								minDate={parse(period.startDate)}
-								maxDate={parse(period.endDate)}
-								onChange={handleEndDateChange}
-							/>
+							<div style={{ marginRight: '1rem' }}>
+								<label>Start Date</label>
+								<DatePicker
+									customInput={<Input style={{ marginRight: '1rem' }} />}
+									name="startDate"
+									selected={startDate}
+									selectsStart
+									startDate={startDate}
+									endDate={startDate}
+									minDate={parse(period.startDate)}
+									maxDate={parse(period.endDate)}
+									onChange={handleStartDateChange}
+								/>
+							</div>
+							<div>
+								<label>End Date</label>
+								<DatePicker
+									customInput={<Input />}
+									name="endDate"
+									selected={endDate}
+									selectsEnd
+									startDate={startDate}
+									endDate={endDate}
+									minDate={parse(period.startDate)}
+									maxDate={parse(period.endDate)}
+									onChange={handleEndDateChange}
+								/>
+							</div>
 						</div>
 					)}
 

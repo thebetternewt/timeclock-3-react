@@ -35,8 +35,7 @@ const Title = styled.h3`
 
 const Content = styled.div`
 	position: relative;
-	height: 525px;
-	max-height: 100%;
+	max-height: 90%;
 	width: 500px;
 	max-width: 100%;
 	background: ${GRAY5};
@@ -44,8 +43,6 @@ const Content = styled.div`
 	padding: 1rem;
 	border-radius: 3px;
 	box-shadow: 3px 7px 12px rgba(0, 0, 0, 0.4);
-	overflow: scroll;
-	scrollbar-width: none;
 `;
 
 const CloseButton = styled.button`

@@ -99,7 +99,7 @@ const ShiftModal = ({ employee, shift, close }) => {
 					/>
 				)}
 				<div style={{ display: 'flex' }}>
-					<div>
+					<div style={{ marginRight: '1rem' }}>
 						<label htmlFor="timein">Time In</label>
 						<DatePicker
 							customInput={<Input style={{ marginRight: '1rem' }} />}
