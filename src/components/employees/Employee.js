@@ -5,13 +5,7 @@ import { useQuery, useMutation } from 'react-apollo-hooks';
 import NumberFormat from 'react-number-format';
 import { format } from 'date-fns';
 
-import {
-	FaPlusCircle,
-	FaTrashAlt,
-	FaPencilAlt,
-	FaTimes,
-	FaCheck,
-} from 'react-icons/fa';
+import { FaPlusCircle, FaPencilAlt, FaTimes, FaCheck } from 'react-icons/fa';
 
 import Box from '../../styled/layouts/Box';
 import ShiftModal from '../shared/ShiftModal';
@@ -29,15 +23,10 @@ import {
 } from '../../apollo/mutations/user';
 import Container from '../../styled/layouts/Container';
 import { DEPARTMENTS } from '../../apollo/queries/department';
-import DepartmentSelect from '../shared/DepartmentSelect';
 import History from '../shared/history/History';
 
-const Employee = ({ employeeId, ...props }) => {
-	console.log('emp props:', props);
-
+const Employee = ({ employeeId }) => {
 	const [workStudyModalOpen, setWorkStudyModalOpen] = useState(false);
-	const [addingDepartment, setAddingDepartment] = useState(false);
-	const [selectedDepartment, setSelectedDepartment] = useState('');
 	const [selectedWorkStudy, setSelectedWorkStudy] = useState();
 	const [addShiftModalOpen, setAddShiftModalOpen] = useState(false);
 	const [activateLoading, setActivateLoading] = useState(false);
@@ -78,11 +67,9 @@ const Employee = ({ employeeId, ...props }) => {
 		return <EmployeeDetailBox>User Not Found.</EmployeeDetailBox>;
 	}
 
-	const toggleAddingDepartment = () => setAddingDepartment(!addingDepartment);
 	const toggleWorkStudyModal = () => setWorkStudyModalOpen(!workStudyModalOpen);
 	const toggleAddShiftModal = () => setAddShiftModalOpen(!addShiftModalOpen);
 
-	const handleDepartmentSelect = e => setSelectedDepartment(e.target.value);
 	const handleWorkStudySelect = ws => setSelectedWorkStudy(ws);
 
 	console.log('employee');
@@ -118,6 +105,16 @@ const Employee = ({ employeeId, ...props }) => {
 										<FaTimes color={DANGER} />
 									)}
 									Admin
+								</div>
+							</DetailColumn>
+							<DetailColumn>
+								<div className="user-departments">
+									<h3>Current Departments</h3>
+									<ul>
+										{user.departments.map(dept => (
+											<li>{dept.name}</li>
+										))}
+									</ul>
 								</div>
 							</DetailColumn>
 						</EmployeeDetail>
@@ -165,92 +162,6 @@ const Employee = ({ employeeId, ...props }) => {
 						<History employee={user} />
 					</div>
 
-					{/* Departments */}
-					{(me.admin || me.supervisor) && (
-						<div>
-							<div className="divider" />
-							<h2 className="section-title">Departments</h2>
-							<EmployeeDetailBox>
-								<List>
-									{user &&
-										user.departments.map(dept => (
-											<Item key={dept.id}>
-												<div>{dept.name}</div>
-												<div>
-													<Button
-														text={() => <FaTrashAlt />}
-														color="danger"
-														naked
-														loading={loading}
-														onClick={async () => {
-															try {
-																await removeFromDept({
-																	variables: {
-																		userId: user.id,
-																		deptId: dept.id,
-																	},
-																});
-															} catch (err) {
-																console.log(err);
-															}
-														}}
-														style={{ fontSize: '1.2rem', color: DANGER }}
-													/>
-												</div>
-											</Item>
-										))}
-								</List>
-
-								{addingDepartment ? (
-									<ActionsWrapper>
-										<DepartmentSelect
-											departments={departments}
-											handleChange={handleDepartmentSelect}
-											value={selectedDepartment}
-										/>
-
-										<Button
-											color="success"
-											onClick={async () => {
-												try {
-													await addToDept({
-														variables: {
-															userId: user.id,
-															deptId: selectedDepartment,
-														},
-														refetchQueries: () => ['User'],
-													});
-													toggleAddingDepartment();
-													setSelectedDepartment('');
-												} catch (err) {
-													console.log(err);
-												}
-											}}
-											text="Add"
-										/>
-
-										<Button
-											color="danger"
-											onClick={toggleAddingDepartment}
-											text="Cancel"
-										/>
-									</ActionsWrapper>
-								) : (
-									<Button
-										color="success"
-										text={() => (
-											<>
-												<FaPlusCircle /> Add Department
-											</>
-										)}
-										style={{ marginTop: '1rem' }}
-										onClick={toggleAddingDepartment}
-									/>
-								)}
-							</EmployeeDetailBox>
-						</div>
-					)}
-
 					{/* Workstudy */}
 					<div>
 						<div className="divider" />
@@ -286,7 +197,6 @@ const Employee = ({ employeeId, ...props }) => {
 												<Button
 													text={() => <FaPencilAlt />}
 													naked
-													small
 													onClick={() => {
 														handleWorkStudySelect(ws);
 														toggleWorkStudyModal();
@@ -354,6 +264,26 @@ const DetailColumn = styled.div`
 		}
 	}
 
+	.user-departments {
+		margin-left: 3rem;
+
+		h3 {
+			font-weight: normal;
+			margin-bottom: 0.5rem;
+			margin-top: 0;
+		}
+
+		ul {
+			margin-top: 0;
+			list-style: none;
+			padding: 0;
+		}
+		li {
+			font-size: 0.9rem;
+			margin-bottom: 0.3em;
+		}
+	}
+
 	> * {
 		margin: 0.3rem 0;
 	}
@@ -364,8 +294,7 @@ const EmployeeDetailBox = styled(Box)`
 `;
 
 const EmployeeActionsWrapper = styled.div`
-	flex-basis: 50%;
-	margin: 0 0 2rem;
+	margin-left: auto;
 
 	button {
 		display: block;

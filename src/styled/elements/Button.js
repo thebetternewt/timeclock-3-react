@@ -55,6 +55,9 @@ export default styled(Button)`
   justify-content: center;
   cursor: pointer;
 	color: ${GRAY1};
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 
   &:disabled {
     /* background: ${LIGHT_GRAY};

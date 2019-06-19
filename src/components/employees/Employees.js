@@ -69,9 +69,7 @@ const Employees = () => {
 			<Container>
 				<EmployeeCardGrid>
 					{filteredUsers.map(user => (
-						<EmployeeLink to={user.id} key={user.id}>
-							<EmployeeCard employee={user} />
-						</EmployeeLink>
+						<EmployeeCard employee={user} key={user.id} />
 					))}
 				</EmployeeCardGrid>
 			</Container>

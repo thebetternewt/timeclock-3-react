@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { navigate } from '@reach/router';
 import { useMutation, useQuery } from 'react-apollo-hooks';
 import queryString from 'query-string';
 
@@ -8,13 +7,14 @@ import { ME, USER } from '../../apollo/queries/user';
 import {
 	REGISTER,
 	ADD_TO_DEPT,
+	REMOVE_FROM_DEPT,
 	UPDATE_USER,
 } from '../../apollo/mutations/user';
 import EmployeeForm from './EmployeeForm';
 import Container from '../../styled/layouts/Container';
 import Spinner from '../../styled/elements/Spinner';
 
-const EditUser = ({ employeeId = '', location }) => {
+const EditUser = ({ employeeId = '', location, navigate }) => {
 	const { deptId } = queryString.parse(location.search);
 
 	const [firstName, setFirstName] = useState('');
@@ -35,7 +35,7 @@ const EditUser = ({ employeeId = '', location }) => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const [passwordsMatch, setPasswordsMatch] = useState(true);
-	const [department, setDepartment] = useState(deptId || '');
+	const [selectedDepartments, setSelectedDepartments] = useState([]);
 
 	const values = {
 		nineDigitId,
@@ -53,14 +53,49 @@ const EditUser = ({ employeeId = '', location }) => {
 		confirm,
 		dsf,
 		admin,
-		department,
+		departments: selectedDepartments,
 	};
 
 	const { data: meData } = useQuery(ME);
 	const { me = {} } = meData;
+	const { supervisedDepartments = [] } = me;
 
 	const { data: deptData } = useQuery(DEPARTMENTS);
 	const { departments = [] } = deptData;
+
+	const checkFixed = dept => {
+		if (me.admin) return false;
+		if (me.supervisor) {
+			return !supervisedDepartments.find(sd => sd.id === dept.id);
+		}
+		return true;
+	};
+
+	let departmentOptions = departments.map(dept => ({
+		value: dept.id,
+		label: dept.name,
+		isFixed: checkFixed(dept),
+	}));
+
+	if (!me.admin) {
+		departmentOptions = departmentOptions.filter(opt =>
+			me.supervisedDepartments.find(sd => sd.id === opt.value)
+		);
+	}
+
+	const orderOptions = values => {
+		return values.filter(v => v.isFixed).concat(values.filter(v => !v.isFixed));
+	};
+
+	if (
+		deptId &&
+		departmentOptions.length > 0 &&
+		selectedDepartments.length === 0
+	) {
+		setSelectedDepartments(
+			departmentOptions.filter(opt => opt.value === deptId)
+		);
+	}
 
 	const { data: userData, loading: userLoading } = useQuery(USER, {
 		variables: { id: employeeId },
@@ -83,11 +118,20 @@ const EditUser = ({ employeeId = '', location }) => {
 		setZip(user.zip || '');
 		setDsf(user.dsf);
 		setAdmin(user.admin);
+		setSelectedDepartments(
+			orderOptions(
+				user.departments.map(dept => ({
+					value: dept.id,
+					label: dept.name,
+					isFixed: checkFixed(dept),
+				}))
+			)
+		);
 	}
 
 	const {
 		confirm: _,
-		department: __,
+		departments: __,
 		phone: phoneValue,
 		password: passwordValue,
 		...userVariables
@@ -118,10 +162,32 @@ const EditUser = ({ employeeId = '', location }) => {
 		refetchQueries: () => ['User'],
 	});
 
+	const removeFromDept = useMutation(REMOVE_FROM_DEPT, {
+		refetchQueries: () => ['User'],
+	});
+
 	const checkPassword = (password, confirm) =>
 		setPasswordsMatch(password ? password === confirm : true);
 
-	const handleDeptChange = deptId => setDepartment(deptId);
+	const handleDeptChange = (value, { action, removedValue }) => {
+		console.log('onChange value:', value);
+		console.log('onChange action:', action);
+		console.log('onChange removedValue:', removedValue);
+
+		switch (action) {
+			case 'remove-value':
+			case 'pop-value':
+				if (removedValue && removedValue.isFixed) {
+					return;
+				}
+				break;
+			case 'clear':
+				value = departmentOptions.filter(val => val.isFixed);
+				break;
+		}
+		value = orderOptions(value || []);
+		setSelectedDepartments(value);
+	};
 
 	const handleChange = ({ target: { name, value, checked } }) => {
 		console.log(name, ':', value);
@@ -189,18 +255,48 @@ const EditUser = ({ employeeId = '', location }) => {
 			if (user) {
 				await updateUser();
 
-				navigate('.');
+				// Find departments that have been removed from the user's list
+				// of selected departments.
+				const departmentsForRemoval = user.departments.filter(
+					dept => !selectedDepartments.find(sd => sd.value === dept.id)
+				);
+
+				// Remove user from each department removed from the list.
+				departmentsForRemoval.forEach(async dept => {
+					await removeFromDept({
+						variables: {
+							userId: user.id,
+							deptId: dept.id,
+						},
+					});
+				});
+
+				// Add user to each department added to the list.
+				selectedDepartments.forEach(async dept => {
+					await addToDept({
+						variables: {
+							userId: user.id,
+							deptId: dept.value,
+						},
+					});
+				});
+
+				navigate('..');
 			} else {
 				const result = await register();
 
-				if (department) {
-					await addToDept({
-						variables: {
-							userId: result.data.register.id,
-							deptId: values.department,
-						},
+				if (selectedDepartments.length > 0) {
+					selectedDepartments.forEach(async dept => {
+						await addToDept({
+							variables: {
+								userId: result.data.register.id,
+								deptId: dept.value,
+							},
+						});
 					});
 				}
+
+				console.log(result);
 
 				navigate(result.data.register.id);
 			}
@@ -211,6 +307,13 @@ const EditUser = ({ employeeId = '', location }) => {
 
 		setLoading(false);
 	};
+
+	const handleCancel = e => {
+		e.preventDefault();
+		navigate(deptId ? `/departments/${deptId}` : '..');
+	};
+
+	console.log('values:', values);
 
 	return (
 		<Container direction="column">
@@ -227,8 +330,9 @@ const EditUser = ({ employeeId = '', location }) => {
 						error={error}
 						passwordsMatch={passwordsMatch}
 						loading={loading}
-						departments={me.admin ? departments : me.supervisedDepartments}
+						departments={departmentOptions}
 						editing={!!employeeId}
+						cancel={handleCancel}
 					/>
 				</>
 			) : (
