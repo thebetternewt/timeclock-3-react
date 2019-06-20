@@ -175,3 +175,12 @@ export const USER = gql`
 		}
 	}
 `;
+
+export const CURRENT_USER_WORKSTUDY = gql`
+	query CurrentUserWorkStudy($userId: ID!, $deptId: ID!) {
+		workStudy(deptId: $deptId, userId: $userId) {
+			id
+			amount
+		}
+	}
+`;

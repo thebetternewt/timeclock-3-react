@@ -24,7 +24,7 @@ const Header = styled.header`
 
 	background-color: ${GRAY1};
 
-	z-index: 10;
+	z-index: 20;
 
 	a {
 		display: block;

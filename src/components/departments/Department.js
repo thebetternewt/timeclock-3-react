@@ -1,45 +1,41 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-
-import Fuse from 'fuse.js';
 import { Link } from '@reach/router';
+import React, { useState } from 'react';
+import { Query } from 'react-apollo';
+import { useMutation, useQuery } from 'react-apollo-hooks';
 import { FaPlusCircle } from 'react-icons/fa';
 import Select from 'react-select';
-
-import Box from '../../styled/layouts/Box';
-import Container from '../../styled/layouts/Container';
-import Button from '../../styled/elements/Button';
-import { List, ListHeader, Item } from '../../styled/elements/List';
-import Spinner from '../../styled/elements/Spinner';
-import {
-	DEPARTMENT,
-	USERS_BY_DEPARTMENT,
-} from '../../apollo/queries/department';
-import EmployeeSelect from '../shared/EmployeeSelect';
-import { USERS, ME } from '../../apollo/queries/user';
+import styled from 'styled-components';
 import {
 	ADD_SUPERVISOR_TO_DEPT,
-	REMOVE_SUPERVISOR_FROM_DEPT,
-	REMOVE_FROM_DEPT,
 	ADD_TO_DEPT,
+	REMOVE_FROM_DEPT,
+	REMOVE_SUPERVISOR_FROM_DEPT,
 } from '../../apollo/mutations/user';
+import { DEPARTMENT } from '../../apollo/queries/department';
+import {
+	ME,
+	USER,
+	USERS,
+	USER_SHIFTS,
+	CURRENT_USER_WORKSTUDY,
+} from '../../apollo/queries/user';
+import { CURRENT_WORK_STUDY_PERIOD } from '../../apollo/queries/workStudyPeriod';
+import Button from '../../styled/elements/Button';
+import Spinner from '../../styled/elements/Spinner';
+import Box from '../../styled/layouts/Box';
+import Container from '../../styled/layouts/Container';
 import { sortUsers } from '../../util/arrays';
-import { useQuery, useMutation } from 'react-apollo-hooks';
 import EmployeeCard from '../shared/EmployeeCard';
-import { Input } from '../../styled/elements/Form';
 
 const Department = ({ departmentId }) => {
 	const [addingSupervisor, setAddingSupervisor] = useState(false);
 	const [selectedSupervisor, setSelectedSupervisor] = useState('');
 	const [addingEmployee, setAddingEmployee] = useState(false);
 	const [selectedEmployee, setSelectedEmployee] = useState('');
-	const [searchString, setSearchString] = useState('');
 	const [loading, setLoading] = useState(false);
 
 	const toggleAddingSupervisor = () => setAddingSupervisor(!addingSupervisor);
 	const toggleAddingEmployee = () => setAddingEmployee(!addingEmployee);
-
-	const handleSupervisorSelect = e => setSelectedSupervisor(e.target.value);
 
 	const handleEmployeeSearchSelect = opt => setSelectedEmployee(opt.value);
 	const handleSupervisorSearchSelect = opt => setSelectedSupervisor(opt.value);
@@ -52,6 +48,14 @@ const Department = ({ departmentId }) => {
 	const { department = {} } = deptData;
 	const { users: employees = [] } = department;
 
+	if (department.supervisors) {
+		employees.forEach(emp => {
+			emp.isSupervisor = !!department.supervisors.find(
+				sup => sup.id === emp.id
+			);
+		});
+	}
+
 	// users in the system to choose to add to the department
 	const { data: usersData } = useQuery(USERS, { fetchPolicy: 'no-cache' });
 	const { users: allUsers = [] } = usersData;
@@ -59,6 +63,14 @@ const Department = ({ departmentId }) => {
 	const { data: meData, loading: meLoading } = useQuery(ME);
 	const { me = {} } = meData;
 	const { admin, supervisor } = me;
+
+	const { data: wsData, loading: wsLoading } = useQuery(
+		CURRENT_WORK_STUDY_PERIOD
+	);
+	const { workStudyPeriod: currentWSPeriod } = wsData;
+
+	// const { data: userData } = useQuery(USER);
+	// const { workStudy: userWorkStudy } = userData;
 
 	const removeFromDept = useMutation(REMOVE_FROM_DEPT);
 	const handleRemove = async user => {
@@ -93,10 +105,10 @@ const Department = ({ departmentId }) => {
 	};
 
 	const addSupervisorToDept = useMutation(ADD_SUPERVISOR_TO_DEPT);
-	const handleAddSupervisor = async () => {
+	const handleAddSupervisor = async userId => {
 		try {
 			await addSupervisorToDept({
-				variables: { userId: selectedSupervisor, deptId: departmentId },
+				variables: { userId, deptId: departmentId },
 				refetchQueries: () => ['Department'],
 			});
 		} catch (err) {
@@ -128,7 +140,7 @@ const Department = ({ departmentId }) => {
 		}
 	};
 
-	const dataLoading = deptLoading || meLoading;
+	const dataLoading = deptLoading || meLoading || wsLoading;
 
 	if (dataLoading) {
 		return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
@@ -189,67 +201,8 @@ const Department = ({ departmentId }) => {
 				</div>
 			</Container>
 
-			{/* Supervisors */}
-			{admin && (
-				<Container direction="column">
-					<h2 className="section-title">Supervisors</h2>
-
-					{addingSupervisor ? (
-						<DepartmentActionsWrapper>
-							<Select
-								options={supervisorOptions}
-								placeholder="Search for employee (first name, last name, netId)"
-								styles={selectStyles}
-								onChange={handleSupervisorSearchSelect}
-								maxMenuHeight={120}
-							/>
-
-							<Button
-								color="success"
-								onClick={handleAddSupervisor}
-								text="Add"
-							/>
-
-							<Button
-								color="danger"
-								onClick={toggleAddingSupervisor}
-								text="Cancel"
-							/>
-							<Link to="../../employees/new">
-								<Button color="primary" text="Create New" />
-							</Link>
-						</DepartmentActionsWrapper>
-					) : (
-						<DepartmentActionsWrapper>
-							<Button
-								color="success"
-								text={() => (
-									<>
-										<FaPlusCircle /> Add New
-									</>
-								)}
-								onClick={toggleAddingSupervisor}
-							/>
-						</DepartmentActionsWrapper>
-					)}
-
-					<EmployeeCardGrid>
-						{sortUsers(department.supervisors, 'lastName').map(user => (
-							<EmployeeCard
-								key={user.id}
-								employee={user}
-								action={() => handleRemoveSupervisor(user)}
-								actionText={'Remove'}
-								// loading={loading}
-							/>
-						))}
-					</EmployeeCardGrid>
-				</Container>
-			)}
-
 			{/* Employees */}
 			<Container direction="column">
-				<div className="divider" />
 				<h2 className="section-title">Employees</h2>
 
 				{addingEmployee ? (
@@ -279,7 +232,7 @@ const Department = ({ departmentId }) => {
 							color="success"
 							text={() => (
 								<>
-									<FaPlusCircle /> Add New
+									<FaPlusCircle /> Add Employee
 								</>
 							)}
 							onClick={toggleAddingEmployee}
@@ -287,15 +240,117 @@ const Department = ({ departmentId }) => {
 					</DepartmentActionsWrapper>
 				)}
 
-				<EmployeeCardGrid>
-					{sortUsers(employees, 'lastName').map(user => (
-						<EmployeeCard
-							key={user.id}
-							employee={user}
-							action={() => handleRemove(user)}
-							actionText={'Remove'}
-							// loading={loading}
+				{/* {addingSupervisor ? (
+					<DepartmentActionsWrapper>
+						<Select
+							options={supervisorOptions}
+							placeholder="Search for employee (first name, last name, netId)"
+							styles={selectStyles}
+							onChange={handleSupervisorSearchSelect}
+							maxMenuHeight={120}
 						/>
+
+						<Button
+							color="success"
+							onClick={() => handleAddSupervisor(selectedSupervisor)}
+							text="Add"
+						/>
+
+						<Button
+							color="danger"
+							onClick={toggleAddingSupervisor}
+							text="Cancel"
+						/>
+						<Link to="../../employees/new">
+							<Button color="primary" text="Create New" />
+						</Link>
+					</DepartmentActionsWrapper>
+				) : (
+					<DepartmentActionsWrapper>
+						<Button
+							color="success"
+							text={() => (
+								<>
+									<FaPlusCircle /> Add Supervisor
+								</>
+							)}
+							onClick={toggleAddingSupervisor}
+						/>
+					</DepartmentActionsWrapper>
+				)} */}
+
+				<EmployeeCardGrid>
+					{sortUsers(employees, ['lastName', 'isSupervisor']).map(user => (
+						<Query
+							query={CURRENT_USER_WORKSTUDY}
+							variables={{
+								userId: user.id,
+								deptId: departmentId,
+							}}
+							key={user.id}
+						>
+							{({ data, loading }) => {
+								let amount;
+								if (data && data.workStudy) {
+									amount = data.workStudy.amount;
+								}
+
+								return (
+									<Query
+										query={USER_SHIFTS}
+										variables={{
+											userId: user.id,
+											deptId: departmentId,
+											startDate: currentWSPeriod.startDate,
+											endDate: currentWSPeriod.endDate,
+										}}
+									>
+										{({ data }) => {
+											let wsShifts = [];
+											let totalMinutes = 0;
+											let percentUsed = 0;
+
+											if (data && data.shifts) {
+												wsShifts = data.shifts.filter(shift => shift.workStudy);
+											}
+
+											wsShifts.forEach(shift => {
+												totalMinutes += shift.minutesElapsed;
+											});
+
+											const totalWorkStudyHoursUsed = totalMinutes / 60;
+
+											if (amount >= 0) {
+												const hoursAvailable = amount / 7.25;
+												percentUsed =
+													(totalWorkStudyHoursUsed / hoursAvailable) * 100;
+											}
+
+											const toggleSupervisor = () => {
+												if (user.isSupervisor) {
+													handleRemoveSupervisor(user);
+												} else {
+													console.log(user.id);
+													handleAddSupervisor(user.id);
+												}
+											};
+
+											return (
+												<EmployeeCard
+													employee={user}
+													supervisor={user.isSupervisor}
+													action={() => handleRemove(user)}
+													actionText={'Remove'}
+													workStudy={amount > 0}
+													workStudyUsed={Math.round(percentUsed)}
+													toggleSupervisor={toggleSupervisor}
+												/>
+											);
+										}}
+									</Query>
+								);
+							}}
+						</Query>
 					))}
 				</EmployeeCardGrid>
 			</Container>
@@ -303,14 +358,11 @@ const Department = ({ departmentId }) => {
 	);
 };
 
-const DepartmentDetailBox = styled(Box)`
-	margin-bottom: 2rem;
-`;
-
 const DepartmentActionsWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	margin-bottom: 2rem;
+	z-index: 10;
 
 	button {
 		margin-right: 1rem;

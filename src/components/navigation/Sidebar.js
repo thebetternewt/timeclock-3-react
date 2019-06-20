@@ -10,16 +10,12 @@ import { LOGOUT } from '../../apollo/mutations/user';
 import { fixed, GRAY4, GRAY5 } from '../../styled/utilities';
 import EmployeeLinks from './EmployeeLinks';
 import SupervisorLinks from './SupervisorLinks';
-import NavLink from './SideNavLink';
 
 const SidebarWrapper = ({ width }) => {
 	const logout = useMutation(LOGOUT);
 
 	const { data: meData } = useQuery(ME);
 	const { me = {} } = meData;
-
-	const elevated = me.supervisor || me.admin;
-	console.log(elevated);
 
 	const handleLogout = async e => {
 		e.preventDefault();

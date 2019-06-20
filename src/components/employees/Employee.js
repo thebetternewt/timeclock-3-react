@@ -132,7 +132,7 @@ const Employee = ({ employeeId }) => {
 									<h3>Current Departments</h3>
 									<ul>
 										{user.departments.map(dept => (
-											<li>{dept.name}</li>
+											<li key={dept.id}>{dept.name}</li>
 										))}
 									</ul>
 								</div>

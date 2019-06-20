@@ -5,6 +5,7 @@ import {
 	FaUsers,
 	FaRegBuilding,
 	FaRegCalendarAlt,
+	FaDollarSign,
 } from 'react-icons/fa';
 
 import NavLink from './SideNavLink';
@@ -45,6 +46,12 @@ const SupervisorLinks = ({ admin = false }) => {
 				<NavLink to="/employees">
 					<FaUsers />
 					Employees
+				</NavLink>
+			</li>
+			<li>
+				<NavLink to="/budgets">
+					<FaDollarSign />
+					Budgets
 				</NavLink>
 			</li>
 			{admin && <AdminLinks />}
