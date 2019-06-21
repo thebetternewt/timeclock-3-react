@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useMutation, useQuery, useApolloClient } from 'react-apollo-hooks';
+import { useMutation, useApolloClient } from 'react-apollo-hooks';
 import { navigate } from '@reach/router';
 
 import DepartmentForm from './DepartmentForm';

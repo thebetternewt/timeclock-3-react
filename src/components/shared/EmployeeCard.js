@@ -13,10 +13,12 @@ const EmployeeCard = ({
 	actionText,
 	actionColor = 'danger',
 	loading,
-	workStudy,
+	workStudyDetails,
 	workStudyUsed,
 	toggleSupervisor,
 }) => {
+	const isWorkStudy = workStudyDetails.amountAllotted > 0;
+
 	return (
 		<Card isSuper={supervisor}>
 			<div className="isSuper" onClick={toggleSupervisor}>
@@ -27,7 +29,7 @@ const EmployeeCard = ({
 				<div className="progress">
 					{/* <Circle percent="10" strokeWidth="4" strokeColor="#D3D3D3" /> */}
 					<AnimatedCircle
-						percent={workStudyUsed}
+						percent={Math.round(workStudyDetails.percentUsed) || 0}
 						gapDegree={70}
 						gapPosition="left"
 						strokeWidth="4"
@@ -39,13 +41,20 @@ const EmployeeCard = ({
 					<h4 className="card-title">
 						{employee.lastName}, {employee.firstName}
 					</h4>
-					<p className="detail">{employee.netId}</p>
-					<p className="detail">
-						Student ID: {employee.nineDigitId.slice(0, 3)}-
-						{employee.nineDigitId.slice(3, 6)}-
-						{employee.nineDigitId.slice(6, 9)}
+					{isWorkStudy && (
+						<div className="ws-details">
+							<p className="detail ws-label">Work study</p>
+							<p className="detail">
+								{(
+									workStudyDetails.hoursAvailable - workStudyDetails.hoursUsed
+								).toFixed(1)}{' '}
+								hours remaining
+							</p>
+						</div>
+					)}
+					<p className="ws-percent">
+						{isWorkStudy ? `${Math.round(workStudyDetails.percentUsed)}%` : ''}
 					</p>
-					<p className="ws-percent">{workStudy ? `${workStudyUsed}%` : ''}</p>
 				</div>
 				{/* <p> Work Study Used: ${workStudyUsed}</p> */}
 			</div>
@@ -114,9 +123,20 @@ const Card = styled.div`
 		}
 	}
 
+	.ws-details {
+		opacity: 0.8;
+		margin-top: 5px;
+	}
+
 	.detail {
 		margin: 0;
-		font-size: 0.8rem;
+		font-size: 0.7rem;
+
+		&.ws-label {
+			text-transform: uppercase;
+			font-weight: bold;
+			letter-spacing: 0.04em;
+		}
 	}
 
 	.card-title {

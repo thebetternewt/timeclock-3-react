@@ -7,8 +7,8 @@ export const arraysEqual = (arr1, arr2) => {
 	return true;
 };
 
-export const sortUsers = (arr, params) => {
-	let sortedUsers = arr;
+export const sort = (arr, params) => {
+	let sortedArr = arr;
 	let sortParams = params;
 
 	if (typeof params === 'string') {
@@ -16,7 +16,7 @@ export const sortUsers = (arr, params) => {
 	}
 
 	sortParams.forEach(param => {
-		sortedUsers = sortedUsers.sort((a, b) => {
+		sortedArr = sortedArr.sort((a, b) => {
 			// Handle booleans
 			if (typeof a[param] === 'boolean') {
 				if (a[param] < b[param]) {
@@ -45,18 +45,5 @@ export const sortUsers = (arr, params) => {
 		});
 	});
 
-	return sortedUsers;
+	return sortedArr;
 };
-
-export const sortDepartments = (arr, param) =>
-	arr.sort((a, b) => {
-		if (a[param].toUpperCase() > b[param].toUpperCase()) {
-			return 1;
-		}
-
-		if (a[param].toUpperCase() < b[param].toUpperCase()) {
-			return -1;
-		}
-
-		return 0;
-	});

@@ -19,20 +19,6 @@ const EmployeeCard = ({ employee }) => {
 					color="primary"
 					text="Details"
 				/>
-				{/* {clockedIn && (
-					<Button
-						color="danger"
-						text="Clock Out"
-						loading={loading}
-						onClick={async () => {
-							try {
-								await clockOutUser();
-							} catch (err) {
-								console.log(err);
-							}
-						}}
-					/>
-				)} */}
 			</div>
 		</Card>
 	);

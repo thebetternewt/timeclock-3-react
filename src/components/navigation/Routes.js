@@ -2,6 +2,7 @@ import React from 'react';
 import { Router, Location, Redirect } from '@reach/router';
 import { useQuery } from 'react-apollo-hooks';
 import { ME } from '../../apollo/queries/user';
+import config from '../../config';
 
 import Login from '../auth/Login';
 
@@ -11,8 +12,8 @@ import TimeSheets from '../home/timeSheets/TimeSheets';
 
 import Employees from '../employees/Employees';
 import Employee from '../employees/Employee';
-import CreateEmployee from '../employees/EditUser';
-import EditEmployee from '../employees/EditUser';
+import CreateEmployee from '../employees/EditEmployee';
+import EditEmployee from '../employees/EditEmployee';
 
 import Departments from '../departments/Departments';
 import Department from '../departments/Department';
@@ -24,22 +25,35 @@ import DepartmentActivity from '../supervisor/dashboard/Activity';
 
 import SupervisorTimeSheets from '../supervisor/timeSheets/TimeSheets';
 import PayPeriods from '../supervisor/payPeriods/PayPeriods';
+import Spinner from '../../styled/elements/Spinner';
 
 const Routes = () => {
-	const { data: meData } = useQuery(ME);
+	const { data: meData, loading } = useQuery(ME);
+
+	if (loading) {
+		return <Spinner size="100px" />;
+	}
 
 	const { me } = meData;
 
 	return (
 		<Location>
 			{({ location }) => {
+				if (me && config.hideHomeForSupervisors) {
+					if (me && (me.admin || me.supervisor)) {
+						if (location.pathname.match(/home/)) {
+							return <Redirect to="/supervisor" />;
+						}
+					}
+				}
+
 				if (me && !me.admin && !me.supervisor) {
 					if (
 						location.pathname.match(
 							/supervisor|employees|departments|payperiods/
 						)
 					) {
-						return <Redirect to="/" noThrow />;
+						return <Redirect to="/home" />;
 					}
 				}
 

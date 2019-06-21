@@ -2,11 +2,12 @@ import React from 'react';
 import { Redirect } from '@reach/router';
 import { useQuery } from 'react-apollo-hooks';
 import styled from 'styled-components';
+import { isSameDay } from 'date-fns';
 
 import ActiveEmployeeCard from './ActiveEmployeeCard';
 import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
 import Spinner from '../../../styled/elements/Spinner';
-import { sortUsers } from '../../../util/arrays';
+import { sort } from '../../../util/arrays';
 
 const ActivityWrapper = ({ departmentId, ...props }) => {
 	console.log('activy props:', props);
@@ -27,7 +28,7 @@ const ActivityWrapper = ({ departmentId, ...props }) => {
 	}
 
 	let clockedInEmployees = [];
-	let clockedOutEmployees = [];
+	let todaysActivity = [];
 
 	clockedInEmployees = deptUsers.filter(
 		emp => emp.isClockedIn && emp.lastShift.department.id === departmentId
@@ -35,7 +36,13 @@ const ActivityWrapper = ({ departmentId, ...props }) => {
 
 	const clockedInIds = clockedInEmployees.map(emp => emp.id);
 
-	clockedOutEmployees = deptUsers.filter(emp => !clockedInIds.includes(emp.id));
+	todaysActivity = deptUsers
+		// filter out users that are not clocked in
+		.filter(emp => !clockedInIds.includes(emp.id))
+		// filter out users that have worked this day
+		.filter(
+			emp => emp.lastShift && isSameDay(emp.lastShift.timeOut, new Date())
+		);
 
 	return (
 		<Activity>
@@ -44,18 +51,16 @@ const ActivityWrapper = ({ departmentId, ...props }) => {
 					Clocked in Employees: {clockedInEmployees.length}
 				</h2>
 				<EmployeeCardGrid>
-					{sortUsers(clockedInEmployees, 'lastName').map(user => (
+					{sort(clockedInEmployees, 'lastName').map(user => (
 						<ActiveEmployeeCard employee={user} key={user.id} clockedIn />
 					))}
 				</EmployeeCardGrid>
 			</div>
 			<div className="clocked-out">
 				<div className="divider" />
-				<h2 className="section-title">
-					Clocked out Employees: {clockedOutEmployees.length}
-				</h2>
+				<h2 className="section-title">Today's Activity</h2>
 				<EmployeeCardGrid>
-					{sortUsers(clockedOutEmployees, 'lastName').map(user => (
+					{sort(todaysActivity, 'lastName').map(user => (
 						<ActiveEmployeeCard employee={user} key={user.id} />
 					))}
 				</EmployeeCardGrid>

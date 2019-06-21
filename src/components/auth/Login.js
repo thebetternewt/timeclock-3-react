@@ -68,7 +68,14 @@ const Login = () => {
 	return (
 		<Query query={ME}>
 			{({ data }) => {
-				if (data && data.me) return <Redirect to="/home" noThrow />;
+				if (data && data.me) {
+					const { me } = data;
+					if (me.admin || me.supervisor) {
+						return <Redirect to="/supervisor" />;
+					}
+
+					return <Redirect to="/home" />;
+				}
 
 				return (
 					<LoginBox>

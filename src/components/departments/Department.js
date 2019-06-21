@@ -24,15 +24,15 @@ import Button from '../../styled/elements/Button';
 import Spinner from '../../styled/elements/Spinner';
 import Box from '../../styled/layouts/Box';
 import Container from '../../styled/layouts/Container';
-import { sortUsers } from '../../util/arrays';
+import { sort } from '../../util/arrays';
 import EmployeeCard from '../shared/EmployeeCard';
+import { aggWorkStudy } from '../../util/workstudy';
 
 const Department = ({ departmentId }) => {
 	const [addingSupervisor, setAddingSupervisor] = useState(false);
 	const [selectedSupervisor, setSelectedSupervisor] = useState('');
 	const [addingEmployee, setAddingEmployee] = useState(false);
 	const [selectedEmployee, setSelectedEmployee] = useState('');
-	const [loading, setLoading] = useState(false);
 
 	const toggleAddingSupervisor = () => setAddingSupervisor(!addingSupervisor);
 	const toggleAddingEmployee = () => setAddingEmployee(!addingEmployee);
@@ -127,7 +127,6 @@ const Department = ({ departmentId }) => {
 				}?`
 			)
 		) {
-			setLoading(true);
 			try {
 				await removeSupervisorFromDept({
 					variables: { userId: user.id, deptId: departmentId },
@@ -136,7 +135,6 @@ const Department = ({ departmentId }) => {
 			} catch (err) {
 				console.log(err);
 			}
-			setLoading(false);
 		}
 	};
 
@@ -154,12 +152,7 @@ const Department = ({ departmentId }) => {
 		user => !department.supervisors.find(emp => emp.id === user.id)
 	);
 
-	const supervisorOptions = sortUsers(nonSupervisors, 'lastName').map(emp => ({
-		value: emp.id,
-		label: `${emp.lastName}, ${emp.firstName} (${emp.netId})`,
-	}));
-
-	const employeeOptions = sortUsers(employeesForHire, 'lastName').map(emp => ({
+	const employeeOptions = sort(employeesForHire, 'lastName').map(emp => ({
 		value: emp.id,
 		label: `${emp.lastName}, ${emp.firstName} (${emp.netId})`,
 	}));
@@ -240,47 +233,8 @@ const Department = ({ departmentId }) => {
 					</DepartmentActionsWrapper>
 				)}
 
-				{/* {addingSupervisor ? (
-					<DepartmentActionsWrapper>
-						<Select
-							options={supervisorOptions}
-							placeholder="Search for employee (first name, last name, netId)"
-							styles={selectStyles}
-							onChange={handleSupervisorSearchSelect}
-							maxMenuHeight={120}
-						/>
-
-						<Button
-							color="success"
-							onClick={() => handleAddSupervisor(selectedSupervisor)}
-							text="Add"
-						/>
-
-						<Button
-							color="danger"
-							onClick={toggleAddingSupervisor}
-							text="Cancel"
-						/>
-						<Link to="../../employees/new">
-							<Button color="primary" text="Create New" />
-						</Link>
-					</DepartmentActionsWrapper>
-				) : (
-					<DepartmentActionsWrapper>
-						<Button
-							color="success"
-							text={() => (
-								<>
-									<FaPlusCircle /> Add Supervisor
-								</>
-							)}
-							onClick={toggleAddingSupervisor}
-						/>
-					</DepartmentActionsWrapper>
-				)} */}
-
 				<EmployeeCardGrid>
-					{sortUsers(employees, ['lastName', 'isSupervisor']).map(user => (
+					{sort(employees, ['lastName', 'isSupervisor']).map(user => (
 						<Query
 							query={CURRENT_USER_WORKSTUDY}
 							variables={{
@@ -289,7 +243,7 @@ const Department = ({ departmentId }) => {
 							}}
 							key={user.id}
 						>
-							{({ data, loading }) => {
+							{({ data }) => {
 								let amount;
 								if (data && data.workStudy) {
 									amount = data.workStudy.amount;
@@ -306,24 +260,13 @@ const Department = ({ departmentId }) => {
 										}}
 									>
 										{({ data }) => {
-											let wsShifts = [];
-											let totalMinutes = 0;
-											let percentUsed = 0;
+											let wsDetails = [];
 
 											if (data && data.shifts) {
-												wsShifts = data.shifts.filter(shift => shift.workStudy);
-											}
-
-											wsShifts.forEach(shift => {
-												totalMinutes += shift.minutesElapsed;
-											});
-
-											const totalWorkStudyHoursUsed = totalMinutes / 60;
-
-											if (amount >= 0) {
-												const hoursAvailable = amount / 7.25;
-												percentUsed =
-													(totalWorkStudyHoursUsed / hoursAvailable) * 100;
+												wsDetails = aggWorkStudy({
+													amountAllotted: amount,
+													shifts: data.shifts,
+												});
 											}
 
 											const toggleSupervisor = () => {
@@ -341,8 +284,8 @@ const Department = ({ departmentId }) => {
 													supervisor={user.isSupervisor}
 													action={() => handleRemove(user)}
 													actionText={'Remove'}
-													workStudy={amount > 0}
-													workStudyUsed={Math.round(percentUsed)}
+													workStudyDetails={wsDetails}
+													workStudyUsed={Math.round(wsDetails.percentUsed)}
 													toggleSupervisor={toggleSupervisor}
 												/>
 											);

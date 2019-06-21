@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
-import { Query, Mutation } from 'react-apollo';
-import { format, parse } from 'date-fns';
+import { useMutation } from 'react-apollo-hooks';
+import { parse } from 'date-fns';
 import styled from 'styled-components';
 import DatePicker from 'react-datepicker';
 
 import { Form, Select, Input } from '../../../styled/elements/Form';
 import Button from '../../../styled/elements/Button';
-// import { PAY_PERIODS } from '../../../apollo/queries/payPeriod';
-// import {
-// 	CREATE_WORK_STUDY,
-// 	EDIT_WORK_STUDY,
-// 	DELETE_WORK_STUDY,
-// } from '../../../../apollo/mutations/workStudy';
 import GraphQlErrors from '../../shared/GraphQLErrors';
+import { CREATE_PAY_PERIOD } from './mutations';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -24,29 +19,40 @@ const yearOptions = [
 
 const semesterOptions = ['Spring', 'Summer', 'Fall'];
 
-const PayPeriodForm = ({ payPeriod, close }) => {
-	const [year, setYear] = useState(payPeriod && payPeriod.year);
-	const [semester, setSemester] = useState(payPeriod && payPeriod.semester);
+const PayPeriodForm = ({ close }) => {
+	const [year, setYear] = useState(new Date().getFullYear());
+	const [semester, setSemester] = useState(semesterOptions[0].toUpperCase());
+	const [payPeriodId, setPayPeriodId] = useState('');
 	const [startDate, setStartDate] = useState();
 	const [endDate, setEndDate] = useState();
-	const [editingDates, setEditingDates] = useState(false);
 	const [error, setError] = useState();
 
-	const editing = !!payPeriod;
-	// const mutation = editing ? EDIT_WORK_STUDY : CREATE_WORK_STUDY;
+	const createPayPeriod = useMutation(CREATE_PAY_PERIOD, {
+		variables: {
+			data: {
+				year,
+				payPeriodId,
+				fiscalYear: payPeriodId > 12 ? year + 1 : year,
+				semester,
+				startDate,
+				endDate,
+			},
+		},
+		refetchQueries: () => ['PayPeriods'],
+	});
+	const handleCreate = async e => {
+		e.preventDefault();
+		try {
+			await createPayPeriod();
+		} catch (err) {
+			console.log(err);
+			setError(err);
+		}
+	};
 
-	// const handleDepartmentChange = e =>
-	// 	setDepartment(getDepartment(e.target.value));
-	// const handleAmountChange = e => setAmount(e.target.value);
-	const handleYearChange = e => setYear(e.target.value);
+	const handleYearChange = e => setYear(parseInt(e.target.value));
 	const handleSemesterChange = e => setSemester(e.target.value);
-	// const handlePeriodChange = e => {
-	// 	const selectedPeriod = getPeriod(e.target.value);
-	// 	console.log('selectedPeriod:', selectedPeriod);
-	// 	setPeriod(selectedPeriod);
-	// 	setStartDate(parse(selectedPeriod.startDate));
-	// 	setEndDate(parse(selectedPeriod.endDate));
-	// };
+	const handlePayPeriodIdChange = e => setPayPeriodId(parseInt(e.target.value));
 	const handleStartDateChange = date => setStartDate(date);
 	const handleEndDateChange = date => setEndDate(date);
 
@@ -77,6 +83,15 @@ const PayPeriodForm = ({ payPeriod, close }) => {
 				))}
 			</Select>
 
+			<label htmlFor="payPeriodId">Pay Period Number</label>
+			<Input
+				type="number"
+				name="payPeriodId"
+				id="payPeriodId"
+				placeholder="1"
+				onChange={handlePayPeriodIdChange}
+			/>
+
 			<label htmlFor="startDate">Start Date</label>
 			<DatePicker
 				customInput={<Input style={{ marginRight: '1rem' }} />}
@@ -99,75 +114,8 @@ const PayPeriodForm = ({ payPeriod, close }) => {
 				onChange={handleEndDateChange}
 			/>
 
-			<ModalActions>
-				{/* <Mutation mutation={mutation} refetchQueries={() => ['User']}>
-							{(submit, { loading, error: workStudyError }) => {
-								if (workStudyError) {
-									setError(workStudyError);
-								}
-
-								const variables = {
-									data: {
-										userId: employee.id,
-										deptId: department.id,
-										workStudyPeriodId: period.id,
-										startDate: format(startDate, 'YYYY-MM-DD'),
-										endDate: format(endDate, 'YYYY-MM-DD'),
-										amount: parseInt(amount, 10),
-									},
-								};
-
-								if (editing) {
-									variables.id = ws.id;
-								}
-
-								return (
-									<Button
-										type="submit"
-										text="Yes"
-										color="success"
-										onClick={async e => {
-											e.preventDefault();
-											console.log(variables);
-											try {
-												await submit({
-													variables,
-												});
-												close();
-											} catch (error) {
-												console.log(error);
-											}
-										}}
-										loading={loading}
-									/>
-								);
-							}}
-						</Mutation> */}
-				{/* 
-						{editing && (
-							<Mutation
-								mutation={DELETE_WORK_STUDY}
-								variables={{ id: ws.id }}
-								refetchQueries={() => ['User']}
-							>
-								{(destroy, { loading }) => (
-									<Button
-										text="Remove"
-										color="danger"
-										loading={loading}
-										onClick={async e => {
-											e.preventDefault();
-											try {
-												await destroy();
-												close();
-											} catch (err) {
-												console.log(err);
-											}
-										}}
-									/>
-								)}
-							</Mutation>
-						)} */}
+			<Actions>
+				<Button text="Submit" onClick={handleCreate} color="success" />
 
 				<Button
 					text="Cancel"
@@ -176,19 +124,14 @@ const PayPeriodForm = ({ payPeriod, close }) => {
 						close();
 					}}
 				/>
-			</ModalActions>
+			</Actions>
 		</Form>
 	);
 };
 
-const WorkStudyDescription = styled.p`
-	span {
-		font-weight: 600;
-	}
-`;
-
-const ModalActions = styled.div`
+const Actions = styled.div`
 	display: flex;
+	margin-top: 1rem;
 
 	button {
 		margin-right: 1rem;

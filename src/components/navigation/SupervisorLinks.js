@@ -19,6 +19,12 @@ const AdminLinks = () => (
 			</NavLink>
 		</li>
 		<li>
+			<NavLink to="/employees">
+				<FaUsers />
+				Employees
+			</NavLink>
+		</li>
+		<li>
 			<NavLink to="/payperiods">
 				<FaRegCalendarAlt />
 				Pay Periods
@@ -40,12 +46,6 @@ const SupervisorLinks = ({ admin = false }) => {
 				<NavLink to="/supervisor/timesheets">
 					<FaRegFileAlt />
 					Timesheets
-				</NavLink>
-			</li>
-			<li>
-				<NavLink to="/employees">
-					<FaUsers />
-					Employees
 				</NavLink>
 			</li>
 			<li>

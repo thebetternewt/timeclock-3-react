@@ -33,7 +33,7 @@ const WorkStudyForm = ({
 }) => {
 	const initialValues = {
 		department: ws ? ws.department : null,
-		year: ws ? ws.period.year : '',
+		year: ws ? ws.period.year : new Date().getFullYear(),
 		period: ws ? ws.period : null,
 		startDate: ws ? parse(ws.startDate) : null,
 		endDate: ws ? parse(ws.endDate) : null,
@@ -95,7 +95,6 @@ const WorkStudyForm = ({
 
 			<label htmlFor="year">Year</label>
 			<Select name="year" onChange={handleYearChange} value={year}>
-				<option value="">Choose year.</option>
 				{yearOptions.map(year => (
 					<option key={year} value={year}>
 						{year}

@@ -14,11 +14,15 @@ import { Input } from '../../styled/elements/Form';
 const Employees = () => {
 	const [searchString, setSearchString] = useState('');
 
+	const { data: usersData } = useQuery(USERS, { fetchPolicy: 'no-cache' });
+	const { users = [] } = usersData;
+
 	const { data: meData } = useQuery(ME);
 	const { me } = meData;
 
-	const { data: usersData } = useQuery(USERS, { fetchPolicy: 'no-cache' });
-	const { users = [] } = usersData;
+	if (me && !me.admin) {
+		return <Redirect to="/" noThrow />;
+	}
 
 	const fuzzySearchOptions = {
 		shouldSort: true,

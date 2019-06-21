@@ -9,11 +9,9 @@ import DepartmentSelect from '../../shared/DepartmentSelect';
 import PrivateRoute from '../../shared/PrivateRoute';
 import { ME } from '../../../apollo/queries/user';
 import { DEPARTMENTS } from '../../../apollo/queries/department';
-import { sortDepartments } from '../../../util/arrays';
+import { sort } from '../../../util/arrays';
 
 const SupervisorDashboard = ({ children, navigate, ...props }) => {
-	console.log('dash-props:', props);
-	console.log('splat:', props['*']);
 	const [departmentId, setDepartmentId] = useState();
 
 	const { data: meData } = useQuery(ME);
@@ -32,7 +30,7 @@ const SupervisorDashboard = ({ children, navigate, ...props }) => {
 	}
 
 	// Sort departments by name
-	departments = sortDepartments(departments, 'name');
+	departments = sort(departments, 'name');
 
 	// If departments are fetched && no department set as selected,
 	// then set first department as selected.

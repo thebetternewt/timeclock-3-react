@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select } from '../../styled/elements/Form';
-import { sortDepartments } from '../../util/arrays';
+import { sort } from '../../util/arrays';
 
 const DepartmentSelect = ({
 	departments = [],
@@ -19,7 +19,7 @@ const DepartmentSelect = ({
 		options = <option value="">No departments found.</option>;
 	} else {
 		options.push(
-			sortDepartments(departments, 'name').map(dept => (
+			sort(departments, 'name').map(dept => (
 				<option key={dept.id} value={dept.id}>
 					{dept.name}
 				</option>

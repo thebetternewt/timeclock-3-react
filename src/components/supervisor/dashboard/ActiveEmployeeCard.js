@@ -22,7 +22,7 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 	if (clockedIn) {
 		cardContent = (
 			<div className="card-content">
-				<p>Time in: {format(lastShift.timeIn, 'hh:mm A')}</p>
+				<p>Time in: {format(lastShift.timeIn, 'h:mm A')}</p>
 				<p>
 					Hours Elapsed:{' '}
 					{(differenceInMinutes(new Date(), lastShift.timeIn) / 60).toFixed(2)}
@@ -34,10 +34,9 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 			<div className="card-content">
 				<h5>Last Shift</h5>
 				<p>{lastShift.department.name}</p>
-				<p>{format(lastShift.timeIn, 'MMM DD')}</p>
 				<p>
-					{format(lastShift.timeIn, 'hh:mm A')} -{' '}
-					{format(lastShift.timeOut, 'hh:mm A')}
+					{format(lastShift.timeIn, 'h:mm A')} -{' '}
+					{format(lastShift.timeOut, 'h:mm A')}
 				</p>
 				<p>
 					{(
@@ -98,13 +97,6 @@ const Card = styled.div`
 	padding: 12px;
 	height: 100%;
 	transition: 200ms all ease;
-
-	${props => {
-		console.log('card props:', props);
-		if (props.clockedIn) {
-			return `box-shadow: 3px 5px 12px ${PRIMARY};`;
-		}
-	}}
 
 	.card-title {
 		margin: 0 0 0.8em;
