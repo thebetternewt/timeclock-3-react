@@ -220,6 +220,7 @@ const Employee = ({ employeeId }) => {
 														<NumberFormat
 															displayType="text"
 															thousandSeparator
+															decimalScale={2}
 															prefix="$"
 															value={
 																wsDetails.amountAllotted - wsDetails.amountUsed
@@ -229,6 +230,7 @@ const Employee = ({ employeeId }) => {
 														<NumberFormat
 															displayType="text"
 															thousandSeparator
+															decimalScale={2}
 															prefix="$"
 															value={wsDetails.amountAllotted}
 														/>{' '}
