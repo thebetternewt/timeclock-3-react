@@ -49,7 +49,7 @@ export const IS_CLOCKED_IN = gql`
 `;
 
 export const MY_SHIFTS = gql`
-	query MyShifts($deptId: String, $startDate: DateTime, $endDate: DateTime) {
+	query MyShifts($deptId: ID, $startDate: DateTime, $endDate: DateTime) {
 		myShifts(deptId: $deptId, startDate: $startDate, endDate: $endDate) {
 			id
 			timeIn

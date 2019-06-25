@@ -4,8 +4,7 @@ import { format, differenceInMinutes } from 'date-fns';
 import { CLOCK_OUT_USER } from '../../../apollo/mutations/user';
 import { useMutation } from 'react-apollo-hooks';
 import Button from '../../../styled/elements/Button';
-import { IoMdInformationCircleOutline } from 'react-icons/io';
-import { PRIMARY } from '../../../styled/utilities';
+import { DANGER } from '../../../styled/utilities';
 
 const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 	const clockOutUser = useMutation(CLOCK_OUT_USER, {
@@ -13,9 +12,15 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 		refetchQueries: () => ['UsersByDepartment'],
 	});
 
-	console.log('emp:', employee);
-
 	const { lastShift } = employee;
+
+	const hoursElapased = () => {
+		if (clockedIn) {
+			return differenceInMinutes(new Date(), lastShift.timeIn) / 60;
+		} else {
+			return differenceInMinutes(lastShift.timeOut, lastShift.timeIn) / 60;
+		}
+	};
 
 	let cardContent;
 
@@ -23,10 +28,7 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 		cardContent = (
 			<div className="card-content">
 				<p>Time in: {format(lastShift.timeIn, 'h:mm A')}</p>
-				<p>
-					Hours Elapsed:{' '}
-					{(differenceInMinutes(new Date(), lastShift.timeIn) / 60).toFixed(2)}
-				</p>
+				<p className="hours">Hours Elapsed: {hoursElapased().toFixed(2)}</p>
 			</div>
 		);
 	} else if (!clockedIn && lastShift) {
@@ -38,12 +40,7 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 					{format(lastShift.timeIn, 'h:mm A')} -{' '}
 					{format(lastShift.timeOut, 'h:mm A')}
 				</p>
-				<p>
-					{(
-						differenceInMinutes(lastShift.timeOut, lastShift.timeIn) / 60
-					).toFixed(2)}{' '}
-					hours
-				</p>
+				<p className="hours">{hoursElapased().toFixed(2)} hours</p>
 			</div>
 		);
 	} else {
@@ -57,7 +54,7 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 	}
 
 	return (
-		<Card clockedIn={clockedIn}>
+		<Card clockedIn={clockedIn} longShift={hoursElapased() >= 8}>
 			<h4 className="card-title">
 				{employee.lastName}, {employee.firstName}
 			</h4>
@@ -98,6 +95,8 @@ const Card = styled.div`
 	height: 100%;
 	transition: 200ms all ease;
 
+	border: ${({ longShift }) => (longShift ? `3px solid ${DANGER}` : 'none')};
+
 	.card-title {
 		margin: 0 0 0.8em;
 	}
@@ -107,6 +106,11 @@ const Card = styled.div`
 
 		h5 {
 			margin: 0;
+		}
+
+		.hours {
+			color: ${({ longShift }) => (longShift ? DANGER : 'inherit')};
+			font-weight: ${({ longShift }) => (longShift ? 'bold' : 'normal')};
 		}
 	}
 

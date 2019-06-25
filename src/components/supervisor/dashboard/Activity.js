@@ -10,6 +10,7 @@ import Spinner from '../../../styled/elements/Spinner';
 import { sort } from '../../../util/arrays';
 
 const ActivityWrapper = ({ departmentId }) => {
+	console.log('deptId', departmentId);
 	const { data, loading } = useQuery(USERS_BY_DEPARTMENT, {
 		variables: { deptId: departmentId },
 		fetchPolicy: 'no-cache',
