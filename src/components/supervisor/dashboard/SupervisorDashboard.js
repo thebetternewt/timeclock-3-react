@@ -13,6 +13,7 @@ import { ME } from '../../../apollo/queries/user';
 import { DEPARTMENTS, DEPT_BUDGET } from '../../../apollo/queries/department';
 import { sort } from '../../../util/arrays';
 import { getFiscalYear } from '../../../util/helpers';
+import { CLOCK_OUT_USER } from '../../../apollo/mutations/user';
 
 const SupervisorDashboard = ({ children, navigate, ...props }) => {
 	const [departmentId, setDepartmentId] = useState();
@@ -25,6 +26,7 @@ const SupervisorDashboard = ({ children, navigate, ...props }) => {
 	const { departments: allDepts = [] } = deptData;
 	let departments = allDepts;
 
+	// Fetch Department Data
 	const { data: budgetData, loading: budgetLoading } = useQuery(DEPT_BUDGET, {
 		variables: { deptId: departmentId, fiscalYear: getFiscalYear() },
 	});

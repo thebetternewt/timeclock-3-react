@@ -1,17 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
+
 import { format, differenceInMinutes } from 'date-fns';
 import { CLOCK_OUT_USER } from '../../../apollo/mutations/user';
 import { useMutation } from 'react-apollo-hooks';
 import Button from '../../../styled/elements/Button';
 import { DANGER } from '../../../styled/utilities';
 
-const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
-	const clockOutUser = useMutation(CLOCK_OUT_USER, {
-		variables: { userId: employee.id },
-		refetchQueries: () => ['UsersByDepartment'],
-	});
-
+const ActiveEmployeeCard = ({
+	employee,
+	loading,
+	clockedIn,
+	handleClockOutUser,
+}) => {
 	const { lastShift } = employee;
 
 	const hoursElapased = () => {
@@ -70,13 +71,7 @@ const ActiveEmployeeCard = ({ employee, loading, clockedIn }) => {
 						color="danger"
 						text="Clock Out"
 						loading={loading}
-						onClick={async () => {
-							try {
-								await clockOutUser();
-							} catch (err) {
-								console.log(err);
-							}
-						}}
+						onClick={() => handleClockOutUser(employee)}
 					/>
 				)}
 			</div>

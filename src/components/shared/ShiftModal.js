@@ -57,12 +57,12 @@ const ShiftModal = ({ employee, shift, close }) => {
 		try {
 			setLoading(true);
 			await mutate({ refetchQueries: () => ['UserShifts'] });
+			setLoading(false);
+			close();
 		} catch (err) {
 			setError(err);
 			console.log(err);
 		}
-		setLoading(false);
-		close();
 	};
 
 	const handleDeleteShift = async e => {
@@ -70,12 +70,12 @@ const ShiftModal = ({ employee, shift, close }) => {
 		try {
 			setLoading(true);
 			await destroy({ refetchQueries: () => ['UserShifts'] });
+			setLoading(false);
+			close();
 		} catch (err) {
 			setError(err);
 			console.log(err);
 		}
-		setLoading(false);
-		close();
 	};
 
 	const handleTimeInChange = date => setTimeIn(date);

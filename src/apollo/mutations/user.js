@@ -50,6 +50,24 @@ export const CLOCK_OUT = gql`
 	mutation ClockOut {
 		clockOut {
 			id
+			timeIn
+			timeOut
+			minutesElapsed
+			workStudy
+			nightShiftMinutes
+			department {
+				id
+				name
+			}
+			user {
+				id
+				firstName
+				lastName
+				name
+				email
+				netId
+				nineDigitId
+			}
 		}
 	}
 `;
@@ -58,6 +76,24 @@ export const CLOCK_OUT_USER = gql`
 	mutation ClockOutUser($userId: ID!) {
 		clockOutUser(userId: $userId) {
 			id
+			timeIn
+			timeOut
+			minutesElapsed
+			workStudy
+			nightShiftMinutes
+			department {
+				id
+				name
+			}
+			user {
+				id
+				firstName
+				lastName
+				name
+				email
+				netId
+				nineDigitId
+			}
 		}
 	}
 `;
