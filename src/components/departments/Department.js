@@ -14,7 +14,6 @@ import {
 import { DEPARTMENT } from '../../apollo/queries/department';
 import {
 	ME,
-	USER,
 	USERS,
 	USER_SHIFTS,
 	CURRENT_USER_WORKSTUDY,
@@ -22,23 +21,18 @@ import {
 import { CURRENT_WORK_STUDY_PERIOD } from '../../apollo/queries/workStudyPeriod';
 import Button from '../../styled/elements/Button';
 import Spinner from '../../styled/elements/Spinner';
-import Box from '../../styled/layouts/Box';
 import Container from '../../styled/layouts/Container';
 import { sort } from '../../util/arrays';
 import EmployeeCard from '../shared/EmployeeCard';
 import { aggWorkStudy } from '../../util/workstudy';
 
 const Department = ({ departmentId }) => {
-	const [addingSupervisor, setAddingSupervisor] = useState(false);
-	const [selectedSupervisor, setSelectedSupervisor] = useState('');
 	const [addingEmployee, setAddingEmployee] = useState(false);
 	const [selectedEmployee, setSelectedEmployee] = useState('');
 
-	const toggleAddingSupervisor = () => setAddingSupervisor(!addingSupervisor);
 	const toggleAddingEmployee = () => setAddingEmployee(!addingEmployee);
 
 	const handleEmployeeSearchSelect = opt => setSelectedEmployee(opt.value);
-	const handleSupervisorSearchSelect = opt => setSelectedSupervisor(opt.value);
 
 	// users in the department
 	const { data: deptData, loading: deptLoading } = useQuery(DEPARTMENT, {
@@ -62,7 +56,7 @@ const Department = ({ departmentId }) => {
 
 	const { data: meData, loading: meLoading } = useQuery(ME);
 	const { me = {} } = meData;
-	const { admin, supervisor } = me;
+	const { admin } = me;
 
 	const { data: wsData, loading: wsLoading } = useQuery(
 		CURRENT_WORK_STUDY_PERIOD
@@ -114,8 +108,6 @@ const Department = ({ departmentId }) => {
 		} catch (err) {
 			console.log(err);
 		}
-		setSelectedSupervisor('');
-		setAddingSupervisor(false);
 	};
 
 	const removeSupervisorFromDept = useMutation(REMOVE_SUPERVISOR_FROM_DEPT);
@@ -270,16 +262,18 @@ const Department = ({ departmentId }) => {
 											}
 
 											const toggleSupervisor = () => {
+												if (!admin) return; //? Not necessary, but prevents mutation from running unnecessarily.
+
 												if (user.isSupervisor) {
 													handleRemoveSupervisor(user);
 												} else {
-													console.log(user.id);
 													handleAddSupervisor(user.id);
 												}
 											};
 
 											return (
 												<EmployeeCard
+													hideAction={!admin && user.isSupervisor}
 													employee={user}
 													supervisor={user.isSupervisor}
 													action={() => handleRemove(user)}

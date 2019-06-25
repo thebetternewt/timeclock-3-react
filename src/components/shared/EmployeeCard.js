@@ -11,10 +11,10 @@ const EmployeeCard = ({
 	supervisor = false,
 	action,
 	actionText,
+	hideAction,
 	actionColor = 'danger',
 	loading,
 	workStudyDetails,
-	workStudyUsed,
 	toggleSupervisor,
 }) => {
 	const isWorkStudy = workStudyDetails.amountAllotted > 0;
@@ -27,7 +27,6 @@ const EmployeeCard = ({
 			</div>
 			<div className="card-content">
 				<div className="progress">
-					{/* <Circle percent="10" strokeWidth="4" strokeColor="#D3D3D3" /> */}
 					<AnimatedCircle
 						percent={Math.round(workStudyDetails.percentUsed) || 0}
 						gapDegree={70}
@@ -56,7 +55,6 @@ const EmployeeCard = ({
 						{isWorkStudy ? `${Math.round(workStudyDetails.percentUsed)}%` : ''}
 					</p>
 				</div>
-				{/* <p> Work Study Used: ${workStudyUsed}</p> */}
 			</div>
 			<div className="card-footer">
 				<Button
@@ -64,7 +62,7 @@ const EmployeeCard = ({
 					color="primary"
 					text="Details"
 				/>
-				{action && (
+				{!hideAction && action && (
 					<Button
 						color={actionColor}
 						text={actionText}
@@ -94,6 +92,8 @@ const Card = styled.div`
 	display: flex;
 	flex-direction: column;
 	position: relative;
+
+	border: ${({ isSuper }) => (isSuper ? '3px solid goldenrod' : 'none')};
 
 	h4 {
 		margin: 0 0 0.2em;

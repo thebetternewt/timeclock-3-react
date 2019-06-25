@@ -25,7 +25,7 @@ const SupervisorDashboard = ({ children, navigate, ...props }) => {
 	const { departments: allDepts = [] } = deptData;
 	let departments = allDepts;
 
-	const { data: budgetData } = useQuery(DEPT_BUDGET, {
+	const { data: budgetData, loading: budgetLoading } = useQuery(DEPT_BUDGET, {
 		variables: { deptId: departmentId, fiscalYear: getFiscalYear() },
 	});
 	const { deptBudget } = budgetData;
@@ -99,19 +99,32 @@ const SupervisorDashboard = ({ children, navigate, ...props }) => {
 			</Container>
 			<Container direction="column">
 				<BudgetWrapper>
-					<h2 className="section-title">Budget</h2>
+					<h2 className="section-title">
+						Budget:
+						{deptBudget && (
+							<NumberFormat
+								displayType="text"
+								thousandSeparator
+								decimalScale={2}
+								fixedDecimalScale
+								prefix=" $"
+								value={amount}
+							/>
+						)}
+					</h2>
 					<StackedBar
+						amount={amount}
 						items={[
 							{
-								value: totalWageExpenditures / amount || 0,
+								value: totalWageExpenditures,
 								label: 'Wages',
 							},
 							{
-								value: totalNightShiftExpenditures / amount || 0,
+								value: totalNightShiftExpenditures,
 								label: 'Night Shift',
 							},
 							{
-								value: totalWorkStudyExpenditures / amount || 0,
+								value: totalWorkStudyExpenditures,
 								label: 'Work Study',
 							},
 						]}
@@ -123,12 +136,16 @@ const SupervisorDashboard = ({ children, navigate, ...props }) => {
 												displayType="text"
 												thousandSeparator
 												decimalScale={2}
+												fixedDecimalScale
 												prefix="$"
 												value={amount - totalExpenditures / 100}
+												style={{ marginRight: 3 }}
 											/>{' '}
 											remaining
 										</>
 								  )
+								: budgetLoading
+								? 'Loading...'
 								: 'No budget found.'
 						}
 					/>

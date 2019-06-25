@@ -1,17 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
+import NumberFormat from 'react-number-format';
 
 // Accepts an array of items: objects with a value and a label (string or component).
-const StackedBar = ({ items = [], baseLabel: BaseLabel }) => (
+const StackedBar = ({ amount, items = [], baseLabel: BaseLabel }) => (
 	<Bar>
 		{items.map(i => (
 			<span
 				key={i.label}
 				className={i.value === 0 ? 'hide' : ''}
-				style={{ width: `${i.value}%` }}
+				style={{ width: amount ? `${i.value / amount}%` : 0 }}
 			>
 				{i.label}
-				<span className="tooltip-text">{i.label}</span>
+				<span className="tooltip-text">
+					{i.label}:
+					<NumberFormat
+						displayType="text"
+						thousandSeparator
+						decimalScale={2}
+						fixedDecimalScale
+						prefix=" $"
+						value={i.value / 100}
+						style={{ marginRight: 3 }}
+					/>
+				</span>
 			</span>
 		))}
 		<span>{typeof BaseLabel === 'string' ? BaseLabel : <BaseLabel />}</span>
