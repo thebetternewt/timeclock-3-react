@@ -72,3 +72,19 @@ export const USERS_BY_DEPARTMENT = gql`
 		}
 	}
 `;
+
+export const DEPT_BUDGET = gql`
+	query DepartmentBudget($deptId: ID!, $fiscalYear: Int!) {
+		deptBudget: budget(deptId: $deptId, fiscalYear: $fiscalYear) {
+			id
+			amount
+			fiscalYear
+			summary {
+				totalExpenditures
+				totalWageExpenditures
+				totalNightShiftExpenditures
+				totalWorkStudyExpenditures
+			}
+		}
+	}
+`;

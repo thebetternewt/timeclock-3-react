@@ -9,9 +9,7 @@ import { USERS_BY_DEPARTMENT } from '../../../apollo/queries/department';
 import Spinner from '../../../styled/elements/Spinner';
 import { sort } from '../../../util/arrays';
 
-const ActivityWrapper = ({ departmentId, ...props }) => {
-	console.log('activy props:', props);
-
+const ActivityWrapper = ({ departmentId }) => {
 	const { data, loading } = useQuery(USERS_BY_DEPARTMENT, {
 		variables: { deptId: departmentId },
 		fetchPolicy: 'no-cache',
@@ -76,7 +74,7 @@ const Activity = styled.div`
 	margin-bottom: 3rem;
 
 	.clocked-in {
-		margin: 3rem 0;
+		margin: 1rem 0;
 	}
 
 	.heading {

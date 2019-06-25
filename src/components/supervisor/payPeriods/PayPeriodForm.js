@@ -44,6 +44,7 @@ const PayPeriodForm = ({ close }) => {
 		e.preventDefault();
 		try {
 			await createPayPeriod();
+			close();
 		} catch (err) {
 			console.log(err);
 			setError(err);
