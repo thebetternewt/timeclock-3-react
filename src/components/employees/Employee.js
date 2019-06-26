@@ -1,5 +1,5 @@
 import { Link } from '@reach/router';
-import { format } from 'date-fns';
+import { format, startOfDay, endOfDay } from 'date-fns';
 import React, { useState } from 'react';
 import { useMutation, useQuery } from 'react-apollo-hooks';
 import { FaCheck, FaPencilAlt, FaPlusCircle, FaTimes } from 'react-icons/fa';
@@ -181,84 +181,92 @@ const Employee = ({ employeeId }) => {
 					<ListHeader>Workstudy</ListHeader>
 					<List>
 						{user &&
-							user.workStudy.map(ws => (
-								<Query
-									query={USER_SHIFTS}
-									variables={{
-										userId: employeeId,
-										deptId: ws.department.id,
-										startDate: ws.startDate,
-										endDate: ws.endDate,
-									}}
-									key={ws.id}
-								>
-									{({ data }) => {
-										let wsDetails = [];
+							user.workStudy.map(ws => {
+								console.log('ws:', ws);
+								return (
+									<Query
+										query={USER_SHIFTS}
+										variables={{
+											userId: employeeId,
+											deptId: ws.department.id,
+											startDate: startOfDay(ws.startDate),
+											endDate: endOfDay(ws.endDate),
+										}}
+										key={ws.id}
+									>
+										{({ data }) => {
+											let wsDetails = [];
 
-										if (data && data.shifts) {
-											wsDetails = aggWorkStudy({
-												amountAllotted: ws.amount,
-												shifts: data.shifts,
-											});
-										}
+											if (data && data.shifts) {
+												wsDetails = aggWorkStudy({
+													amountAllotted: ws.amount,
+													shifts: data.shifts,
+												});
+											}
 
-										return (
-											<WorkStudyItem>
-												<div className="detail">
-													<div className="department">{ws.department.name}</div>
-													<div className="period">
-														<span style={{ fontWeight: 'bold' }}>
-															{ws.period.name} {ws.period.year}
-														</span>
-														<br />
-														{format(ws.startDate, 'MMM DD')} -{' '}
-														{format(ws.endDate, 'MMM DD')}
+											console.log(wsDetails);
+
+											return (
+												<WorkStudyItem>
+													<div className="detail">
+														<div className="department">
+															{ws.department.name}
+														</div>
+														<div className="period">
+															<span style={{ fontWeight: 'bold' }}>
+																{ws.period.name} {ws.period.year}
+															</span>
+															<br />
+															{format(ws.startDate, 'MMM DD')} -{' '}
+															{format(ws.endDate, 'MMM DD')}
+														</div>
 													</div>
-												</div>
-												<div className="amount">
-													<p>
-														<NumberFormat
-															displayType="text"
-															thousandSeparator
-															decimalScale={2}
-															prefix="$"
-															value={
-																wsDetails.amountAllotted - wsDetails.amountUsed
-															}
-														/>{' '}
-														of{' '}
-														<NumberFormat
-															displayType="text"
-															thousandSeparator
-															decimalScale={2}
-															prefix="$"
-															value={wsDetails.amountAllotted}
-														/>{' '}
-														remaining
-													</p>
-													<p>
-														{(
-															wsDetails.hoursAvailable - wsDetails.hoursUsed
-														).toFixed(1)}{' '}
-														hours remaining
-													</p>
-												</div>
+													<div className="amount">
+														<p>
+															<NumberFormat
+																displayType="text"
+																thousandSeparator
+																decimalScale={2}
+																prefix="$"
+																value={
+																	wsDetails.amountAllotted -
+																	wsDetails.amountUsed
+																}
+															/>{' '}
+															of{' '}
+															<NumberFormat
+																displayType="text"
+																thousandSeparator
+																decimalScale={2}
+																prefix="$"
+																value={wsDetails.amountAllotted}
+															/>{' '}
+															remaining
+														</p>
+														<p>
+															{(
+																wsDetails.hoursAvailable - wsDetails.hoursUsed
+															).toFixed(1)}{' '}
+															hours remaining
+														</p>
+													</div>
 
-												<div className="actions">
-													<Button
-														text={() => <FaPencilAlt />}
-														naked
-														onClick={() => {
-															handleWorkStudySelect(ws);
-															toggleWorkStudyModal();
-														}}
-													/>
-												</div>
-											</WorkStudyItem>
-										);
-									}}
-								</Query>
-							))}
+													<div className="actions">
+														<Button
+															text={() => <FaPencilAlt />}
+															naked
+															onClick={() => {
+																handleWorkStudySelect(ws);
+																toggleWorkStudyModal();
+															}}
+														/>
+													</div>
+												</WorkStudyItem>
+											);
+										}}
+									</Query>
+								);
+							})}
 					</List>
 					<Button
 						color="success"
