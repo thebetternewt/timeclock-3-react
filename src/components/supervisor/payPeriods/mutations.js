@@ -7,3 +7,9 @@ export const CREATE_PAY_PERIOD = gql`
 		}
 	}
 `;
+
+export const DELETE_PAY_PERIOD = gql`
+	mutation DeletePayPeriod($id: ID!) {
+		deletePayPeriod(id: $id)
+	}
+`;
