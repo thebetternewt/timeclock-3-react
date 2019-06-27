@@ -65,8 +65,6 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 	});
 	const { departments = [] } = deptData;
 
-	console.log('depts:', departments);
-
 	const checkFixed = dept => {
 		if (me.admin) return false;
 		if (me.supervisor) {
@@ -173,10 +171,6 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 		setPasswordsMatch(password ? password === confirm : true);
 
 	const handleDeptChange = (value, { action, removedValue }) => {
-		console.log('onChange value:', value);
-		console.log('onChange action:', action);
-		console.log('onChange removedValue:', removedValue);
-
 		switch (action) {
 			case 'remove-value':
 			case 'pop-value':
@@ -193,7 +187,6 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 	};
 
 	const handleChange = ({ target: { name, value, checked } }) => {
-		console.log(name, ':', value);
 		checkPassword(password, confirm);
 
 		switch (name) {
@@ -249,8 +242,6 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 
 	const handleSubmit = async e => {
 		e.preventDefault();
-
-		console.log('values:', values);
 
 		setLoading(true);
 
@@ -319,8 +310,6 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 		e.preventDefault();
 		navigate(deptId ? `/departments/${deptId}` : '..');
 	};
-
-	console.log('values:', values);
 
 	return (
 		<Container direction="column">

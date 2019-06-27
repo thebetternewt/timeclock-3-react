@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import moment from 'moment';
 import { Query } from 'react-apollo';
 import { useQuery } from 'react-apollo-hooks';
+import { format, startOfDay, endOfDay } from 'date-fns';
 
 import {
 	Form,
@@ -20,7 +20,7 @@ import DepartmentSelect from '../../shared/DepartmentSelect';
 import EmployeeSelect from '../../shared/EmployeeSelect';
 
 const TimeSheetForm = ({ admin = false, departments = [] }) => {
-	const [year, setYear] = useState(moment().year());
+	const [year, setYear] = useState(new Date().getFullYear());
 	const [payPeriod, setPayPeriod] = useState();
 	const [payPeriods, setPayPeriods] = useState([]);
 	const [department, setDepartment] = useState();
@@ -129,9 +129,8 @@ const TimeSheetForm = ({ admin = false, departments = [] }) => {
 									<option value="">Select Pay Period</option>
 									{payPeriods.map(opt => (
 										<option key={opt.id} value={opt.id}>
-											{opt.payPeriodId} (
-											{moment(opt.startDate).format('MMM DD')} -{' '}
-											{moment(opt.endDate).format('MMM DD')})
+											{opt.payPeriodId} ({format(opt.startDate, 'MMM D')} -{' '}
+											{format(opt.endDate, 'MMM D')})
 										</option>
 									))}
 								</>
@@ -181,12 +180,8 @@ const TimeSheetForm = ({ admin = false, departments = [] }) => {
 						variables={{
 							userId: employeeForSearch() ? employeeForSearch().id : '',
 							deptId: department.id,
-							startDate: moment(payPeriod.startDate)
-								.startOf('Day')
-								.toISOString(),
-							endDate: moment(payPeriod.endDate)
-								.endOf('Day')
-								.toISOString(),
+							startDate: startOfDay(payPeriod.startDate),
+							endDate: endOfDay(payPeriod.endDate),
 						}}
 					>
 						{({ data }) => {

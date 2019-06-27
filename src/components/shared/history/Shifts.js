@@ -29,12 +29,7 @@ const Shifts = () => {
 		},
 	});
 
-	console.log('userId:', context.employee.name);
-	console.log('deptId:', context.department.name);
-
 	const { shifts = [] } = shiftData;
-
-	console.log('shifts:', shifts);
 
 	if (shifts.length) {
 		context.setShifts(shifts);

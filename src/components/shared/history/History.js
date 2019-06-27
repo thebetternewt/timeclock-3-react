@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useQuery } from 'react-apollo-hooks';
-import moment from 'moment';
 import { FaArrowLeft } from 'react-icons/fa';
 import SearchContext from './searchContext';
+import { format } from 'date-fns';
 
 import Box from '../../../styled/layouts/Box';
 import Container from '../../../styled/layouts/Container';
@@ -68,8 +68,8 @@ const History = ({ employee }) => {
 					{shifts.length ? (
 						<>
 							<div className="date">
-								{moment(payPeriod.startDate).format('MMM D')} -{' '}
-								{moment(payPeriod.endDate).format('MMM D')}
+								{format(payPeriod.startDate, 'MMM D')} -{' '}
+								{format(payPeriod.endDate, 'MMM D')}
 							</div>
 							<div className="total-time">{hoursElapsed} hours</div>
 							<div className="department">

@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { startOfDay, endOfDay } from 'date-fns';
 
 import Container from '../../../styled/layouts/Container';
 import Spinner from '../../../styled/elements/Spinner';
 import ShiftClock from './ShiftClock';
-import Stats from './Stats';
 import PrivateRoute from '../../shared/PrivateRoute';
 import { useQuery } from 'react-apollo-hooks';
 import { CURRENT_PAY_PERIOD } from '../../../apollo/queries/payPeriod';
 import { MY_SHIFTS } from '../../../apollo/queries/user';
+
+const Stats = React.lazy(() => import('./Stats'));
 
 const StatsWrapper = ({ payPeriod }) => {
 	const { data: shiftData, loading: shiftsLoading } = useQuery(MY_SHIFTS, {
@@ -21,7 +22,9 @@ const StatsWrapper = ({ payPeriod }) => {
 	const { myShifts } = shiftData;
 
 	return (
-		<Stats payPeriod={payPeriod} shifts={myShifts} loading={shiftsLoading} />
+		<Suspense fallback={<Spinner size="60px" style={{ marginTop: '3rem' }} />}>
+			<Stats payPeriod={payPeriod} shifts={myShifts} loading={shiftsLoading} />
+		</Suspense>
 	);
 };
 

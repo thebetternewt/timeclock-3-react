@@ -36,8 +36,6 @@ const Employees = () => {
 	const fuse = new Fuse(users, fuzzySearchOptions);
 	const filteredUsers = searchString ? fuse.search(searchString) : users;
 
-	// console.log('results:', filteredUsers);
-
 	if (me && !me.admin && !me.supervisor) {
 		return <Redirect to="/" noThrow />;
 	}

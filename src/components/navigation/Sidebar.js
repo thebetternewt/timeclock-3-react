@@ -21,8 +21,8 @@ const SidebarWrapper = ({ width }) => {
 		e.preventDefault();
 		try {
 			await logout();
-		} catch (e) {
-			console.log(e);
+		} catch (err) {
+			console.log(err);
 		}
 
 		const { NODE_ENV, REACT_APP_CAS_HOST } = process.env;

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import Spinner from '../../../styled/elements/Spinner';
 
@@ -74,8 +74,10 @@ const StatsWrapper = ({ payPeriod = {}, shifts = [], loading }) => {
 		<>
 			<div className="title">Current Pay Period</div>
 			<div className="date">
-				{moment(payPeriod.startDate).format('MMM D')} -{' '}
-				{moment(payPeriod.endDate).format('MMM D')}
+				{`${format(payPeriod.startDate, 'MMM D')} - ${format(
+					payPeriod.endDate,
+					'MMM D'
+				)}`}
 			</div>
 			<div className="total">{(totalMinutes / 60).toFixed(2)} hours</div>
 			<div className="departments">

@@ -34,7 +34,6 @@ const ActivityWrapper = ({ departmentId }) => {
 			const { data } = await clockOutUser({
 				variables: { userId: employee.id },
 			});
-			console.log(data);
 
 			const editShiftResult = await ClockedOutAlert.fire({
 				title: `Successfully clocked out ${employee.name}!`,

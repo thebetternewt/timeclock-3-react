@@ -88,8 +88,8 @@ const SearchForm = () => {
 					{context.payPeriods.length ? (
 						context.payPeriods.map(opt => (
 							<option key={opt.id} value={opt.id}>
-								{opt.payPeriodId} ({format(opt.startDate, 'MMM DD')}) - (
-								{format(opt.endDate, 'MMM DD')})
+								{opt.payPeriodId} ({format(opt.startDate, 'MMM D')} -
+								{format(opt.endDate, 'MMM D')})
 							</option>
 						))
 					) : (

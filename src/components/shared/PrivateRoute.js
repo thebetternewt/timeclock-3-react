@@ -5,8 +5,6 @@ import { ME } from '../../apollo/queries/user';
 
 const PrivateRoute = ({ component: Component, location, ...rest }) => {
 	const { data, loading } = useQuery(ME);
-	console.log('data: ', data);
-	console.log('loading: ', loading);
 
 	if (!data.me && !loading) {
 		// If user session expired, redirect to login.

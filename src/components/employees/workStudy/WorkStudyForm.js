@@ -57,11 +57,9 @@ const WorkStudyForm = ({
 		setDepartment(getDepartment(e.target.value));
 	const handleAmountChange = e => {
 		let value = e.target.value;
-		console.log(value);
 
 		value = value.replace(/[$,]/g, '');
 
-		console.log('new', value);
 		setAmount(value);
 	};
 	const handleYearChange = e => {
@@ -70,7 +68,6 @@ const WorkStudyForm = ({
 	};
 	const handlePeriodChange = e => {
 		const selectedPeriod = getPeriod(e.target.value);
-		console.log('selectedPeriod:', selectedPeriod);
 		setPeriod(selectedPeriod);
 		setStartDate(parse(selectedPeriod.startDate));
 		setEndDate(parse(selectedPeriod.endDate));
@@ -238,7 +235,7 @@ const WorkStudyForm = ({
 										color="success"
 										onClick={async e => {
 											e.preventDefault();
-											console.log(variables);
+
 											try {
 												await submit({
 													variables,

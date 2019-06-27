@@ -1,113 +1,100 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Formik } from 'formik';
-import moment from 'moment';
+import { useQuery, useMutation } from 'react-apollo-hooks';
+import { differenceInSeconds } from 'date-fns';
 
 import Timer from './Timer';
 import Box from '../../../styled/layouts/Box';
 import { Form } from '../../../styled/elements/Form';
 import Button from '../../../styled/elements/Button';
-import { Query, Mutation } from 'react-apollo';
 import { ME } from '../../../apollo/queries/user';
 import { CLOCK_IN, CLOCK_OUT } from '../../../apollo/mutations/user';
 import DepartmentSelect from '../../shared/DepartmentSelect';
+import Spinner from '../../../styled/elements/Spinner';
 
 const ShiftClock = () => {
-	return (
-		<ShiftClockContainer>
-			<Query query={ME}>
-				{({ data }) => {
-					if (data && data.me) {
-						const { me } = data;
-						const { departments } = me;
+	const [loading, setLoading] = useState(false);
+	const [department, setDepartment] = useState('');
 
-						if (me.isClockedIn) {
-							const { lastShift } = me;
-							const secondsElapsed =
-								moment().diff(moment(lastShift.timeIn)) / 1000;
+	const { data: meData, loading: meLoading } = useQuery(ME, {
+		fetchPolicy: 'cache-and-network',
+	});
+	const { me = {} } = meData;
+	const { departments = [], lastShift } = me;
 
-							return (
-								<>
-									<div className="title">Currently clocked into</div>
-									<div className="department">{lastShift.department.name}</div>
-									<Timer secondsElapsed={secondsElapsed} />
-									<Mutation
-										mutation={CLOCK_OUT}
-										refetchQueries={() => ['Me', 'MyShifts']}
-									>
-										{(clockOut, { loading: clockOutLoading }) => {
-											return (
-												<>
-													<Button
-														onClick={async () => {
-															try {
-																await clockOut();
-															} catch (e) {
-																console.log(e);
-															}
-														}}
-														loading={clockOutLoading}
-														text="Clock Out"
-														color="danger"
-														disabled={clockOutLoading}
-													/>
-												</>
-											);
-										}}
-									</Mutation>
-								</>
-							);
-						}
+	const clockOut = useMutation(CLOCK_OUT, {
+		refetchQueries: () => ['Me', 'MyShifts'],
+	});
+	const handleClockOut = async () => {
+		setLoading(true);
+		try {
+			await clockOut();
+		} catch (err) {
+			console.log(err);
+		}
+		setLoading(false);
+	};
 
-						return (
-							<Mutation mutation={CLOCK_IN} refetchQueries={() => ['Me']}>
-								{(clockIn, { loading }) => {
-									// TODO: Handle error.
-									return (
-										<Formik
-											initialValues={{ deptId: '' }}
-											onSubmit={async values => {
-												try {
-													await clockIn({
-														variables: values,
-													});
-												} catch (error) {
-													console.log(error);
-												}
-											}}
-										>
-											{({ handleSubmit, handleChange, values }) => {
-												return (
-													<Form onSubmit={handleSubmit}>
-														<DepartmentSelect
-															departments={departments}
-															value={values.deptId}
-															handleChange={handleChange}
-															name="deptId"
-														/>
+	const clockIn = useMutation(CLOCK_IN, {
+		variables: {
+			deptId: department,
+		},
+		refetchQueries: () => ['Me', 'MyShifts'],
+	});
+	const handleClockIn = async () => {
+		setLoading(true);
+		try {
+			await clockIn();
+		} catch (err) {
+			console.log(err);
+		}
+		setLoading(false);
+	};
 
-														<Button
-															type="submit"
-															color="success"
-															text="Clock in"
-															loading={loading}
-															disabled={loading || !values.deptId}
-														/>
-													</Form>
-												);
-											}}
-										</Formik>
-									);
-								}}
-							</Mutation>
-						);
-					}
+	let containerContent;
 
-					return null;
-				}}
-			</Query>
-		</ShiftClockContainer>
-	);
+	if (loading || meLoading) {
+		containerContent = <Spinner size="60px" />;
+	} else if (me.isClockedIn) {
+		const secondsElapsed = differenceInSeconds(new Date(), lastShift.timeIn);
+
+		containerContent = (
+			<>
+				<div className="title">Currently clocked into</div>
+				<div className="department">{lastShift.department.name}</div>
+				<Timer secondsElapsed={secondsElapsed} />
+
+				<Button
+					onClick={handleClockOut}
+					loading={loading}
+					text="Clock Out"
+					color="danger"
+					disabled={loading}
+				/>
+			</>
+		);
+	} else {
+		containerContent = (
+			<Form onSubmit={handleClockIn}>
+				<DepartmentSelect
+					departments={departments}
+					value={department}
+					handleChange={e => setDepartment(e.target.value)}
+					name="deptId"
+				/>
+
+				<Button
+					type="submit"
+					color="success"
+					text="Clock in"
+					loading={loading}
+					disabled={loading || !department}
+				/>
+			</Form>
+		);
+	}
+
+	return <ShiftClockContainer>{containerContent}</ShiftClockContainer>;
 };
 
 const ShiftClockContainer = styled(Box)`

@@ -2,27 +2,24 @@ import React from 'react';
 import styled from 'styled-components';
 import Button from '../../styled/elements/Button';
 
-const EmployeeCard = ({ employee }) => {
-	// console.log(employee);
-	return (
-		<Card>
-			<h4>{employee.name}</h4>
-			<p className="netId">{employee.netId}</p>
-			<p className="studentId">
-				Student ID: {employee.nineDigitId.slice(0, 3)}-
-				{employee.nineDigitId.slice(3, 6)}-{employee.nineDigitId.slice(6, 9)}
-			</p>
-			<p className="phone"> Phone: {employee.phone} </p>
-			<div className="card-footer">
-				<Button
-					href={`/employees/${employee.id}`}
-					color="primary"
-					text="Details"
-				/>
-			</div>
-		</Card>
-	);
-};
+const EmployeeCard = ({ employee }) => (
+	<Card>
+		<h4>{employee.name}</h4>
+		<p className="netId">{employee.netId}</p>
+		<p className="studentId">
+			Student ID: {employee.nineDigitId.slice(0, 3)}-
+			{employee.nineDigitId.slice(3, 6)}-{employee.nineDigitId.slice(6, 9)}
+		</p>
+		<p className="phone"> Phone: {employee.phone} </p>
+		<div className="card-footer">
+			<Button
+				href={`/employees/${employee.id}`}
+				color="primary"
+				text="Details"
+			/>
+		</div>
+	</Card>
+);
 
 const Card = styled.div`
 	background-color: #eee;
