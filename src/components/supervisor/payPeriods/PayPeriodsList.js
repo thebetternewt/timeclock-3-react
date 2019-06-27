@@ -22,7 +22,7 @@ const PayPeriodsList = ({ payPeriods }) => {
 				<li key={pp.id} style={{ display: 'flex', margin: '8px 0' }}>
 					<div>
 						{pp.year} #{pp.payPeriodId} ({format(pp.startDate, 'YYYY-MM-DD')} -{' '}
-						{format(pp.endDate, 'YYYY-MM-DD')})
+						{format(pp.endDate, 'YYYY-MM-DD')}) {pp.semester}
 					</div>
 					<button
 						onClick={() => handleDelete(pp.id)}
