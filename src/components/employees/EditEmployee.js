@@ -60,8 +60,12 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 	const { me = {} } = meData;
 	const { supervisedDepartments = [] } = me;
 
-	const { data: deptData } = useQuery(DEPARTMENTS);
+	const { data: deptData } = useQuery(DEPARTMENTS, {
+		fetchPolicy: 'cache-and-network',
+	});
 	const { departments = [] } = deptData;
+
+	console.log('depts:', departments);
 
 	const checkFixed = dept => {
 		if (me.admin) return false;
@@ -92,9 +96,8 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 		departmentOptions.length > 0 &&
 		selectedDepartments.length === 0
 	) {
-		setSelectedDepartments(
-			departmentOptions.filter(opt => opt.value === deptId)
-		);
+		const newDeptOpt = departmentOptions.find(opt => opt.value === deptId);
+		if (newDeptOpt) setSelectedDepartments([newDeptOpt]);
 	}
 
 	const { data: userData, loading: userLoading } = useQuery(USER, {
@@ -286,19 +289,23 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 				const result = await register();
 
 				if (selectedDepartments.length > 0) {
-					selectedDepartments.forEach(async dept => {
-						await addToDept({
-							variables: {
-								userId: result.data.register.id,
-								deptId: dept.value,
-							},
-						});
-					});
+					await Promise.all(
+						selectedDepartments.map(async dept => {
+							await addToDept({
+								variables: {
+									userId: result.data.register.id,
+									deptId: dept.value,
+								},
+							});
+						})
+					);
 				}
 
-				console.log(result);
-
-				navigate(result.data.register.id);
+				if (deptId) {
+					navigate(`/departments/${deptId}`);
+				} else {
+					navigate(`/employees/${result.data.register.id}`);
+				}
 			}
 		} catch (err) {
 			setError(err);

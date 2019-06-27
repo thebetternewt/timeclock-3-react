@@ -6,12 +6,13 @@ import PayPeriodForm from './PayPeriodForm';
 import PayPeriodsList from './PayPeriodsList';
 import Button from '../../../styled/elements/Button';
 import { sort } from '../../../util/arrays';
+import { Select, Input, Form } from '../../../styled/elements/Form';
 
 const PayPeriods = () => {
-	const [year, setYear] = useState(new Date().getFullYear());
+	const [year, setYear] = useState('');
 	const [showForm, setShowForm] = useState(false);
 
-	const { data: ppData } = useQuery(PAY_PERIODS, {
+	const { data: ppData, loading } = useQuery(PAY_PERIODS, {
 		variables: { year: parseInt(year, 10) },
 	});
 
@@ -33,6 +34,14 @@ const PayPeriods = () => {
 					onClick={() => setShowForm(true)}
 				/>
 			)}
+			<Form style={{ margin: '2rem 0' }}>
+				<label>Year</label>
+				<Input
+					style={{ width: 200 }}
+					value={year}
+					onChange={e => setYear(e.target.value)}
+				/>
+			</Form>
 			<PayPeriodsList
 				payPeriods={sort(payPeriods, ['year', 'payPeriodId']).reverse()}
 			/>

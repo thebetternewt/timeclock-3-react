@@ -93,14 +93,6 @@ const Login = () => {
 											text="CAS Login"
 											style={{ marginTop: '2rem', width: 300, height: 50 }}
 										/>
-
-										<Button
-											target="_blank"
-											href="https://timeclock.library.msstate.edu/"
-											text="Old Timeclock"
-											external
-											style={{ marginTop: '0.3rem', width: 300, height: 50 }}
-										/>
 									</>
 								)}
 								<p
