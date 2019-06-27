@@ -12,12 +12,12 @@ const PayPeriods = () => {
 	const [year, setYear] = useState('');
 	const [showForm, setShowForm] = useState(false);
 
-	const { data: ppData, loading } = useQuery(PAY_PERIODS, {
+	const { data: ppData } = useQuery(PAY_PERIODS, {
 		variables: { year: parseInt(year, 10) },
 	});
 
 	const { payPeriods = [] } = ppData;
-
+	console.log(payPeriods);
 	return (
 		<div>
 			<h1 className="title">Pay Periods</h1>
@@ -43,7 +43,7 @@ const PayPeriods = () => {
 				/>
 			</Form>
 			<PayPeriodsList
-				payPeriods={sort(payPeriods, ['year', 'payPeriodId']).reverse()}
+				payPeriods={sort(payPeriods, ['payPeriodId', 'year']).reverse()}
 			/>
 		</div>
 	);

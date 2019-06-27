@@ -30,6 +30,19 @@ export const sort = (arr, params) => {
 				return 0;
 			}
 
+			// Handle numbers
+			if (typeof a[param] === 'number') {
+				if (a[param] > b[param]) {
+					return 1;
+				}
+
+				if (a[param] < b[param]) {
+					return -1;
+				}
+
+				return 0;
+			}
+
 			// Handle strings
 			if (typeof a[param] === 'string') {
 				if (a[param].toUpperCase() > b[param].toUpperCase()) {
