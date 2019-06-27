@@ -48,12 +48,12 @@ const SupervisorLinks = ({ admin = false }) => {
 					Timesheets
 				</NavLink>
 			</li>
-			<li>
+			{/* <li>
 				<NavLink to="/budgets">
 					<FaDollarSign />
 					Budgets
 				</NavLink>
-			</li>
+			</li> */}
 			{admin && <AdminLinks />}
 		</>
 	);
