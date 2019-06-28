@@ -17,9 +17,9 @@ export const client = new ApolloClient({
 			if (notAuthenticated) {
 				console.log('NOT AUTHENTICATED!');
 				if (NODE_ENV === 'production') {
-					fetch(`https://${REACT_APP_CAS_HOST}/cas/logout`).then(() => {
-						window.location.pathname !== '/' && window.location.replace('/');
-					});
+					if (window.location.pathname !== '/') {
+						window.location.replace(`https://${REACT_APP_CAS_HOST}/cas/logout`);
+					}
 				} else {
 					window.location.pathname !== '/' && window.location.replace('/');
 				}
