@@ -24,12 +24,12 @@ const Login = () => {
 
 	console.log('login cookies', cookies);
 
-	if (cookies['_ga']) {
-		removeCookie('_ga', { path: '/' });
-	}
-	if (cookies['IDMSESSID']) {
-		removeCookie('IDMSESSID', { path: '/' });
-	}
+	// if (cookies['_ga']) {
+	// 	removeCookie('_ga', { path: '/' });
+	// }
+	// if (cookies['IDMSESSID']) {
+	// 	removeCookie('IDMSESSID', { path: '/' });
+	// }
 
 	const login = useMutation(LOGIN, {
 		variables: { netId, password },
