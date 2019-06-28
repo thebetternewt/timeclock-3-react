@@ -7,7 +7,7 @@ import { FaMoon, FaGraduationCap, FaPencilAlt } from 'react-icons/fa';
 import Box from '../../../styled/layouts/Box';
 import Button from '../../../styled/elements/Button';
 import ShiftModal from '../../shared/ShiftModal';
-import { LIGHT_GRAY, GRAY4 } from '../../../styled/utilities/Colors';
+import { LIGHT_GRAY } from '../../../styled/utilities/Colors';
 import { USER_SHIFTS } from '../../../apollo/queries/user';
 
 import SearchContext from './searchContext';

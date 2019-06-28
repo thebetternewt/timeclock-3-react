@@ -140,10 +140,6 @@ const Department = ({ departmentId }) => {
 		user => !employees.find(emp => emp.id === user.id)
 	);
 
-	const nonSupervisors = allUsers.filter(
-		user => !department.supervisors.find(emp => emp.id === user.id)
-	);
-
 	const employeeOptions = sort(employeesForHire, 'lastName').map(emp => ({
 		value: emp.id,
 		label: `${emp.lastName}, ${emp.firstName} (${emp.netId})`,

@@ -5,7 +5,7 @@ import { Link, Redirect } from '@reach/router';
 import styled from 'styled-components';
 import { FaPlusCircle } from 'react-icons/fa';
 
-import { ME, USERS } from '../../apollo/queries/user';
+import { ME } from '../../apollo/queries/user';
 import { DEPARTMENTS } from '../../apollo/queries/department';
 import Container from '../../styled/layouts/Container';
 import Button from '../../styled/elements/Button';

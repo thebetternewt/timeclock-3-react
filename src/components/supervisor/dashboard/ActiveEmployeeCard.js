@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { format, differenceInMinutes } from 'date-fns';
-import { CLOCK_OUT_USER } from '../../../apollo/mutations/user';
-import { useMutation } from 'react-apollo-hooks';
 import Button from '../../../styled/elements/Button';
 import { DANGER } from '../../../styled/utilities';
 

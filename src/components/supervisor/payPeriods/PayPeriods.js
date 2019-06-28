@@ -6,7 +6,7 @@ import PayPeriodForm from './PayPeriodForm';
 import PayPeriodsList from './PayPeriodsList';
 import Button from '../../../styled/elements/Button';
 import { sort } from '../../../util/arrays';
-import { Select, Input, Form } from '../../../styled/elements/Form';
+import { Input, Form } from '../../../styled/elements/Form';
 
 const PayPeriods = () => {
 	const [year, setYear] = useState('');

@@ -18,10 +18,7 @@ export const client = new ApolloClient({
 			if (notAuthenticated) {
 				console.log('NOT AUTHENTICATED!');
 				if (NODE_ENV === 'production') {
-					if (
-						window.location.pathname !== '/' &&
-						window.location.pathname !== 'server.js'
-					) {
+					if (window.location.pathname !== '/') {
 						window.location.replace(`https://${REACT_APP_CAS_HOST}/cas/logout`);
 					}
 				} else {

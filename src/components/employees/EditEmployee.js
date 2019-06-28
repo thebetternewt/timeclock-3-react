@@ -56,6 +56,8 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 		departments: selectedDepartments,
 	};
 
+	console.log('values:', values);
+
 	const { data: meData } = useQuery(ME);
 	const { me = {} } = meData;
 	const { supervisedDepartments = [] } = me;
@@ -137,9 +139,9 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 		password: passwordValue,
 		...userVariables
 	} = values;
-	if (phoneValue) {
-		userVariables.phone = phoneValue;
-	}
+
+	userVariables.phone = phoneValue.replace(/\D/g, '') || null;
+
 	if (passwordValue) {
 		userVariables.password = passwordValue;
 	}
@@ -180,6 +182,8 @@ const EditUser = ({ employeeId = '', location, navigate }) => {
 				break;
 			case 'clear':
 				value = departmentOptions.filter(val => val.isFixed);
+				break;
+			default:
 				break;
 		}
 		value = orderOptions(value || []);

@@ -98,14 +98,4 @@ const EmployeeCardGrid = styled.div`
 	grid-gap: 1rem;
 `;
 
-const EmployeeLink = styled(Link)`
-	/* &:nth-of-type(2) {
-		display: none;
-	}
-
-	&:nth-of-type(4) {
-		display: none;
-	} */
-`;
-
 export default Employees;

@@ -44,7 +44,11 @@ const EmployeeForm = ({
 	editing = false,
 	cancel,
 }) => (
-	<Form onSubmit={handleSubmit} style={{ maxWidth: '100%' }}>
+	<Form
+		autoComplete={false}
+		onSubmit={handleSubmit}
+		style={{ maxWidth: '100%' }}
+	>
 		{error && <GraphQlErrors errors={error} />}
 		<div style={{ display: 'flex' }}>
 			<div style={{ width: 250, marginRight: '2rem' }}>
@@ -137,12 +141,14 @@ const EmployeeForm = ({
 			</div>
 			<div style={{ width: 250, marginRight: '2rem' }}>
 				<SrOnlyLabel>Phone Number</SrOnlyLabel>
-				<Input
-					type="phone"
+				<NumberFormat
 					name="phone"
 					placeholder="Phone Number"
 					value={values.phone}
 					onChange={handleChange}
+					customInput={Input}
+					format="(###) ###-####"
+					mask="_"
 				/>
 
 				<SrOnlyLabel>Street Address 1</SrOnlyLabel>
@@ -151,6 +157,7 @@ const EmployeeForm = ({
 					placeholder="Street Address 1"
 					value={values.street1}
 					onChange={handleChange}
+					autocomplete="off"
 				/>
 
 				<SrOnlyLabel>Street Address 2</SrOnlyLabel>

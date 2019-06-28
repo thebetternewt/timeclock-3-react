@@ -2,20 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloProvider } from 'react-apollo';
 import { ApolloProvider as ApolloHooksProvider } from 'react-apollo-hooks';
-import { CookiesProvider } from 'react-cookie';
 
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { client } from './apollo/client';
 
 const app = (
-	<CookiesProvider>
-		<ApolloProvider client={client}>
-			<ApolloHooksProvider client={client}>
-				<App />
-			</ApolloHooksProvider>
-		</ApolloProvider>
-	</CookiesProvider>
+	<ApolloProvider client={client}>
+		<ApolloHooksProvider client={client}>
+			<App />
+		</ApolloHooksProvider>
+	</ApolloProvider>
 );
 
 ReactDOM.render(app, document.getElementById('root'));

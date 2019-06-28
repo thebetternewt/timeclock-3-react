@@ -1,6 +1,6 @@
 import React from 'react';
 import { Location } from '@reach/router';
-import { Form, SrOnlyLabel, Input } from '../../styled/elements/Form';
+import { Form, Input } from '../../styled/elements/Form';
 import GraphQlErrors from '../shared/GraphQLErrors';
 import Button from '../../styled/elements/Button';
 

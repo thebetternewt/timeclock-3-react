@@ -44,6 +44,8 @@ const Employee = ({ employeeId }) => {
 	let user;
 	user = userData.user;
 
+	console.log('emp:', user);
+
 	if (loading) {
 		return <Spinner size="100px" style={{ marginTop: '2rem' }} />;
 	}
@@ -70,7 +72,16 @@ const Employee = ({ employeeId }) => {
 							{user.nineDigitId.slice(3, 6)}-{user.nineDigitId.slice(6, 9)}{' '}
 						</div>
 						<div>Email: {user.email}</div>
-						{user.phone && <div>Phone: {user.phone}</div>}
+						{user.phone && (
+							<div>
+								Phone:{' '}
+								<NumberFormat
+									value={user.phone}
+									displayType="text"
+									format="(###) ###-####"
+								/>
+							</div>
+						)}
 						<div className="divider" />
 
 						{user.street1 && (

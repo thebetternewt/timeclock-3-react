@@ -55,6 +55,8 @@ export const sort = (arr, params) => {
 
 				return 0;
 			}
+
+			return 0;
 		});
 	});
 

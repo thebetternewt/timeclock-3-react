@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Query } from 'react-apollo';
 import { useMutation } from 'react-apollo-hooks';
 import { Redirect } from '@reach/router';
-import { useCookies } from 'react-cookie';
 
 import Box from '../../styled/layouts/Box';
 import Logo from '../../styled/layouts/Logo';
@@ -19,17 +18,6 @@ const Login = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState();
 	const [showForm, setShowForm] = useState(false);
-
-	const [cookies, removeCookie] = useCookies();
-
-	console.log('login cookies', cookies);
-
-	// if (cookies['_ga']) {
-	// 	removeCookie('_ga', { path: '/' });
-	// }
-	// if (cookies['IDMSESSID']) {
-	// 	removeCookie('IDMSESSID', { path: '/' });
-	// }
 
 	const login = useMutation(LOGIN, {
 		variables: { netId, password },

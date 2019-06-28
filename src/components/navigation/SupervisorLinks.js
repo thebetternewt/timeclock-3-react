@@ -5,7 +5,6 @@ import {
 	FaUsers,
 	FaRegBuilding,
 	FaRegCalendarAlt,
-	FaDollarSign,
 } from 'react-icons/fa';
 
 import NavLink from './SideNavLink';
