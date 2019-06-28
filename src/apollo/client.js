@@ -1,5 +1,6 @@
 import ApolloClient from 'apollo-boost';
 import config from '../config';
+const { NODE_ENV, REACT_APP_CAS_HOST } = process.env;
 
 export const client = new ApolloClient({
 	uri: config.graphqlEndpoint,
@@ -15,7 +16,13 @@ export const client = new ApolloClient({
 
 			if (notAuthenticated) {
 				console.log('NOT AUTHENTICATED!');
-				window.location.pathname !== '/' && window.location.replace('/');
+				if (NODE_ENV === 'production') {
+					fetch(`https://${REACT_APP_CAS_HOST}/cas/logout`).then(() => {
+						window.location.pathname !== '/' && window.location.replace('/');
+					});
+				} else {
+					window.location.pathname !== '/' && window.location.replace('/');
+				}
 			}
 		}
 
