@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from '@reach/router';
 import styled from 'styled-components';
-import { FaUserCircle, FaUserNinja, FaCircle } from 'react-icons/fa';
+import { FaUserCircle, FaUserNinja } from 'react-icons/fa';
 
 import Header from '../styled/layouts/Header';
 import TopNav from './navigation/TopNav';

@@ -1,5 +1,6 @@
 import ApolloClient from 'apollo-boost';
 import config from '../config';
+
 const { NODE_ENV, REACT_APP_CAS_HOST } = process.env;
 
 export const client = new ApolloClient({
